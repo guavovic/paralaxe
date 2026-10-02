@@ -9,6 +9,7 @@ namespace Guavovic.Parallax
     {
         private static readonly int WindStrengthId = Shader.PropertyToID("_WindStrength");
         private static readonly int WindSpeedId = Shader.PropertyToID("_WindSpeed");
+        private static readonly int BlurId = Shader.PropertyToID("_Blur");
 
         [SerializeField] private int settingsIndex;
 
@@ -70,6 +71,23 @@ namespace Guavovic.Parallax
                 spriteRenderer.GetPropertyBlock(_block);
                 _block.SetFloat(WindStrengthId, strength);
                 _block.SetFloat(WindSpeedId, speed);
+                spriteRenderer.SetPropertyBlock(_block);
+            }
+        }
+
+        public void ApplyBlur(float blur)
+        {
+            if (_renderers == null)
+                return;
+
+            foreach (var spriteRenderer in _renderers)
+            {
+                var material = spriteRenderer.sharedMaterial;
+                if (material == null || !material.HasProperty(BlurId))
+                    continue;
+
+                spriteRenderer.GetPropertyBlock(_block);
+                _block.SetFloat(BlurId, blur);
                 spriteRenderer.SetPropertyBlock(_block);
             }
         }
