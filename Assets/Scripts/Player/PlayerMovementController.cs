@@ -77,7 +77,7 @@ namespace SilverGames.Metroidvania.Character.Player
 		private void PlayerIsFalling()
 		{
 			//check if player is falling
-			if (Rb.velocity.y < 0 && !CharacterState.Falling && !CharacterState.Attacking)
+			if (Rb.linearVelocity.y < 0 && !CharacterState.Falling && !CharacterState.Attacking)
 			{
 				CharacterState.Falling = true;
 				//CharacterAnimator.FallAnimation();
@@ -89,12 +89,12 @@ namespace SilverGames.Metroidvania.Character.Player
 			}
 
 			//if we are falling past a certain speed threshold
-			if (Rb.velocity.y < _fallSpeedYDampingChangeThreshold && !_cameraManager.IsLerpingYDampin && !_cameraManager.LerpedFromPlayerFalling)
+			if (Rb.linearVelocity.y < _fallSpeedYDampingChangeThreshold && !_cameraManager.IsLerpingYDampin && !_cameraManager.LerpedFromPlayerFalling)
 			{
 				_cameraManager.LerpYDamping(true);
 			}
 			//if we are standing still or moving up
-			if (Rb.velocity.y >= 0 && !_cameraManager.IsLerpingYDampin && _cameraManager.LerpedFromPlayerFalling)
+			if (Rb.linearVelocity.y >= 0 && !_cameraManager.IsLerpingYDampin && _cameraManager.LerpedFromPlayerFalling)
 			{
 				//reset so it can be called again
 				_cameraManager.LerpedFromPlayerFalling = false;
