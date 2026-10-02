@@ -41,6 +41,12 @@ namespace Guavovic.Parallax
                 CreateCopies();
         }
 
+        public void Restore()
+        {
+            transform.position = _origin;
+            transform.localScale = _baseScale;
+        }
+
         public void ApplyTint(Color tint)
         {
             if (_renderers == null)

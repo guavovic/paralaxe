@@ -19,6 +19,7 @@ namespace Guavovic.Parallax
         private ParallaxMode _solverMode;
         private Vector3 _cameraOrigin;
         private bool _initialized;
+        private bool _previewing;
 
         public ParallaxProfile Profile { get => profile; set => profile = value; }
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
@@ -83,9 +84,7 @@ namespace Guavovic.Parallax
             if (_solver == null || _solverMode != profile.Mode)
             {
                 _solverMode = profile.Mode;
-                _solver = profile.Mode == ParallaxMode.Perspective
-                    ? (IParallaxSolver)new PerspectiveSolver()
-                    : new Simulated2DSolver();
+                _solver = ParallaxSolvers.Create(profile.Mode);
             }
 
             var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance);
@@ -100,6 +99,58 @@ namespace Guavovic.Parallax
                 _solver.Solve(layer, settings, context);
                 layer.ApplyWind(_world.WindStrength * settings.WindInfluence, _world.WindSpeed);
             }
+        }
+
+        /// <summary>
+        /// Simula um deslocamento da câmera sem mover a câmera. Serve para o preview do editor.
+        /// </summary>
+        public void Preview(Vector3 cameraOffset, bool withWind)
+        {
+            if (profile == null)
+                return;
+
+            if (!_previewing)
+            {
+                if (layers.Count == 0)
+                    CollectLayers();
+
+                foreach (var layer in layers)
+                {
+                    if (layer != null)
+                        layer.Initialize(createCopies: false);
+                }
+
+                _previewing = true;
+            }
+
+            var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
+            var context = new ParallaxContext(cameraOrigin + cameraOffset, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance);
+            var solver = ParallaxSolvers.Create(profile.Mode);
+            var all = profile.Layers;
+
+            foreach (var layer in layers)
+            {
+                if (layer == null || layer.SettingsIndex < 0 || layer.SettingsIndex >= all.Count)
+                    continue;
+
+                var settings = all[layer.SettingsIndex];
+                solver.Solve(layer, settings, context);
+                layer.ApplyWind(withWind ? profile.WindStrength * settings.WindInfluence : 0f, profile.WindSpeed);
+            }
+        }
+
+        public void ResetPreview()
+        {
+            if (!_previewing)
+                return;
+
+            foreach (var layer in layers)
+            {
+                if (layer != null)
+                    layer.Restore();
+            }
+
+            _previewing = false;
         }
     }
 }
