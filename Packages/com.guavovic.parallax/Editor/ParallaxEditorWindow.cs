@@ -170,6 +170,8 @@ namespace Guavovic.Parallax.Editor
                 }
 
                 EditorGUILayout.PropertyField(layer.FindPropertyRelative("windInfluence"), new GUIContent("Influência do vento"));
+                EditorGUILayout.PropertyField(layer.FindPropertyRelative("blur"), new GUIContent("Desfoque"));
+                EditorGUILayout.PropertyField(layer.FindPropertyRelative("autoScroll"), new GUIContent("Rolagem automática"));
                 EditorGUILayout.PropertyField(layer.FindPropertyRelative("loopHorizontally"), new GUIContent("Repetir na horizontal"));
                 EditorGUILayout.PropertyField(layer.FindPropertyRelative("tint"), new GUIContent("Cor"));
                 EditorGUILayout.EndVertical();

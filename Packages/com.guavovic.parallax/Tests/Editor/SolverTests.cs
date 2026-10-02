@@ -36,9 +36,9 @@ namespace Guavovic.Parallax.Tests
             Object.DestroyImmediate(_texture);
         }
 
-        private static ParallaxContext Context(float cameraX, float speed = 1f, float cameraZ = -10f)
+        private static ParallaxContext Context(float cameraX, float speed = 1f, float cameraZ = -10f, float time = 0f)
         {
-            return new ParallaxContext(new Vector3(cameraX, 0f, cameraZ), new Vector3(0f, 0f, cameraZ), speed, 10f);
+            return new ParallaxContext(new Vector3(cameraX, 0f, cameraZ), new Vector3(0f, 0f, cameraZ), speed, 10f, time);
         }
 
         [Test]
@@ -103,6 +103,43 @@ namespace Guavovic.Parallax.Tests
 
             Assert.AreEqual(2f, _layer.transform.localScale.x, 0.001f);
             Assert.AreEqual(10f, _layer.transform.position.z, 0.001f);
+        }
+
+        [Test]
+        public void AutoScrollMovesTheLayerWithTimeWithoutTheCamera()
+        {
+            var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
+            settings.SetLoopHorizontally(false);
+            settings.SetAutoScroll(new Vector2(0.5f, 0f));
+
+            new Simulated2DSolver().Solve(_layer, settings, Context(0f, time: 4f));
+
+            Assert.AreEqual(2f, _layer.transform.position.x, 0.001f);
+        }
+
+        [Test]
+        public void AutoScrollWithLoopStaysNearTheCamera()
+        {
+            var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
+            settings.SetAutoScroll(new Vector2(3f, 0f));
+            var solver = new Simulated2DSolver();
+
+            foreach (var time in new[] { 0f, 1f, 5.5f, 37f, 120f })
+            {
+                solver.Solve(_layer, settings, Context(0f, time: time));
+                Assert.LessOrEqual(Mathf.Abs(_layer.transform.position.x), TileWidth * 0.5f + 0.001f, "tempo " + time);
+            }
+        }
+
+        [Test]
+        public void BlurIsClampedToTheSupportedRange()
+        {
+            var settings = new ParallaxLayerSettings();
+            settings.SetBlur(99f);
+            Assert.AreEqual(6f, settings.Blur, 0.001f);
+
+            settings.SetBlur(-3f);
+            Assert.AreEqual(0f, settings.Blur, 0.001f);
         }
 
         [Test]

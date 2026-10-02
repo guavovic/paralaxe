@@ -13,6 +13,10 @@ namespace Guavovic.Parallax
         [SerializeField] private float depth;
         [Tooltip("Quanto o vento global balança esta camada.")]
         [SerializeField, Min(0f)] private float windInfluence = 1f;
+        [Tooltip("Desfoque em texels, para simular profundidade de campo. 0 desliga.")]
+        [SerializeField, Range(0f, 6f)] private float blur;
+        [Tooltip("Rolagem automática em unidades por segundo, independente da câmera. Serve para neblina e nuvens.")]
+        [SerializeField] private Vector2 autoScroll;
         [SerializeField] private bool loopHorizontally = true;
         [SerializeField] private Color tint = Color.white;
 
@@ -20,6 +24,8 @@ namespace Guavovic.Parallax
         public Vector2 Factor => factor;
         public float Depth => depth;
         public float WindInfluence => windInfluence;
+        public float Blur => blur;
+        public Vector2 AutoScroll => autoScroll;
         public bool LoopHorizontally => loopHorizontally;
         public Color Tint => tint;
 
@@ -36,6 +42,8 @@ namespace Guavovic.Parallax
         public void SetFactor(Vector2 value) { factor = value; }
         public void SetDepth(float value) { depth = value; }
         public void SetWindInfluence(float value) { windInfluence = Mathf.Max(0f, value); }
+        public void SetBlur(float value) { blur = Mathf.Clamp(value, 0f, 6f); }
+        public void SetAutoScroll(Vector2 value) { autoScroll = value; }
         public void SetLoopHorizontally(bool value) { loopHorizontally = value; }
         public void SetTint(Color value) { tint = value; }
         public void SetName(string value) { name = value; }
