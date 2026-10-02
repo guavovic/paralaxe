@@ -69,8 +69,13 @@ namespace Guavovic.Parallax
             if (layers.Count == 0)
                 CollectLayers();
 
+            var all = profile.Layers;
             foreach (var layer in layers)
+            {
                 layer.Initialize(createCopies: true);
+                if (layer.SettingsIndex >= 0 && layer.SettingsIndex < all.Count)
+                    layer.ApplyTint(all[layer.SettingsIndex].Tint);
+            }
 
             _cameraOrigin = targetCamera.transform.position;
             _initialized = true;
@@ -117,8 +122,12 @@ namespace Guavovic.Parallax
 
                 foreach (var layer in layers)
                 {
-                    if (layer != null)
-                        layer.Initialize(createCopies: false);
+                    if (layer == null)
+                        continue;
+
+                    layer.Initialize(createCopies: false);
+                    if (layer.SettingsIndex >= 0 && layer.SettingsIndex < profile.Layers.Count)
+                        layer.ApplyTint(profile.Layers[layer.SettingsIndex].Tint);
                 }
 
                 _previewing = true;
