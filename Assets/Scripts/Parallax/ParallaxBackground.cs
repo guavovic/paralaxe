@@ -15,6 +15,12 @@ public sealed class ParallaxBackground : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        if (parallaxCamera != null)
+            parallaxCamera.onCameraTranslate -= Move;
+    }
+
     public void AddParallaxLayer(ParallaxLayerController parallaxLayer)
     {
         if (parallaxLayers == null)
