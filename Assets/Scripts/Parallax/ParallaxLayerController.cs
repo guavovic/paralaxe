@@ -60,6 +60,6 @@ public sealed class ParallaxLayerController : MonoBehaviour
         var parent = transform.gameObject.transform;
 
         Instantiate(childTransform, new Vector3(startPositionX - _lenght, startPositionY, startPositionZ), rotation, parent);
-        Instantiate(childTransform, new Vector3(-(startPositionX - _lenght), startPositionY, startPositionZ), rotation, parent);
+        Instantiate(childTransform, new Vector3(startPositionX + _lenght, startPositionY, startPositionZ), rotation, parent);
     }
 }
