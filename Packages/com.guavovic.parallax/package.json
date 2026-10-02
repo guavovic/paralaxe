@@ -1,7 +1,7 @@
 {
   "name": "com.guavovic.parallax",
   "version": "0.1.0",
-  "displayName": "Parallax",
+  "displayName": "Paralaxe",
   "description": "Parallax em 2D simulado e em perspectiva, com valores globais que o jogador pode afetar e que afetam o jogador.",
   "unity": "6000.0",
   "author": {
