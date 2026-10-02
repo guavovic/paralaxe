@@ -14,28 +14,64 @@ MonoBehaviour:
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxProfile
   mode: 1
   layers:
-  - name: "\xC1rvores ao fundo"
-    factor: {x: 0.85, y: 0.05}
-    depth: 40
+  - name: "C\xE9u"
+    factor: {x: 0.98, y: 0.3}
+    depth: 490.0005
+    windInfluence: 0
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Montanhas
+    factor: {x: 0.92, y: 0.25}
+    depth: 115.00002
+    windInfluence: 0
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Floresta ao fundo
+    factor: {x: 0.8, y: 0.15}
+    depth: 40.000004
     windInfluence: 0.3
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: "\xC1rvores do meio"
-    factor: {x: 0.6, y: 0.04}
-    depth: 20
-    windInfluence: 0.6
+  - name: Neblina distante
+    factor: {x: 0.72, y: 0.12}
+    depth: 25.714289
+    windInfluence: 0.2
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: "\xC1rvores da frente"
-    factor: {x: 0.3, y: 0.02}
-    depth: 8
+  - name: Floresta do meio
+    factor: {x: 0.58, y: 0.08}
+    depth: 13.809523
+    windInfluence: 0.5
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "Neblina pr\xF3xima"
+    factor: {x: 0.45, y: 0.06}
+    depth: 8.181818
+    windInfluence: 0.3
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Floresta da frente
+    factor: {x: 0.3, y: 0.03}
+    depth: 4.2857146
+    windInfluence: 0.8
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "Ch\xE3o"
+    factor: {x: 0, y: 0}
+    depth: 0
+    windInfluence: 0
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Primeiro plano
+    factor: {x: -0.35, y: 0}
+    depth: -2.5925925
     windInfluence: 1
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: Luzes
-    factor: {x: -0.15, y: 0}
-    depth: -4
-    windInfluence: 0.4
+  - name: Raios de luz
+    factor: {x: -0.1, y: 0}
+    depth: -0.90909094
+    windInfluence: 0.2
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
   speedMultiplier: 1
