@@ -1,11 +1,10 @@
-Shader "Parallax/Wind Sprite"
+Shader "Parallax/Glow Sprite"
 {
     Properties
     {
         [PerRendererData] _MainTex ("Sprite Texture", 2D) = "white" {}
         _Color ("Tint", Color) = (1, 1, 1, 1)
-        _WindSpeed ("Wind Speed", Float) = 1
-        _WindStrength ("Wind Strength", Float) = 0.5
+        _Intensity ("Intensity", Range(0, 4)) = 1
         _Blur ("Blur (texels)", Range(0, 6)) = 0
     }
 
@@ -14,7 +13,7 @@ Shader "Parallax/Wind Sprite"
         Tags
         {
             "RenderType" = "Transparent"
-            "Queue" = "Transparent"
+            "Queue" = "Transparent+10"
             "RenderPipeline" = "UniversalPipeline"
             "IgnoreProjector" = "True"
             "CanUseSpriteAtlas" = "True"
@@ -22,7 +21,8 @@ Shader "Parallax/Wind Sprite"
 
         Cull Off
         ZWrite Off
-        Blend SrcAlpha OneMinusSrcAlpha
+        // Aditivo: a luz soma ao que já está desenhado e nunca escurece nada.
+        Blend SrcAlpha One
 
         Pass
         {
@@ -41,8 +41,7 @@ Shader "Parallax/Wind Sprite"
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
                 half4 _Color;
-                float _WindSpeed;
-                float _WindStrength;
+                float _Intensity;
                 float _Blur;
             CBUFFER_END
 
@@ -59,23 +58,6 @@ Shader "Parallax/Wind Sprite"
                 float2 uv : TEXCOORD0;
                 half4 color : COLOR;
             };
-
-            float Hash(float2 p)
-            {
-                return frac(sin(dot(p, float2(127.1, 311.7))) * 43758.5453);
-            }
-
-            float GradientNoise(float2 p)
-            {
-                float2 i = floor(p);
-                float2 f = frac(p);
-                float2 u = f * f * (3.0 - 2.0 * f);
-                float a = Hash(i);
-                float b = Hash(i + float2(1, 0));
-                float c = Hash(i + float2(0, 1));
-                float d = Hash(i + float2(1, 1));
-                return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
-            }
 
             Varyings vert(Attributes input)
             {
@@ -114,11 +96,9 @@ Shader "Parallax/Wind Sprite"
 
             half4 frag(Varyings input) : SV_Target
             {
-                float t = _Time.y * _WindSpeed;
-                float2 noiseUV = float2(input.uv.x * 6.0 + t, input.uv.y * 3.0);
-                float sway = (GradientNoise(noiseUV) - 0.5) * _WindStrength * 0.05;
-                float2 uv = input.uv + float2(sway, 0);
-                return SampleBlurred(uv) * input.color;
+                half4 color = SampleBlurred(input.uv) * input.color;
+                color.rgb *= _Intensity;
+                return color;
             }
             ENDHLSL
         }

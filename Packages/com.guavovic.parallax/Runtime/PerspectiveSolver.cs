@@ -19,6 +19,10 @@ namespace Guavovic.Parallax
             float centerX = cameraOrigin.x + (origin.x - cameraOrigin.x) * scale;
             float centerY = cameraOrigin.y + (origin.y - cameraOrigin.y) * scale;
 
+            Vector2 scroll = settings.AutoScroll * context.Time * scale;
+            centerX += scroll.x;
+            centerY += scroll.y;
+
             float wrap = 0f;
             float tileWidth = layer.TileWidth * scale;
             if (settings.LoopHorizontally && tileWidth > 0f)
