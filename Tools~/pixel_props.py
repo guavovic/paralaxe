@@ -53,9 +53,36 @@ def bird(frame):
     return img
 
 
+def speech_bubble():
+    # balão de fala 26x14: contorno escuro, miolo claro e uma ponta virada para a cabeça
+    ink, fill = (10, 14, 22, 255), (223, 238, 240, 255)
+    img = Image.new("RGBA", (26, 14), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(img)
+    draw.rectangle([0, 0, 25, 10], fill=ink)
+    draw.rectangle([1, 1, 24, 9], fill=fill)
+    for x, y in ((0, 0), (25, 0), (0, 10), (25, 10)):
+        img.putpixel((x, y), (0, 0, 0, 0))
+    for x, y in ((1, 1), (24, 1), (1, 9), (24, 9)):
+        img.putpixel((x, y), ink)
+    for x, y in ((4, 10), (5, 10), (6, 10)):
+        img.putpixel((x, y), fill)
+    for x, y in ((3, 10), (7, 10), (4, 11), (6, 11), (4, 12), (5, 11), (5, 12)):
+        img.putpixel((x, y), ink)
+    for x, y in ((5, 11),):
+        img.putpixel((x, y), fill)
+    return img
+
+
+def bubble_dot():
+    img = Image.new("RGBA", (2, 2), (10, 14, 22, 255))
+    return img
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     dot_glow().save(os.path.join(OUT, "dot_glow.png"))
+    speech_bubble().save(os.path.join(OUT, "bubble.png"))
+    bubble_dot().save(os.path.join(OUT, "bubble_dot.png"))
     smoke_puff().save(os.path.join(OUT, "smoke_puff.png"))
     for frame in range(4):
         bird(frame).save(os.path.join(OUT, "bird_%d.png" % frame))
