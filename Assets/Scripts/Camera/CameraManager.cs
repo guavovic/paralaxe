@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Cinemachine;
+
 
 namespace SilverGames.Metroidvania.Camera
 {
@@ -10,7 +10,7 @@ namespace SilverGames.Metroidvania.Camera
 	{
 		public static CameraManager Instance;
 
-		[SerializeField] private CinemachineVirtualCamera[] _allVirtualCameras;
+		[SerializeField] private Unity.Cinemachine.CinemachineVirtualCamera[] _allVirtualCameras;
 
 		[Header(" --- Controls for lerping the Y Damping during player Jump/Fall")]
 		[SerializeField] private float _fallPanAmount = 0.25f;
@@ -21,8 +21,8 @@ namespace SilverGames.Metroidvania.Camera
 		public bool LerpedFromPlayerFalling { get; set; }
 
 		private Coroutine _lerpYPanCoroutine;
-		private CinemachineVirtualCamera _currentCamera;
-		private CinemachineFramingTransposer _framingTransposer;
+		private Unity.Cinemachine.CinemachineVirtualCamera _currentCamera;
+		private Unity.Cinemachine.CinemachineFramingTransposer _framingTransposer;
 
 		private float _normYPanAmount;
 
@@ -39,7 +39,7 @@ namespace SilverGames.Metroidvania.Camera
 					_currentCamera = _allVirtualCameras[i];
 
 					//set the framing transposer
-					_framingTransposer = _currentCamera.GetCinemachineComponent<CinemachineFramingTransposer>();
+					_framingTransposer = _currentCamera.GetCinemachineComponent<Unity.Cinemachine.CinemachineFramingTransposer>();
 				}
 			}
 
