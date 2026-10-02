@@ -13,7 +13,7 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Min(0.01f)] private float walkFrameTime = 0.11f;
         [SerializeField, Min(0f)] private float walkThreshold = 0.3f;
         [Tooltip("Velocidade a partir da qual a caminhada acelera, para a corrida.")]
-        [SerializeField, Min(0.1f)] private float walkReferenceSpeed = 6f;
+        [SerializeField, Min(0.1f)] private float walkReferenceSpeed = 3.2f;
 
         private SpriteRenderer _renderer;
         private Rigidbody2D _body;

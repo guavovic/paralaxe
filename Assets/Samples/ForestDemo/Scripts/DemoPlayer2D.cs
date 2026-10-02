@@ -6,10 +6,10 @@ namespace Guavovic.Parallax.Samples
     [RequireComponent(typeof(Rigidbody2D))]
     public sealed class DemoPlayer2D : MonoBehaviour
     {
-        [SerializeField, Min(0f)] private float moveSpeed = 6f;
-        [SerializeField, Min(1f)] private float runMultiplier = 1.6f;
-        [SerializeField, Min(0f)] private float jumpSpeed = 9f;
-        [SerializeField, Min(0f)] private float acceleration = 40f;
+        [SerializeField, Min(0f)] private float moveSpeed = 3.2f;
+        [SerializeField, Min(1f)] private float runMultiplier = 1.7f;
+        [SerializeField, Min(0f)] private float jumpSpeed = 8f;
+        [SerializeField, Min(0f)] private float acceleration = 22f;
         [Tooltip("Sem input, a velocidade horizontal cai de forma proporcional, então o vento ainda empurra o jogador no ar.")]
         [SerializeField, Min(0f)] private float idleDrag = 3f;
         [SerializeField] private LayerMask groundMask = ~0;
@@ -33,7 +33,9 @@ namespace Guavovic.Parallax.Samples
         private float _lastActivityTime;
         private float _nextActionTime;
 
-        public bool IsAutonomous => autonomousAfterSeconds > 0f && Time.time - _lastActivityTime >= autonomousAfterSeconds;
+        public float IdleSeconds => Time.time - _lastActivityTime;
+        public float AutonomousAfterSeconds => autonomousAfterSeconds;
+        public bool IsAutonomous => autonomousAfterSeconds > 0f && IdleSeconds >= autonomousAfterSeconds;
         public bool IsRunning => _run && Mathf.Abs(_input) > 0.01f;
 
         private void Awake()
