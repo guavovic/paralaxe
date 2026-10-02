@@ -10,6 +10,8 @@ namespace Guavovic.Parallax
     {
         [Tooltip("Força aplicada por unidade de vento.")]
         [SerializeField, Min(0f)] private float force = 4f;
+        [Tooltip("Se ligado, o vento só empurra o corpo quando ele não está tocando em nada, como durante um pulo.")]
+        [SerializeField] private bool onlyInAir = true;
 
         private Rigidbody2D _body;
 
@@ -22,6 +24,9 @@ namespace Guavovic.Parallax
         {
             var world = ParallaxWorld.Current;
             if (world == null)
+                return;
+
+            if (onlyInAir && _body.IsTouchingLayers(Physics2D.AllLayers))
                 return;
 
             _body.AddForce(world.Wind * force);
