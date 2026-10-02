@@ -115,7 +115,7 @@ public sealed class CreateNewRoomWindow : EditorWindow
             orderInLayerComponent.SetOrderInLayerValue(i);
 
             ParallaxLayerController parallaxLayerComponent = backgroundLayer.AddComponent<ParallaxLayerController>();
-            parallaxLayerComponent.SetParallaxFactor(i / 10f);
+            parallaxLayerComponent.SetParallaxFactor(-i / (backgroundLayers + 1f));
 
             backgroundTypeCollectionComponent.SetLayerType(LayerType.Background);
             backgroundTypeCollectionComponent.AddParallaxLayer(parallaxLayerComponent);
@@ -170,7 +170,7 @@ public sealed class CreateNewRoomWindow : EditorWindow
             orderInLayerComponent.SetOrderInLayerValue(i);
 
             ParallaxLayerController parallaxLayerComponent = foregroundLayer.AddComponent<ParallaxLayerController>();
-            parallaxLayerComponent.SetParallaxFactor(i / 10f);
+            parallaxLayerComponent.SetParallaxFactor(-i / 10f);
 
             foregroundTypeCollectionComponent.SetLayerType(LayerType.Foreground);
             foregroundTypeCollectionComponent.AddParallaxLayer(parallaxLayerComponent);
