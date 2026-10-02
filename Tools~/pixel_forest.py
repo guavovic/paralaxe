@@ -200,7 +200,7 @@ def layer_clouds():
 
     def density(x, y):
         band = max(0.0, 1 - abs(y - H * 0.22) / (H * 0.16))
-        v = (noise_a(x) * 0.5 + 0.5) * 0.7 + (noise_b(x * 2.1 + y * 3.0) * 0.5 + 0.5) * 0.3
+        v = (noise_a(x) * 0.5 + 0.5) * 0.7 + (noise_b(x * 2 + y * 3) * 0.5 + 0.5) * 0.3
         return max(0.0, (v - 0.46)) * 2.6 * band
 
     return dither_fill((W, H), density, hexc("#6f9bb0", 120), scale=2)
@@ -300,7 +300,7 @@ def layer_fog(seed, y_center, thickness, color, alpha, scale=2):
 
     def density(x, y):
         band = max(0.0, 1 - abs(y - y_center) / thickness)
-        v = (noise_a(x) * 0.5 + 0.5) * 0.65 + (noise_b(x * 2.3 + y * 2.0) * 0.5 + 0.5) * 0.35
+        v = (noise_a(x) * 0.5 + 0.5) * 0.65 + (noise_b(x * 2 + y * 2) * 0.5 + 0.5) * 0.35
         return band * max(0.0, v * 0.9 - 0.3)
 
     return dither_fill((W, H), density, color[:3] + (alpha,), scale)
