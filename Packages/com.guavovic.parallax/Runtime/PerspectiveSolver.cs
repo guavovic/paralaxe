@@ -23,6 +23,10 @@ namespace Guavovic.Parallax
             centerX += scroll.x;
             centerY += scroll.y;
 
+            // O fator Y diz quanto a camada acompanha a câmera na vertical. Com 1 ela fica sempre cobrindo a tela,
+            // então a borda do sprite nunca aparece quando a câmera sobe ou desce.
+            centerY += context.CameraOffset.y * settings.Factor.y;
+
             float wrap = 0f;
             float tileWidth = layer.TileWidth * scale;
             if (settings.LoopHorizontally && tileWidth > 0f)

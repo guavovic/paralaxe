@@ -143,6 +143,21 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void PerspectiveFollowsTheCameraOnYByTheYFactor()
+        {
+            var locked = new ParallaxLayerSettings("L", new Vector2(0f, 1f), 0f);
+            var free = new ParallaxLayerSettings("L", Vector2.zero, 0f);
+            var context = new ParallaxContext(new Vector3(0f, 3f, -10f), new Vector3(0f, 0f, -10f), 1f, 10f);
+
+            new PerspectiveSolver().Solve(_layer, locked, context);
+            Assert.AreEqual(3f, _layer.transform.position.y, 0.001f);
+
+            _layer.Restore();
+            new PerspectiveSolver().Solve(_layer, free, context);
+            Assert.AreEqual(0f, _layer.transform.position.y, 0.001f);
+        }
+
+        [Test]
         public void RestoreBringsBackOriginAndScale()
         {
             var settings = new ParallaxLayerSettings("L", Vector2.zero, 10f);
