@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960b13c5dbbda044f92e4fe57c328ba2, type: 3}
+  m_Name: ForestPerspectiveProfile
+  m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxProfile
+  mode: 1
+  layers:
+  - name: "\xC1rvores ao fundo"
+    factor: {x: 0.85, y: 0.05}
+    depth: 40
+    windInfluence: 0.3
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "\xC1rvores do meio"
+    factor: {x: 0.6, y: 0.04}
+    depth: 20
+    windInfluence: 0.6
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "\xC1rvores da frente"
+    factor: {x: 0.3, y: 0.02}
+    depth: 8
+    windInfluence: 1
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Luzes
+    factor: {x: -0.15, y: 0}
+    depth: -4
+    windInfluence: 0.4
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  speedMultiplier: 1
+  windDirection: {x: 1, y: 0}
+  windStrength: 0.6
+  windSpeed: 1
+  gustDecay: 1.5
+  maxGust: 2
+  focusDistance: 10
