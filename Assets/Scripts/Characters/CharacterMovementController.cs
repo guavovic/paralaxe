@@ -173,7 +173,7 @@ namespace SilverGames.Metroidvania.Character
             if (CharacterState.Jumping)
             {
                 print("soltou pulo no meio do click");
-                Rb.velocity = new Vector2(Rb.velocity.x * 0.5f, Rb.velocity.y * 0.5f);
+                Rb.linearVelocity = new Vector2(Rb.linearVelocity.x * 0.5f, Rb.linearVelocity.y * 0.5f);
                 //print(Rb.velocity);
             }
         }
