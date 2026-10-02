@@ -10160,7 +10160,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoCameraFollow
   target: {fileID: 855756098}
   smoothTime: 0.15
-  followY: 0
+  followY: 1
+  verticalFactor: 0.6
+  minY: -1.6
+  maxY: 2.4
 --- !u!114 &2035013548
 MonoBehaviour:
   m_ObjectHideFlags: 0
