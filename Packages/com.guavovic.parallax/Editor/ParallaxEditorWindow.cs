@@ -13,6 +13,7 @@ namespace Guavovic.Parallax.Editor
         private bool _previewActive;
 
         [MenuItem("Window/Parallax/Editor")]
+        [MenuItem("Tools/Parallax/Editor")]
         public static void Open()
         {
             GetWindow<ParallaxEditorWindow>("Parallax");

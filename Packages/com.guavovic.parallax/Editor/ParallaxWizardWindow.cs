@@ -13,6 +13,7 @@ namespace Guavovic.Parallax.Editor
 
         [MenuItem("GameObject/Parallax/Novo parallax", false, 10)]
         [MenuItem("Window/Parallax/Novo parallax")]
+        [MenuItem("Tools/Parallax/Novo parallax")]
         public static void Open()
         {
             GetWindow<ParallaxWizardWindow>("Novo parallax");
