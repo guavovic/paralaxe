@@ -12,6 +12,8 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Min(0.01f)] private float idleFrameTime = 0.6f;
         [SerializeField, Min(0.01f)] private float walkFrameTime = 0.11f;
         [SerializeField, Min(0f)] private float walkThreshold = 0.3f;
+        [Tooltip("Velocidade a partir da qual a caminhada acelera, para a corrida.")]
+        [SerializeField, Min(0.1f)] private float walkReferenceSpeed = 6f;
 
         private SpriteRenderer _renderer;
         private Rigidbody2D _body;
@@ -42,7 +44,8 @@ namespace Guavovic.Parallax.Samples
 
             if (Mathf.Abs(velocity.x) > walkThreshold && walk != null && walk.Length > 0)
             {
-                _renderer.sprite = walk[(int)(_timer / walkFrameTime) % walk.Length];
+                float pace = Mathf.Clamp(Mathf.Abs(velocity.x) / walkReferenceSpeed, 1f, 2.2f);
+                _renderer.sprite = walk[(int)(_timer * pace / walkFrameTime) % walk.Length];
                 return;
             }
 
