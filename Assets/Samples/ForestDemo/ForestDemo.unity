@@ -556,6 +556,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoCameraFollow
   target: {fileID: 1149368681}
   smoothTime: 0.15
+  followY: 0
 --- !u!4 &850408062
 Transform:
   m_ObjectHideFlags: 0
@@ -586,6 +587,7 @@ GameObject:
   - component: {fileID: 1149368677}
   - component: {fileID: 1149368676}
   - component: {fileID: 1149368675}
+  - component: {fileID: 1149368682}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -788,6 +790,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1149368682
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1149368674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8a561df15f308834d8dcae9c5ae814c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoPlayerAnimator
+  idle: {fileID: 21300000, guid: b362fbc0f95f7bb429bd9f81da358487, type: 3}
+  walk:
+  - {fileID: 21300000, guid: 1ed62943f9a34a84ba2197750189ea22, type: 3}
+  - {fileID: 21300000, guid: 9a6cf75e7b728034895bb7920f8df524, type: 3}
+  jump: {fileID: 21300000, guid: d396a232946adba4ca57175bde2dfafe, type: 3}
+  fall: {fileID: 21300000, guid: 52d194fda4722c04d89e24f6104816c3, type: 3}
+  walkFrameTime: 0.12
+  walkThreshold: 0.3
 --- !u!1 &1237406324
 GameObject:
   m_ObjectHideFlags: 0

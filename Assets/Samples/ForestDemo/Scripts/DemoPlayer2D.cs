@@ -14,6 +14,7 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private LayerMask groundMask = ~0;
         [SerializeField] private float groundCheckDistance = 0.1f;
 
+        private readonly RaycastHit2D[] _hits = new RaycastHit2D[4];
         private Rigidbody2D _body;
         private Collider2D _collider;
         private float _input;
@@ -54,11 +55,10 @@ namespace Guavovic.Parallax.Samples
             _body.linearVelocity = velocity;
         }
 
-        private bool IsGrounded()
+        public bool IsGrounded()
         {
-            var bounds = _collider.bounds;
-            var hit = Physics2D.BoxCast(bounds.center, bounds.size, 0f, Vector2.down, groundCheckDistance, groundMask);
-            return hit.collider != null && hit.collider != _collider;
+            var filter = new ContactFilter2D { useLayerMask = true, layerMask = groundMask, useTriggers = false };
+            return _collider.Cast(Vector2.down, filter, _hits, groundCheckDistance) > 0;
         }
     }
 }
