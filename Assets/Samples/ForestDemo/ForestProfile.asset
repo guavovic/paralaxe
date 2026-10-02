@@ -15,65 +15,125 @@ MonoBehaviour:
   mode: 0
   layers:
   - name: "C\xE9u"
-    factor: {x: 0.98, y: 0.3}
-    depth: 490.0005
+    factor: {x: 0.99, y: 0.05}
+    depth: 990.001
     windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Nuvens
+    factor: {x: 0.96, y: 0.04}
+    depth: 239.99986
+    windInfluence: 0
+    blur: 0.6
+    autoScroll: {x: 0.12, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.55}
   - name: Montanhas
-    factor: {x: 0.92, y: 0.25}
-    depth: 115.00002
+    factor: {x: 0.93, y: 0.05}
+    depth: 132.85716
     windInfluence: 0
+    blur: 1
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: Floresta ao fundo
-    factor: {x: 0.8, y: 0.15}
-    depth: 40.000004
-    windInfluence: 0.3
+  - name: Floresta distante
+    factor: {x: 0.88, y: 0.04}
+    depth: 73.33333
+    windInfluence: 0.15
+    blur: 0.8
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
   - name: Neblina distante
-    factor: {x: 0.72, y: 0.12}
-    depth: 25.714289
+    factor: {x: 0.85, y: 0.03}
+    depth: 56.666676
+    windInfluence: 0
+    blur: 1.2
+    autoScroll: {x: -0.18, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.3}
+  - name: "\xC1rvores gigantes"
+    factor: {x: 0.75, y: 0.03}
+    depth: 30
     windInfluence: 0.2
+    blur: 0.5
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
   - name: Floresta do meio
-    factor: {x: 0.58, y: 0.08}
+    factor: {x: 0.58, y: 0.02}
     depth: 13.809523
     windInfluence: 0.5
+    blur: 0
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: "Neblina pr\xF3xima"
-    factor: {x: 0.45, y: 0.06}
+  - name: Neblina do meio
+    factor: {x: 0.45, y: 0.02}
     depth: 8.181818
-    windInfluence: 0.3
+    windInfluence: 0
+    blur: 0.8
+    autoScroll: {x: 0.22, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.28}
+  - name: "Ru\xEDnas"
+    factor: {x: 0.2, y: 0.01}
+    depth: 2.5
+    windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
-  - name: Floresta da frente
-    factor: {x: 0.3, y: 0.03}
-    depth: 4.2857146
-    windInfluence: 0.8
+  - name: Luz das lanternas
+    factor: {x: 0.2, y: 0.01}
+    depth: 2.5
+    windInfluence: 0
+    blur: 0.6
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
-    tint: {r: 1, g: 1, b: 1, a: 1}
+    tint: {r: 1, g: 1, b: 1, a: 0.9}
   - name: "Ch\xE3o"
     factor: {x: 0, y: 0}
     depth: 0
     windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "Cip\xF3s"
+    factor: {x: -0.12, y: 0}
+    depth: -1.0714285
+    windInfluence: 1
+    blur: 0.8
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
   - name: Primeiro plano
-    factor: {x: -0.35, y: 0}
-    depth: -2.5925925
-    windInfluence: 1
+    factor: {x: -0.45, y: 0}
+    depth: -3.1034482
+    windInfluence: 0.6
+    blur: 2
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Neblina baixa
+    factor: {x: -0.25, y: 0}
+    depth: -2
+    windInfluence: 0
+    blur: 1
+    autoScroll: {x: 0.3, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.16}
   - name: Raios de luz
-    factor: {x: -0.1, y: 0}
-    depth: -0.90909094
-    windInfluence: 0.2
+    factor: {x: -0.08, y: 0}
+    depth: -0.7407407
+    windInfluence: 0
+    blur: 1.2
+    autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
-    tint: {r: 1, g: 1, b: 1, a: 1}
+    tint: {r: 1, g: 1, b: 1, a: 0.5}
   speedMultiplier: 1
   windDirection: {x: 1, y: 0}
   windStrength: 0.6
