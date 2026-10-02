@@ -6,6 +6,7 @@ Shader "Parallax/Wind Sprite"
         _Color ("Tint", Color) = (1, 1, 1, 1)
         _WindSpeed ("Wind Speed", Float) = 1
         _WindStrength ("Wind Strength", Float) = 0.5
+        _Blur ("Blur (texels)", Range(0, 6)) = 0
     }
 
     SubShader
@@ -35,12 +36,14 @@ Shader "Parallax/Wind Sprite"
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
+            float4 _MainTex_TexelSize;
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _MainTex_ST;
                 half4 _Color;
                 float _WindSpeed;
                 float _WindStrength;
+                float _Blur;
             CBUFFER_END
 
             struct Attributes
@@ -83,13 +86,39 @@ Shader "Parallax/Wind Sprite"
                 return output;
             }
 
+            half4 SampleBlurred(float2 uv)
+            {
+                if (_Blur < 0.01)
+                    return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
+
+                // Desfoque de 9 pontos com pesos de um filtro gaussiano pequeno.
+                // A cor é ponderada pelo alpha, para o contorno não escurecer ao misturar com o transparente.
+                float2 step = _MainTex_TexelSize.xy * _Blur;
+                float2 offsets[9] = {
+                    float2(0, 0), float2(step.x, 0), float2(-step.x, 0), float2(0, step.y), float2(0, -step.y),
+                    step, -step, float2(step.x, -step.y), float2(-step.x, step.y)
+                };
+                float weights[9] = { 0.2270, 0.1135, 0.1135, 0.1135, 0.1135, 0.0680, 0.0680, 0.0680, 0.0680 };
+
+                half3 color = 0;
+                half alpha = 0;
+                [unroll] for (int i = 0; i < 9; i++)
+                {
+                    half4 tap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv + offsets[i]);
+                    color += tap.rgb * tap.a * weights[i];
+                    alpha += tap.a * weights[i];
+                }
+
+                return half4(color / max(alpha, 0.0001h), alpha);
+            }
+
             half4 frag(Varyings input) : SV_Target
             {
                 float t = _Time.y * _WindSpeed;
                 float2 noiseUV = float2(input.uv.x * 6.0 + t, input.uv.y * 3.0);
                 float sway = (GradientNoise(noiseUV) - 0.5) * _WindStrength * 0.05;
                 float2 uv = input.uv + float2(sway, 0);
-                return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * input.color;
+                return SampleBlurred(uv) * input.color;
             }
             ENDHLSL
         }

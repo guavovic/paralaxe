@@ -87,7 +87,7 @@ namespace Guavovic.Parallax
                 _solver = ParallaxSolvers.Create(profile.Mode);
             }
 
-            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance);
+            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance, Time.time);
             var all = profile.Layers;
 
             foreach (var layer in layers)
@@ -98,6 +98,7 @@ namespace Guavovic.Parallax
                 var settings = all[layer.SettingsIndex];
                 _solver.Solve(layer, settings, context);
                 layer.ApplyWind(_world.WindStrength * settings.WindInfluence, _world.WindSpeed);
+                layer.ApplyBlur(settings.Blur);
             }
         }
 
@@ -136,6 +137,7 @@ namespace Guavovic.Parallax
                 var settings = all[layer.SettingsIndex];
                 solver.Solve(layer, settings, context);
                 layer.ApplyWind(withWind ? profile.WindStrength * settings.WindInfluence : 0f, profile.WindSpeed);
+                layer.ApplyBlur(settings.Blur);
             }
         }
 
