@@ -24,7 +24,7 @@ namespace Guavovic.Parallax
             get
             {
                 if (_current == null)
-                    _current = FindFirstObjectByType<ParallaxWorld>();
+                    _current = FindAnyObjectByType<ParallaxWorld>();
 
                 return _current;
             }

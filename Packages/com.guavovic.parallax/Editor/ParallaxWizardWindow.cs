@@ -48,25 +48,15 @@ namespace Guavovic.Parallax.Editor
                 _sprites.Add(null);
 
             EditorGUILayout.Space();
-            using (new EditorGUI.DisabledScope(!CanCreate()))
+            bool canCreate = _sprites.Exists(sprite => sprite != null);
+            using (new EditorGUI.DisabledScope(!canCreate))
             {
                 if (GUILayout.Button("Criar"))
                     Create();
             }
 
-            if (!CanCreate())
+            if (!canCreate)
                 EditorGUILayout.HelpBox("Adicione ao menos uma imagem.", MessageType.Info);
-        }
-
-        private bool CanCreate()
-        {
-            foreach (var sprite in _sprites)
-            {
-                if (sprite != null)
-                    return true;
-            }
-
-            return false;
         }
 
         private void Create()
@@ -95,13 +85,10 @@ namespace Guavovic.Parallax.Editor
 
                 profile.AddLayer(new ParallaxLayerSettings(chosen[i].name, new Vector2(factor, factor * 0.1f), depth));
 
-                var layerObject = new GameObject("Camada " + i + " - " + chosen[i].name);
-                layerObject.transform.SetParent(rigObject.transform, false);
-                var layer = layerObject.AddComponent<ParallaxLayer>();
-                layer.SettingsIndex = i;
+                var layer = ParallaxLayerCommands.CreateLayerObject(rig, i, "Camada " + i + " - " + chosen[i].name);
 
                 var imageObject = new GameObject(chosen[i].name);
-                imageObject.transform.SetParent(layerObject.transform, false);
+                imageObject.transform.SetParent(layer.transform, false);
                 var spriteRenderer = imageObject.AddComponent<SpriteRenderer>();
                 spriteRenderer.sprite = chosen[i];
                 spriteRenderer.sortingOrder = i - chosen.Count;
@@ -109,8 +96,7 @@ namespace Guavovic.Parallax.Editor
 
             AssetDatabase.CreateAsset(profile, path);
             AssetDatabase.SaveAssets();
-            rig.CollectLayers();
-            EditorUtility.SetDirty(rig);
+            ParallaxLayerCommands.RegisterLayers(rig);
 
             Selection.activeGameObject = rigObject;
             ParallaxEditorWindow.Open(rig);

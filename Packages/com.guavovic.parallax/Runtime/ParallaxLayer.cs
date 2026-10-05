@@ -19,6 +19,10 @@ namespace Guavovic.Parallax
         private Vector3 _baseScale = Vector3.one;
         private float _tileWidth;
         private bool _copiesCreated;
+        private bool _materialApplied;
+        private float _windStrength;
+        private float _windSpeed;
+        private float _blur;
 
         public int SettingsIndex { get => settingsIndex; set => settingsIndex = value; }
         public Vector3 Origin => _origin;
@@ -31,6 +35,7 @@ namespace Guavovic.Parallax
             _baseScale = transform.localScale;
             _renderers = GetComponentsInChildren<SpriteRenderer>(true);
             _block = new MaterialPropertyBlock();
+            _materialApplied = false;
 
             if (transform.childCount == 0)
                 return;
@@ -59,23 +64,32 @@ namespace Guavovic.Parallax
 
         public void ApplyWind(float strength, float speed)
         {
-            if (_renderers == null)
-                return;
-
-            foreach (var spriteRenderer in _renderers)
-            {
-                var material = spriteRenderer.sharedMaterial;
-                if (material == null || !material.HasProperty(WindStrengthId))
-                    continue;
-
-                spriteRenderer.GetPropertyBlock(_block);
-                _block.SetFloat(WindStrengthId, strength);
-                _block.SetFloat(WindSpeedId, speed);
-                spriteRenderer.SetPropertyBlock(_block);
-            }
+            _materialApplied = false;
+            SetMaterialProperties(strength, speed, null);
         }
 
         public void ApplyBlur(float blur)
+        {
+            _materialApplied = false;
+            SetMaterialProperties(null, 0f, blur);
+        }
+
+        /// <summary>
+        /// Vento e desfoque numa passada só por renderer, e só quando algum valor mudou desde a última vez.
+        /// </summary>
+        internal void ApplyMaterialProperties(float windStrength, float windSpeed, float blur)
+        {
+            if (_materialApplied && windStrength == _windStrength && windSpeed == _windSpeed && blur == _blur)
+                return;
+
+            SetMaterialProperties(windStrength, windSpeed, blur);
+            _windStrength = windStrength;
+            _windSpeed = windSpeed;
+            _blur = blur;
+            _materialApplied = true;
+        }
+
+        private void SetMaterialProperties(float? windStrength, float windSpeed, float? blur)
         {
             if (_renderers == null)
                 return;
@@ -83,11 +97,24 @@ namespace Guavovic.Parallax
             foreach (var spriteRenderer in _renderers)
             {
                 var material = spriteRenderer.sharedMaterial;
-                if (material == null || !material.HasProperty(BlurId))
+                if (material == null)
+                    continue;
+
+                bool wind = windStrength.HasValue && material.HasProperty(WindStrengthId);
+                bool blurs = blur.HasValue && material.HasProperty(BlurId);
+                if (!wind && !blurs)
                     continue;
 
                 spriteRenderer.GetPropertyBlock(_block);
-                _block.SetFloat(BlurId, blur);
+                if (wind)
+                {
+                    _block.SetFloat(WindStrengthId, windStrength.Value);
+                    _block.SetFloat(WindSpeedId, windSpeed);
+                }
+
+                if (blurs)
+                    _block.SetFloat(BlurId, blur.Value);
+
                 spriteRenderer.SetPropertyBlock(_block);
             }
         }

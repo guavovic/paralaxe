@@ -230,76 +230,19 @@ namespace Guavovic.Parallax.Editor
         private void AddLayer(SerializedProperty layers)
         {
             StopPreview();
-            int index = layers.arraySize;
-            layers.InsertArrayElementAtIndex(index);
-            var added = layers.GetArrayElementAtIndex(index);
-            added.FindPropertyRelative("name").stringValue = "Camada " + index;
-            added.FindPropertyRelative("factor").vector2Value = new Vector2(0.5f, 0f);
-            added.FindPropertyRelative("depth").floatValue = 0f;
-            added.FindPropertyRelative("windInfluence").floatValue = 1f;
-            added.FindPropertyRelative("loopHorizontally").boolValue = true;
-            added.FindPropertyRelative("tint").colorValue = Color.white;
-            _profileObject.ApplyModifiedProperties();
-
-            var layerObject = new GameObject("Camada " + index);
-            Undo.RegisterCreatedObjectUndo(layerObject, "Adicionar camada");
-            layerObject.transform.SetParent(_rig.transform, false);
-            var component = layerObject.AddComponent<ParallaxLayer>();
-            component.SettingsIndex = index;
-            RegisterLayers();
+            ParallaxLayerCommands.Add(_rig, _profileObject);
         }
 
         private void RemoveLayer(SerializedProperty layers, int index)
         {
             StopPreview();
-            ParallaxLayer removed = null;
-
-            foreach (var layer in _rig.GetComponentsInChildren<ParallaxLayer>(true))
-            {
-                if (layer.SettingsIndex == index)
-                    removed = layer;
-                else if (layer.SettingsIndex > index)
-                {
-                    Undo.RecordObject(layer, "Remover camada");
-                    layer.SettingsIndex--;
-                }
-            }
-
-            layers.DeleteArrayElementAtIndex(index);
-            _profileObject.ApplyModifiedProperties();
-
-            if (removed != null)
-                Undo.DestroyObjectImmediate(removed.gameObject);
-
-            RegisterLayers();
+            ParallaxLayerCommands.Remove(_rig, _profileObject, layers, index);
         }
 
         private void MoveLayer(SerializedProperty layers, int from, int to)
         {
             StopPreview();
-
-            foreach (var layer in _rig.GetComponentsInChildren<ParallaxLayer>(true))
-            {
-                int index = layer.SettingsIndex;
-                int updated = index == from ? to : (index == to ? from : index);
-
-                if (updated != index)
-                {
-                    Undo.RecordObject(layer, "Mover camada");
-                    layer.SettingsIndex = updated;
-                }
-            }
-
-            layers.MoveArrayElement(from, to);
-            _profileObject.ApplyModifiedProperties();
-            RegisterLayers();
-        }
-
-        private void RegisterLayers()
-        {
-            Undo.RecordObject(_rig, "Atualizar camadas");
-            _rig.CollectLayers();
-            EditorUtility.SetDirty(_rig);
+            ParallaxLayerCommands.Move(_rig, _profileObject, layers, from, to);
         }
     }
 }
