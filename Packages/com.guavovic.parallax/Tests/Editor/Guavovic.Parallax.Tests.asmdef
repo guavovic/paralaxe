@@ -3,6 +3,7 @@
   "rootNamespace": "Guavovic.Parallax.Tests",
   "references": [
     "Guavovic.Parallax",
+    "Guavovic.Parallax.Editor",
     "UnityEngine.TestRunner",
     "UnityEditor.TestRunner"
   ],
