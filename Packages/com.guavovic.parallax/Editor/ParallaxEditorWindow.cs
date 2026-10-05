@@ -7,6 +7,7 @@ namespace Guavovic.Parallax.Editor
     public sealed class ParallaxEditorWindow : EditorWindow
     {
         private static readonly string[] ModeNames = { "2D", "Perspectiva" };
+        private static GUIContent _gear;
 
         private ParallaxRig _rig;
         private SerializedObject _profileObject;
@@ -95,14 +96,13 @@ namespace Guavovic.Parallax.Editor
                 return;
             }
 
-            if (_rig.Profile == null || _profileObject == null)
+            if (_rig.Profile == null)
             {
                 DrawMissingProfile();
                 return;
             }
 
             DrawCameraWarning();
-            _profileObject.Update();
             EditorGUI.BeginChangeCheck();
 
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandHeight(true));
@@ -141,10 +141,9 @@ namespace Guavovic.Parallax.Editor
                     _preview.Refresh();
                 }
 
-                var gear = EditorGUIUtility.IconContent("_Popup");
-                gear.tooltip = "Mundo: velocidade, vento e foco";
-                var gearRect = GUILayoutUtility.GetRect(gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
-                if (GUI.Button(gearRect, gear, EditorStyles.toolbarButton))
+                _gear ??= EditorGUIUtility.TrIconContent("_Popup", "Mundo: velocidade, vento e foco");
+                var gearRect = GUILayoutUtility.GetRect(_gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
+                if (GUI.Button(gearRect, _gear, EditorStyles.toolbarButton))
                     PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject, OnWorldChanged));
             }
 
@@ -179,7 +178,7 @@ namespace Guavovic.Parallax.Editor
         private void MatchCamera()
         {
             var camera = RigCamera;
-            if (camera == null || ParallaxCamera.Matches(camera, _rig.Profile.Mode))
+            if (ParallaxCamera.Matches(camera, _rig.Profile.Mode))
                 return;
 
             Undo.RecordObject(camera, "Ajustar câmera ao modo");
@@ -224,7 +223,7 @@ namespace Guavovic.Parallax.Editor
             }
             else
             {
-                if (_details.Draw(_rig, layers.GetArrayElementAtIndex(selected), _list.ObjectAt(selected)))
+                if (_details.Draw(_rig, layers.GetArrayElementAtIndex(selected), _list.ObjectAt(selected), _list.SpriteAt(selected)))
                 {
                     _preview.Stop();
                     ParallaxLayerCommands.Remove(_rig, _profileObject, layers, selected);
@@ -266,8 +265,9 @@ namespace Guavovic.Parallax.Editor
             if (string.IsNullOrEmpty(path))
                 return;
 
-            var profile = CreateInstance<ParallaxProfile>();
-            AssetDatabase.CreateAsset(profile, path);
+            // O modo novo segue a câmera que o rig já usa.
+            var camera = RigCamera;
+            var profile = ParallaxLayerCommands.CreateProfile(path, camera != null && !camera.orthographic ? ParallaxMode.Perspective : ParallaxMode.Simulated2D);
             Undo.RecordObject(_rig, "Criar profile");
             _rig.Profile = profile;
             EditorUtility.SetDirty(_rig);

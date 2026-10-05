@@ -19,7 +19,11 @@ namespace Guavovic.Parallax.Editor
         private readonly ParallaxRig _rig;
         private readonly SerializedObject _profileObject;
         private readonly ReorderableList _list;
+        private static GUIContent _eyeOn;
+        private static GUIContent _eyeOff;
+
         private ParallaxLayer[] _objects = new ParallaxLayer[0];
+        private Sprite[] _sprites = new Sprite[0];
 
         public ParallaxLayerList(ParallaxRig rig, SerializedObject profileObject)
         {
@@ -32,8 +36,7 @@ namespace Guavovic.Parallax.Editor
                 onReorderCallbackWithDetails = (list, from, to) =>
                 {
                     _profileObject.ApplyModifiedProperties();
-                    ParallaxLayerCommands.ReorderDrawing(_rig, _objects, from, to);
-                    ParallaxLayerCommands.RemapAfterMove(_rig, from, to);
+                    ParallaxLayerCommands.Move(_rig, _objects, from, to);
                 }
             };
         }
@@ -49,10 +52,23 @@ namespace Guavovic.Parallax.Editor
             return index >= 0 && index < _objects.Length ? _objects[index] : null;
         }
 
+        public Sprite SpriteAt(int index)
+        {
+            return index >= 0 && index < _sprites.Length ? _sprites[index] : null;
+        }
+
         public void Draw()
         {
             if (Event.current.type == EventType.Layout)
+            {
                 _objects = FindLayerObjects(_rig, _list.serializedProperty.arraySize);
+                _sprites = new Sprite[_objects.Length];
+                for (int i = 0; i < _objects.Length; i++)
+                {
+                    var spriteRenderer = _objects[i] != null ? _objects[i].GetComponentInChildren<SpriteRenderer>(true) : null;
+                    _sprites[i] = spriteRenderer != null ? spriteRenderer.sprite : null;
+                }
+            }
 
             if (_list.index >= _list.serializedProperty.arraySize)
                 _list.index = _list.serializedProperty.arraySize - 1;
@@ -75,11 +91,9 @@ namespace Guavovic.Parallax.Editor
             return result;
         }
 
-        public static void DrawThumbnail(Rect rect, ParallaxLayer layer)
+        public static void DrawThumbnail(Rect rect, Sprite sprite)
         {
             EditorGUI.DrawRect(rect, new Color(0f, 0f, 0f, 0.25f));
-            var spriteRenderer = layer != null ? layer.GetComponentInChildren<SpriteRenderer>(true) : null;
-            var sprite = spriteRenderer != null ? spriteRenderer.sprite : null;
             if (sprite == null || sprite.texture == null)
                 return;
 
@@ -116,15 +130,16 @@ namespace Guavovic.Parallax.Editor
         private void DrawRow(Rect rect, int index, bool active, bool focused)
         {
             var element = _list.serializedProperty.GetArrayElementAtIndex(index);
-            var layer = index < _objects.Length ? _objects[index] : null;
+            var layer = ObjectAt(index);
             rect.y += 3f;
             rect.height -= 6f;
 
-            DrawThumbnail(new Rect(rect.x, rect.y, rect.height * 1.6f, rect.height), layer);
+            float thumbWidth = rect.height * 1.6f;
+            DrawThumbnail(new Rect(rect.x, rect.y, thumbWidth, rect.height), SpriteAt(index));
 
             float eyeWidth = 22f;
             float dotsWidth = Dots * 9f;
-            var nameRect = new Rect(rect.x + rect.height * 1.6f + 6f, rect.y, rect.width - rect.height * 1.6f - dotsWidth - eyeWidth - 14f, rect.height);
+            var nameRect = new Rect(rect.x + thumbWidth + 6f, rect.y, rect.width - thumbWidth - dotsWidth - eyeWidth - 14f, rect.height);
             EditorGUI.LabelField(nameRect, element.FindPropertyRelative("name").stringValue, EditorStyles.label);
 
             float distance = ParallaxDistance.Normalized(ParallaxDistance.Get(_rig.Profile, element));
@@ -144,11 +159,12 @@ namespace Guavovic.Parallax.Editor
 
         private static void DrawEye(Rect rect, GameObject layerObject)
         {
+            // Ícones próprios com tooltip: mexer no tooltip do IconContent mudaria o ícone da Unity inteira.
+            _eyeOn ??= EditorGUIUtility.TrIconContent("scenevis_visible_hover", "Desligar a camada");
+            _eyeOff ??= EditorGUIUtility.TrIconContent("scenevis_hidden_hover", "Ligar a camada");
             bool visible = layerObject.activeSelf;
-            var icon = EditorGUIUtility.IconContent(visible ? "scenevis_visible_hover" : "scenevis_hidden_hover");
-            icon.tooltip = visible ? "Desligar a camada" : "Ligar a camada";
 
-            if (!GUI.Button(rect, icon, EditorStyles.iconButton))
+            if (!GUI.Button(rect, visible ? _eyeOn : _eyeOff, EditorStyles.iconButton))
                 return;
 
             Undo.RecordObject(layerObject, visible ? "Desligar camada" : "Ligar camada");

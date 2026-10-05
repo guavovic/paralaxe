@@ -30,54 +30,37 @@ namespace Guavovic.Parallax.Editor
         }
 
         /// <summary>
-        /// Acompanha nos objetos da cena uma configuração que já mudou de posição no profile,
-        /// como depois de arrastar na lista.
+        /// Acompanha na cena uma configuração que já mudou de posição no profile, como depois de arrastar na lista.
+        /// A ordem de desenho vai junto quando ela seguia a lista (de trás para a frente); ordem ajustada à mão,
+        /// como a do sample, fica como está.
         /// </summary>
-        public static void RemapAfterMove(ParallaxRig rig, int from, int to)
+        public static void Move(ParallaxRig rig, ParallaxLayer[] objectsBeforeMove, int from, int to)
         {
-            RemapIndices(rig, "Mover camada", i =>
-            {
-                if (i == from)
-                    return to;
-                if (from < to && i > from && i <= to)
-                    return i - 1;
-                if (from > to && i >= to && i < from)
-                    return i + 1;
-                return i;
-            });
-
+            ShiftDrawOrder(objectsBeforeMove, from, to);
+            RemapIndices(rig, "Mover camada", i => MovedIndex(i, from, to));
             RegisterLayers(rig);
         }
 
         /// <summary>
-        /// Leva a ordem de desenho junto quando uma camada muda de posição na lista, mas só se o desenho
-        /// já seguia a lista (de trás para a frente). Ordem ajustada à mão, como a do sample, fica como está.
+        /// Onde fica o índice <paramref name="index"/> depois que o item em <paramref name="from"/> vai para <paramref name="to"/>.
         /// </summary>
-        public static void ReorderDrawing(ParallaxRig rig, ParallaxLayer[] objectsBeforeMove, int from, int to)
+        public static int MovedIndex(int index, int from, int to)
         {
-            var orders = new List<int>();
-            foreach (var layer in objectsBeforeMove)
-            {
-                var spriteRenderer = layer != null ? layer.GetComponentInChildren<SpriteRenderer>(true) : null;
-                if (spriteRenderer == null)
-                    return;
-                if (orders.Count > 0 && spriteRenderer.sortingOrder <= orders[orders.Count - 1])
-                    return;
-                orders.Add(spriteRenderer.sortingOrder);
-            }
+            if (index == from)
+                return to;
+            if (from < to && index > from && index <= to)
+                return index - 1;
+            if (from > to && index >= to && index < from)
+                return index + 1;
+            return index;
+        }
 
-            var moved = new List<ParallaxLayer>(objectsBeforeMove);
-            var item = moved[from];
-            moved.RemoveAt(from);
-            moved.Insert(to, item);
-
-            for (int i = 0; i < moved.Count; i++)
-            {
-                var renderers = moved[i].GetComponentsInChildren<SpriteRenderer>(true);
-                Undo.RecordObjects(renderers, "Mover camada");
-                foreach (var spriteRenderer in renderers)
-                    spriteRenderer.sortingOrder = orders[i];
-            }
+        public static ParallaxProfile CreateProfile(string path, ParallaxMode mode)
+        {
+            var profile = ScriptableObject.CreateInstance<ParallaxProfile>();
+            profile.SetMode(mode);
+            AssetDatabase.CreateAsset(profile, path);
+            return profile;
         }
 
         /// <summary>
@@ -85,9 +68,7 @@ namespace Guavovic.Parallax.Editor
         /// </summary>
         public static ParallaxRig CreateRig(string name, ParallaxMode mode, string profilePath)
         {
-            var profile = ScriptableObject.CreateInstance<ParallaxProfile>();
-            profile.SetMode(mode);
-            AssetDatabase.CreateAsset(profile, profilePath);
+            var profile = CreateProfile(profilePath, mode);
 
             var rigObject = new GameObject(name);
             Undo.RegisterCreatedObjectUndo(rigObject, "Novo parallax");
@@ -162,6 +143,33 @@ namespace Guavovic.Parallax.Editor
             foreach (var spriteRenderer in renderers)
                 highest = Mathf.Max(highest, spriteRenderer.sortingOrder);
             return highest + 1;
+        }
+
+        private static void ShiftDrawOrder(ParallaxLayer[] objects, int from, int to)
+        {
+            // Primeiro sprite de cada camada; o desenho só segue a lista se eles crescem de trás para a frente.
+            var orders = new int[objects.Length];
+            for (int i = 0; i < objects.Length; i++)
+            {
+                var spriteRenderer = objects[i] != null ? objects[i].GetComponentInChildren<SpriteRenderer>(true) : null;
+                if (spriteRenderer == null || (i > 0 && spriteRenderer.sortingOrder <= orders[i - 1]))
+                    return;
+                orders[i] = spriteRenderer.sortingOrder;
+            }
+
+            // Cada camada recebe a ordem da posição nova, e todos os sprites dela andam o mesmo tanto,
+            // então ordens internas de uma camada com vários sprites continuam iguais.
+            for (int i = 0; i < objects.Length; i++)
+            {
+                int shift = orders[MovedIndex(i, from, to)] - orders[i];
+                if (shift == 0)
+                    continue;
+
+                var renderers = objects[i].GetComponentsInChildren<SpriteRenderer>(true);
+                Undo.RecordObjects(renderers, "Mover camada");
+                foreach (var spriteRenderer in renderers)
+                    spriteRenderer.sortingOrder += shift;
+            }
         }
 
         private static void RemapIndices(ParallaxRig rig, string undoName, Func<int, int> map)

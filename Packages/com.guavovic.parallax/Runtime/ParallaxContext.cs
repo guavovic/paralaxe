@@ -12,7 +12,7 @@ namespace Guavovic.Parallax
 
         /// <summary>
         /// Deslocamento de uma câmera que não se moveu de verdade, como no preview do editor.
-        /// O modo perspectiva depende da câmera real, então simula esse deslocamento camada por camada.
+        /// Cada solver simula esse deslocamento a seu modo; no modo perspectiva, só o eixo X.
         /// </summary>
         public readonly Vector3 VirtualCameraOffset;
 

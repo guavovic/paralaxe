@@ -77,8 +77,7 @@ namespace Guavovic.Parallax.Tests
             _profileObject.FindProperty("layers").MoveArrayElement(0, 3);
             _profileObject.ApplyModifiedProperties();
 
-            ParallaxLayerCommands.ReorderDrawing(_rig, before, 0, 3);
-            ParallaxLayerCommands.RemapAfterMove(_rig, 0, 3);
+            ParallaxLayerCommands.Move(_rig, before, 0, 3);
 
             AssertEveryObjectMatchesItsSettings();
             var orders = DrawOrders();
@@ -92,7 +91,7 @@ namespace Guavovic.Parallax.Tests
             var before = ParallaxLayerList.FindLayerObjects(_rig, 4);
             before[1].GetComponentInChildren<SpriteRenderer>().sortingOrder = 10;
 
-            ParallaxLayerCommands.ReorderDrawing(_rig, before, 0, 3);
+            ParallaxLayerCommands.Move(_rig, before, 0, 3);
 
             Assert.AreEqual(10, before[1].GetComponentInChildren<SpriteRenderer>().sortingOrder);
         }

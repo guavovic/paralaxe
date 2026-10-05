@@ -15,7 +15,9 @@ namespace Guavovic.Parallax.Editor
         private bool _animating;
         private double _animationStart;
 
-        public bool Active { get; private set; }
+        private double _lastTick;
+
+        public bool Active => _rig != null && _rig.IsPreviewing;
 
         public void SetRig(ParallaxRig rig)
         {
@@ -62,10 +64,9 @@ namespace Guavovic.Parallax.Editor
         {
             SetAnimating(false);
             _offset = 0f;
-            if (_rig != null && Active)
+            if (_rig != null)
                 _rig.ResetPreview();
 
-            Active = false;
             SceneView.RepaintAll();
         }
 
@@ -94,7 +95,13 @@ namespace Guavovic.Parallax.Editor
                 return;
             }
 
-            float time = (float)(EditorApplication.timeSinceStartup - _animationStart);
+            // O update do editor roda bem mais que 60 vezes por segundo; mais que isso não muda nada na tela.
+            double now = EditorApplication.timeSinceStartup;
+            if (now - _lastTick < 1.0 / 60.0)
+                return;
+
+            _lastTick = now;
+            float time = (float)(now - _animationStart);
             _offset = Mathf.Sin(time * 0.35f) * Range;
             Apply();
         }
@@ -104,7 +111,6 @@ namespace Guavovic.Parallax.Editor
             if (_rig == null || EditorApplication.isPlaying)
                 return;
 
-            Active = true;
             _rig.Preview(new Vector3(_offset, 0f, 0f), withWind: _animating);
             SceneView.RepaintAll();
         }

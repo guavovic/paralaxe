@@ -30,10 +30,7 @@ namespace Guavovic.Parallax.Editor
 
             DragAndDrop.visualMode = result.Count > 0 ? DragAndDropVisualMode.Copy : DragAndDropVisualMode.Rejected;
             if (current.type != EventType.DragPerform || result.Count == 0)
-            {
-                result.Clear();
-                return result;
-            }
+                return new List<Sprite>();
 
             DragAndDrop.AcceptDrag();
             current.Use();

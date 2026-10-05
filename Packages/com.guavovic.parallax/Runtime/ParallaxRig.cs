@@ -99,9 +99,7 @@ namespace Guavovic.Parallax
             }
 
             var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
-            var context = profile.Mode == ParallaxMode.Perspective
-                ? new ParallaxContext(cameraOrigin, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance, 0f, cameraOffset)
-                : new ParallaxContext(cameraOrigin + cameraOffset, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance);
+            var context = new ParallaxContext(cameraOrigin, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance, 0f, cameraOffset);
             SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
         }
 
