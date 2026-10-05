@@ -8,7 +8,7 @@ namespace Guavovic.Parallax
         {
             Vector2 factor = settings.Factor * context.SpeedMultiplier;
             Vector3 origin = layer.Origin;
-            Vector3 offset = context.CameraOffset;
+            Vector3 offset = context.CameraOffset + context.VirtualCameraOffset;
 
             Vector2 scroll = settings.AutoScroll * context.Time;
 
