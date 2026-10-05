@@ -5,8 +5,11 @@
   "description": "Parallax em 2D simulado e em perspectiva, com valores globais que o jogador pode afetar e que afetam o jogador.",
   "unity": "6000.0",
   "author": {
-    "name": "Gustavo Victor"
+    "name": "Gustavo Victor",
+    "url": "https://github.com/guavovic"
   },
+  "license": "SEE LICENSE IN LICENSE.md",
+  "licensesUrl": "https://github.com/guavovic/paralaxe/blob/main/LICENSE",
   "dependencies": {
     "com.unity.render-pipelines.universal": "17.0.0"
   },
