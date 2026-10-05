@@ -7,6 +7,7 @@ namespace Guavovic.Parallax.Editor
     public sealed class ParallaxEditorWindow : EditorWindow
     {
         private static readonly string[] ModeNames = { "2D", "Perspectiva" };
+        private static readonly string[] StyleNames = BuildStyleNames();
         private static GUIContent _gear;
 
         private ParallaxRig _rig;
@@ -15,6 +16,7 @@ namespace Guavovic.Parallax.Editor
         private readonly ParallaxLayerDetails _details = new ParallaxLayerDetails();
         private readonly ParallaxPreviewBar _preview = new ParallaxPreviewBar();
         private ParallaxMode _newMode = ParallaxMode.Simulated2D;
+        private int _newStyle;
         private Vector2 _listScroll;
         private Vector2 _detailsScroll;
 
@@ -138,6 +140,10 @@ namespace Guavovic.Parallax.Editor
                 if (chosen != current)
                     SetMode(chosen);
 
+                var presetsRect = GUILayoutUtility.GetRect(new GUIContent("Presets"), EditorStyles.toolbarDropDown, GUILayout.Width(70f));
+                if (GUI.Button(presetsRect, "Presets", EditorStyles.toolbarDropDown))
+                    ParallaxPresets.ShowMenu(presetsRect, _rig, OnWorldChanged);
+
                 _gear ??= new GUIContent(AssetDatabase.LoadAssetAtPath<Texture2D>(ParallaxRigSetup.IconFolder + "ParallaxWorld.png"), "Mundo: velocidade, vento e foco");
                 var gearRect = GUILayoutUtility.GetRect(_gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
                 if (GUI.Button(gearRect, _gear, EditorStyles.toolbarButton))
@@ -228,6 +234,7 @@ namespace Guavovic.Parallax.Editor
             EditorGUILayout.LabelField("Novo parallax", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("Arraste as imagens do cenário, da mais distante para a mais próxima. As distâncias já saem espalhadas.", EditorStyles.wordWrappedLabel);
             _newMode = (ParallaxMode)GUILayout.Toolbar((int)_newMode, ModeNames);
+            _newStyle = EditorGUILayout.Popup("Estilo", _newStyle, StyleNames);
             EditorGUILayout.Space(6f);
 
             var sprites = ParallaxDropZone.Draw("Arraste as imagens aqui", 120f);
@@ -252,9 +259,16 @@ namespace Guavovic.Parallax.Editor
             GUIUtility.ExitGUI();
         }
 
+        private static string[] BuildStyleNames()
+        {
+            var names = new List<string> { "Distâncias espalhadas" };
+            names.AddRange(ParallaxPresets.BuiltInNames);
+            return names.ToArray();
+        }
+
         private void CreateRig(List<Sprite> sprites)
         {
-            var rig = ParallaxRigSetup.CreateFromSprites(sprites, _newMode);
+            var rig = ParallaxRigSetup.CreateFromSprites(sprites, _newMode, _newStyle == 0 ? null : StyleNames[_newStyle]);
             if (rig == null)
                 return;
 
