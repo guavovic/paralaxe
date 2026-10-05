@@ -1,5 +1,7 @@
 # Paralaxe
 
+![Herói andando pela floresta em pixel art, com as camadas do parallax se movendo em velocidades diferentes](Docs/floresta.gif)
+
 Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.
 
 Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de exemplo em pixel art que mostra o que dá para fazer.
