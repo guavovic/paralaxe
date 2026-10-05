@@ -109,6 +109,21 @@ def icon_profile():
     return img
 
 
+def icon_camera_bounds():
+    """Uma câmera dentro de cantoneiras: a área que ela pode mostrar."""
+    img, d = canvas()
+    for x0, y0, dx, dy in ((0, 0, 1, 1), (15, 0, -1, 1), (0, 15, 1, -1), (15, 15, -1, -1)):
+        d.line([x0, y0, x0 + 4 * dx, y0], fill=MID)
+        d.line([x0, y0, x0, y0 + 4 * dy], fill=MID)
+    d.rectangle([3, 5, 10, 11], fill=OUTLINE)
+    d.rectangle([4, 6, 9, 10], fill=MID)
+    d.line([4, 6, 9, 6], fill=LIGHT)
+    d.polygon([(10, 8), (13, 5), (13, 11)], fill=OUTLINE)
+    d.polygon([(11, 8), (12, 7), (12, 9)], fill=DARK)
+    d.point((6, 8), fill=ORANGE)
+    return img
+
+
 ICONS = {
     "ParallaxRig": icon_rig,
     "ParallaxLayer": icon_layer,
@@ -116,6 +131,7 @@ ICONS = {
     "ParallaxWindInfluencer2D": icon_wind_influencer,
     "ParallaxWindReceiver2D": icon_wind_receiver,
     "ParallaxProfile": icon_profile,
+    "ParallaxCameraBounds": icon_camera_bounds,
 }
 
 
