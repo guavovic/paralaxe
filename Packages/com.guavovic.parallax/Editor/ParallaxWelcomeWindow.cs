@@ -132,7 +132,7 @@ namespace Guavovic.Parallax.Editor
         {
             EditorGUILayout.LabelField("Créditos", EditorStyles.boldLabel);
             EditorGUILayout.LabelField("Feito por Gustavo Victor.", EditorStyles.wordWrappedLabel);
-            EditorGUILayout.LabelField("A arte do exemplo é pixel art gerada por script, camada por camada.", EditorStyles.wordWrappedMiniLabel);
+            EditorGUILayout.LabelField("Ao usar num jogo ou projeto, credite \"Paralaxe, por Gustavo Victor\". A arte do exemplo é só para conhecer o pacote.", EditorStyles.wordWrappedMiniLabel);
             EditorGUILayout.Space(4f);
             if (EditorGUILayout.LinkButton("github.com/guavovic/paralaxe"))
                 Application.OpenURL(RepositoryUrl);
