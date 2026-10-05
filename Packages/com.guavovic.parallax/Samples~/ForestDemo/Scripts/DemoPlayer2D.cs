@@ -14,6 +14,8 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Min(0f)] private float idleDrag = 3f;
         [SerializeField] private LayerMask groundMask = ~0;
         [SerializeField] private float groundCheckDistance = 0.1f;
+        [Tooltip("Duração do golpe, em segundos.")]
+        [SerializeField, Min(0.05f)] private float attackDuration = 0.3f;
 
         [Header("Modo autônomo")]
         [Tooltip("Segundos sem nenhuma tecla até o herói passar a se mexer sozinho. 0 desliga.")]
@@ -23,6 +25,7 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Range(0f, 1f)] private float jumpChance = 0.35f;
         [SerializeField, Range(0f, 1f)] private float runChance = 0.35f;
         [SerializeField, Range(0f, 1f)] private float restChance = 0.2f;
+        [SerializeField, Range(0f, 1f)] private float attackChance = 0.25f;
 
         private readonly RaycastHit2D[] _hits = new RaycastHit2D[4];
         private Rigidbody2D _body;
@@ -30,6 +33,8 @@ namespace Guavovic.Parallax.Samples
         private float _input;
         private bool _run;
         private bool _jumpQueued;
+        private bool _crouch;
+        private float _attackStart = float.NegativeInfinity;
         private float _lastActivityTime;
         private float _nextActionTime;
 
@@ -37,6 +42,19 @@ namespace Guavovic.Parallax.Samples
         public float AutonomousAfterSeconds => autonomousAfterSeconds;
         public bool IsAutonomous => autonomousAfterSeconds > 0f && IdleSeconds >= autonomousAfterSeconds;
         public bool IsRunning => _run && Mathf.Abs(_input) > 0.01f;
+        public bool IsCrouching => _crouch;
+
+        /// <summary>
+        /// De 0 a 1 durante o golpe; negativo fora dele.
+        /// </summary>
+        public float AttackProgress
+        {
+            get
+            {
+                float t = (Time.time - _attackStart) / attackDuration;
+                return t >= 0f && t < 1f ? t : -1f;
+            }
+        }
 
         private void Awake()
         {
@@ -60,6 +78,7 @@ namespace Guavovic.Parallax.Samples
             _nextActionTime = 0f;
             _input = 0f;
             _run = false;
+            _crouch = false;
 
             if (keyboard == null)
                 return;
@@ -68,8 +87,21 @@ namespace Guavovic.Parallax.Samples
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) _input += 1f;
             _run = keyboard.leftShiftKey.isPressed;
 
-            if (keyboard.spaceKey.wasPressedThisFrame)
+            _crouch = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+            if (_crouch)
+                _input = 0f;
+
+            if (keyboard.spaceKey.wasPressedThisFrame && !_crouch)
                 _jumpQueued = true;
+
+            if (keyboard.jKey.wasPressedThisFrame)
+                Attack();
+        }
+
+        private void Attack()
+        {
+            if (AttackProgress < 0f)
+                _attackStart = Time.time;
         }
 
         private void UpdateAutonomous()
@@ -92,6 +124,8 @@ namespace Guavovic.Parallax.Samples
 
             if (Random.value < jumpChance)
                 _jumpQueued = true;
+            else if (Random.value < attackChance)
+                Attack();
         }
 
         private void FixedUpdate()

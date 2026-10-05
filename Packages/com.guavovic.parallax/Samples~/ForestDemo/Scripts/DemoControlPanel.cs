@@ -8,7 +8,7 @@ namespace Guavovic.Parallax.Samples
     /// </summary>
     public sealed class DemoControlPanel : MonoBehaviour
     {
-        private const string Help = "A/D ou setas andam, espaço pula";
+        private const string Help = "A/D andam, espaço pula, S agacha, J ataca";
 
         private int _speedShown = int.MinValue;
         private int _windShown = int.MinValue;

@@ -9,6 +9,9 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private Sprite[] walk;
         [SerializeField] private Sprite jump;
         [SerializeField] private Sprite fall;
+        [SerializeField] private Sprite crouch;
+        [Tooltip("Quadros do golpe, em ordem: preparação, golpe, acompanhamento.")]
+        [SerializeField] private Sprite[] attack;
         [SerializeField, Min(0.01f)] private float idleFrameTime = 0.6f;
         [SerializeField, Min(0.01f)] private float walkFrameTime = 0.11f;
         [SerializeField, Min(0f)] private float walkThreshold = 0.3f;
@@ -34,9 +37,22 @@ namespace Guavovic.Parallax.Samples
             if (Mathf.Abs(velocity.x) > 0.1f)
                 _renderer.flipX = velocity.x < 0f;
 
+            float attackProgress = _player.AttackProgress;
+            if (attackProgress >= 0f && attack != null && attack.Length > 0)
+            {
+                _renderer.sprite = attack[Mathf.Min(attack.Length - 1, (int)(attackProgress * attack.Length))];
+                return;
+            }
+
             if (!_player.IsGrounded())
             {
                 _renderer.sprite = velocity.y > 0f ? jump : fall;
+                return;
+            }
+
+            if (_player.IsCrouching && crouch != null)
+            {
+                _renderer.sprite = crouch;
                 return;
             }
 
