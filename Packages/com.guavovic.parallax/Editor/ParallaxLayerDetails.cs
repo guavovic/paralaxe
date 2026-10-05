@@ -35,7 +35,7 @@ namespace Guavovic.Parallax.Editor
             ParallaxLayerList.DrawThumbnail(preview, sprite);
             EditorGUILayout.Space(4f);
 
-            DrawDistance(rig.Profile, layer);
+            DrawDistance(rig.Profile, rig.Mode, layer);
             EditorGUILayout.Space(6f);
 
             _effectsOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_effectsOpen, "Efeitos");
@@ -73,12 +73,12 @@ namespace Guavovic.Parallax.Editor
             return remove;
         }
 
-        private static void DrawDistance(ParallaxProfile profile, SerializedProperty layer)
+        private static void DrawDistance(ParallaxProfile profile, ParallaxMode mode, SerializedProperty layer)
         {
             EditorGUI.BeginChangeCheck();
             float distance = EditorGUILayout.Slider(
                 DistanceLabel,
-                ParallaxDistance.Get(profile, layer), ParallaxDistance.Near, ParallaxDistance.Far);
+                ParallaxDistance.Get(profile, mode, layer), ParallaxDistance.Near, ParallaxDistance.Far);
             if (EditorGUI.EndChangeCheck())
                 ParallaxDistance.Set(profile, layer, distance);
 

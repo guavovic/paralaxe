@@ -10,24 +10,58 @@ namespace Guavovic.Parallax.Tests
         {
             var profile = ScriptableObject.CreateInstance<ParallaxProfile>();
             var rig = new GameObject("Rig").AddComponent<ParallaxRig>();
+            var camera = new GameObject("Camera").AddComponent<Camera>();
             try
             {
                 profile.AddLayer(new ParallaxLayerSettings("Céu", new Vector2(0.99f, 1f), 990f));
-                profile.SetMode(ParallaxMode.Perspective);
                 rig.Profile = profile;
+                rig.TargetCamera = camera;
                 var layer = new GameObject("Camada").AddComponent<ParallaxLayer>();
                 layer.transform.SetParent(rig.transform, false);
 
+                camera.orthographic = false;
                 rig.Preview(new Vector3(2f, 0f, 0f), withWind: false);
                 Assert.Greater(layer.transform.localScale.x, 50f);
 
-                profile.SetMode(ParallaxMode.Simulated2D);
+                camera.orthographic = true;
                 rig.Preview(new Vector3(2f, 0f, 0f), withWind: false);
                 Assert.AreEqual(Vector3.one, layer.transform.localScale);
             }
             finally
             {
                 Object.DestroyImmediate(rig.gameObject);
+                Object.DestroyImmediate(camera.gameObject);
+                Object.DestroyImmediate(profile);
+            }
+        }
+
+        [Test]
+        public void ModeFollowsTheCameraEvenWhenTheProfileSaysOtherwise()
+        {
+            var profile = ScriptableObject.CreateInstance<ParallaxProfile>();
+            var rig = new GameObject("Rig").AddComponent<ParallaxRig>();
+            var camera = new GameObject("Camera").AddComponent<Camera>();
+            try
+            {
+                profile.AddLayer(new ParallaxLayerSettings("Céu", new Vector2(0.99f, 1f), 990f));
+                profile.SetMode(ParallaxMode.Perspective);
+                camera.orthographic = true;
+                rig.Profile = profile;
+                rig.TargetCamera = camera;
+                var layer = new GameObject("Camada").AddComponent<ParallaxLayer>();
+                layer.transform.SetParent(rig.transform, false);
+
+                Assert.AreEqual(ParallaxMode.Simulated2D, rig.Mode);
+                rig.Preview(new Vector3(2f, 0f, 0f), withWind: false);
+                Assert.AreEqual(Vector3.one, layer.transform.localScale);
+
+                camera.orthographic = false;
+                Assert.AreEqual(ParallaxMode.Perspective, rig.Mode);
+            }
+            finally
+            {
+                Object.DestroyImmediate(rig.gameObject);
+                Object.DestroyImmediate(camera.gameObject);
                 Object.DestroyImmediate(profile);
             }
         }

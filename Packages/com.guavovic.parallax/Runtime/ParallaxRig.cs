@@ -27,6 +27,19 @@ namespace Guavovic.Parallax
         public ParallaxWorld World => _world;
         public bool IsPreviewing => _previewing;
 
+        /// <summary>
+        /// O modo vem da câmera: ortográfica usa 2D e em perspectiva usa Perspectiva.
+        /// Sem câmera, vale o modo do profile.
+        /// </summary>
+        public ParallaxMode Mode
+        {
+            get
+            {
+                var fallback = profile != null ? profile.Mode : ParallaxMode.Simulated2D;
+                return ParallaxCamera.ModeOf(targetCamera != null ? targetCamera : Camera.main, fallback);
+            }
+        }
+
         private void Start()
         {
             Initialize();
@@ -66,9 +79,6 @@ namespace Guavovic.Parallax
 
             if (applyProfileToWorld)
                 _world.ApplyProfile(profile);
-
-            if (!ParallaxCamera.Matches(targetCamera, profile.Mode))
-                Debug.LogWarning($"Paralaxe: o modo {profile.Mode} pede uma câmera {(profile.Mode == ParallaxMode.Perspective ? "em perspectiva" : "ortográfica")}. Ajuste a câmera ou use o botão do editor de parallax.", this);
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
@@ -137,7 +147,8 @@ namespace Guavovic.Parallax
 
         private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed)
         {
-            if (_solver == null || _solverMode != profile.Mode)
+            var mode = Mode;
+            if (_solver == null || _solverMode != mode)
             {
                 // O modo perspectiva amplia as camadas; ao trocar de modo, todas voltam à escala original.
                 if (_solver != null)
@@ -149,8 +160,8 @@ namespace Guavovic.Parallax
                     }
                 }
 
-                _solverMode = profile.Mode;
-                _solver = ParallaxSolvers.Create(profile.Mode);
+                _solverMode = mode;
+                _solver = ParallaxSolvers.Create(mode);
             }
 
             foreach (var layer in layers)

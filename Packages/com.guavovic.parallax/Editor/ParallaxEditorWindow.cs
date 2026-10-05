@@ -103,7 +103,6 @@ namespace Guavovic.Parallax.Editor
                 return;
             }
 
-            DrawCameraWarning();
             EditorGUI.BeginChangeCheck();
 
             EditorGUILayout.BeginHorizontal(GUILayout.ExpandHeight(true));
@@ -134,18 +133,15 @@ namespace Guavovic.Parallax.Editor
             if (_profileObject != null)
             {
                 _profileObject.Update();
-                var mode = _profileObject.FindProperty("mode");
-                mode.enumValueIndex = GUILayout.Toolbar(mode.enumValueIndex, ModeNames, EditorStyles.toolbarButton, GUILayout.Width(150f));
-                if (_profileObject.ApplyModifiedProperties())
-                {
-                    MatchCamera();
-                    _preview.Refresh();
-                }
+                var current = _rig.Mode;
+                var chosen = (ParallaxMode)GUILayout.Toolbar((int)current, ModeNames, EditorStyles.toolbarButton, GUILayout.Width(150f));
+                if (chosen != current)
+                    SetMode(chosen);
 
                 _gear ??= new GUIContent(AssetDatabase.LoadAssetAtPath<Texture2D>(ParallaxRigSetup.IconFolder + "ParallaxWorld.png"), "Mundo: velocidade, vento e foco");
                 var gearRect = GUILayoutUtility.GetRect(_gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
                 if (GUI.Button(gearRect, _gear, EditorStyles.toolbarButton))
-                    PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject, OnWorldChanged));
+                    PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject, _rig, OnWorldChanged));
             }
 
             EditorGUILayout.EndHorizontal();
@@ -159,31 +155,20 @@ namespace Guavovic.Parallax.Editor
 
         private Camera RigCamera => _rig.TargetCamera != null ? _rig.TargetCamera : Camera.main;
 
-        private void DrawCameraWarning()
-        {
-            if (ParallaxCamera.Matches(RigCamera, _rig.Profile.Mode))
-                return;
-
-            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
-            EditorGUILayout.LabelField(_rig.Profile.Mode == ParallaxMode.Perspective
-                ? "O modo Perspectiva precisa de câmera em perspectiva."
-                : "O modo 2D precisa de câmera ortográfica.", EditorStyles.wordWrappedMiniLabel);
-            if (GUILayout.Button("Ajustar câmera", GUILayout.Width(110f)))
-                MatchCamera();
-            EditorGUILayout.EndHorizontal();
-        }
-
         /// <summary>
-        /// Deixa a câmera do rig no tipo que o modo pede, mostrando a mesma área no plano de foco.
+        /// O modo vem da câmera, então trocar o modo troca a câmera (mantendo a área no plano de foco).
+        /// O profile acompanha, para valer quando o rig não tiver câmera.
         /// </summary>
-        private void MatchCamera()
+        private void SetMode(ParallaxMode mode)
         {
             var camera = RigCamera;
-            if (ParallaxCamera.Matches(camera, _rig.Profile.Mode))
-                return;
-
-            Undo.RecordObject(camera, "Ajustar câmera ao modo");
-            ParallaxCamera.Match(camera, _rig.Profile.Mode, _rig.Profile.FocusDistance);
+            Undo.RecordObjects(camera != null ? new Object[] { camera, _rig.Profile } : new Object[] { _rig.Profile }, "Trocar modo");
+            if (camera != null)
+                ParallaxCamera.Match(camera, mode, _rig.Profile.FocusDistance);
+            _rig.Profile.SetMode(mode);
+            EditorUtility.SetDirty(_rig.Profile);
+            _profileObject.Update();
+            _preview.Refresh();
             SceneView.RepaintAll();
         }
 

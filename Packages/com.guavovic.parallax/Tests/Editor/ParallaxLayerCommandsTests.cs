@@ -122,7 +122,7 @@ namespace Guavovic.Parallax.Tests
             _profileObject.Update();
 
             Assert.AreEqual(0.75f, _profile.Layers[1].Factor.x, 0.001f);
-            Assert.AreEqual(0.75f, ParallaxDistance.Get(_profile, _profileObject.FindProperty("layers").GetArrayElementAtIndex(1)), 0.01f);
+            Assert.AreEqual(0.75f, ParallaxDistance.Get(_profile, ParallaxMode.Perspective, _profileObject.FindProperty("layers").GetArrayElementAtIndex(1)), 0.01f);
         }
 
         private int[] DrawOrders()

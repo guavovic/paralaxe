@@ -13,9 +13,9 @@ namespace Guavovic.Parallax.Editor
         public const float Near = -1f;
         public const float Far = 0.99f;
 
-        public static float Get(ParallaxProfile profile, SerializedProperty layer)
+        public static float Get(ParallaxProfile profile, ParallaxMode mode, SerializedProperty layer)
         {
-            return profile.Mode == ParallaxMode.Perspective
+            return mode == ParallaxMode.Perspective
                 ? profile.DepthToFactor(layer.FindPropertyRelative("depth").floatValue)
                 : layer.FindPropertyRelative("factor").vector2Value.x;
         }
