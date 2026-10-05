@@ -22,7 +22,7 @@ namespace Guavovic.Parallax.Editor
         [MenuItem("Tools/Parallax/Editor")]
         public static void Open()
         {
-            GetWindow<ParallaxEditorWindow>("Parallax");
+            GetWindow<ParallaxEditorWindow>();
         }
 
         [MenuItem("GameObject/Parallax/Novo parallax", false, 10)]
@@ -30,17 +30,18 @@ namespace Guavovic.Parallax.Editor
         [MenuItem("Tools/Parallax/Novo parallax")]
         public static void OpenNew()
         {
-            GetWindow<ParallaxEditorWindow>("Parallax").SetRig(null);
+            GetWindow<ParallaxEditorWindow>().SetRig(null);
         }
 
         public static void Open(ParallaxRig rig)
         {
-            GetWindow<ParallaxEditorWindow>("Parallax").SetRig(rig);
+            GetWindow<ParallaxEditorWindow>().SetRig(rig);
         }
 
         private void OnEnable()
         {
             minSize = new Vector2(480f, 320f);
+            titleContent = new GUIContent("Parallax", AssetDatabase.LoadAssetAtPath<Texture2D>(ParallaxRigSetup.IconFolder + "ParallaxRig.png"));
             Selection.selectionChanged += OnSelectionChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
             Undo.undoRedoPerformed += Repaint;
@@ -141,7 +142,7 @@ namespace Guavovic.Parallax.Editor
                     _preview.Refresh();
                 }
 
-                _gear ??= EditorGUIUtility.TrIconContent("_Popup", "Mundo: velocidade, vento e foco");
+                _gear ??= new GUIContent(AssetDatabase.LoadAssetAtPath<Texture2D>(ParallaxRigSetup.IconFolder + "ParallaxWorld.png"), "Mundo: velocidade, vento e foco");
                 var gearRect = GUILayoutUtility.GetRect(_gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
                 if (GUI.Button(gearRect, _gear, EditorStyles.toolbarButton))
                     PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject, OnWorldChanged));
@@ -261,37 +262,16 @@ namespace Guavovic.Parallax.Editor
             if (!GUILayout.Button("Criar profile"))
                 return;
 
-            string path = AskProfilePath();
-            if (string.IsNullOrEmpty(path))
-                return;
-
-            // O modo novo segue a câmera que o rig já usa.
-            var camera = RigCamera;
-            var profile = ParallaxLayerCommands.CreateProfile(path, camera != null && !camera.orthographic ? ParallaxMode.Perspective : ParallaxMode.Simulated2D);
-            Undo.RecordObject(_rig, "Criar profile");
-            _rig.Profile = profile;
-            EditorUtility.SetDirty(_rig);
-            SetRig(_rig);
+            if (ParallaxRigSetup.CreateProfileFor(_rig, RigCamera))
+                SetRig(_rig);
             GUIUtility.ExitGUI();
-        }
-
-        private static string AskProfilePath()
-        {
-            // Sugere um nome livre, para não substituir o profile de outro rig sem querer.
-            string suggested = System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GenerateUniqueAssetPath("Assets/ParallaxProfile.asset"));
-            return EditorUtility.SaveFilePanelInProject("Salvar o ParallaxProfile", suggested, "asset", "Onde salvar o profile do parallax.");
         }
 
         private void CreateRig(List<Sprite> sprites)
         {
-            string path = AskProfilePath();
-            if (string.IsNullOrEmpty(path))
+            var rig = ParallaxRigSetup.CreateFromSprites(sprites, _newMode);
+            if (rig == null)
                 return;
-
-            var rig = ParallaxLayerCommands.CreateRig("Parallax", _newMode, path);
-            var profileObject = new SerializedObject(rig.Profile);
-            ParallaxLayerCommands.AddSprites(rig, profileObject, sprites, spread: true);
-            AssetDatabase.SaveAssetIfDirty(rig.Profile);
 
             Selection.activeGameObject = rig.gameObject;
             SetRig(rig);
