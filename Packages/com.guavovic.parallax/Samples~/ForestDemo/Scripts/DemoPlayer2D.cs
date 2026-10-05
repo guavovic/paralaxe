@@ -16,6 +16,11 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private float groundCheckDistance = 0.1f;
         [Tooltip("Duração do golpe, em segundos.")]
         [SerializeField, Min(0.05f)] private float attackDuration = 0.3f;
+        [Tooltip("Golpe dado até este tempo depois do anterior vira o segundo do combo (subindo).")]
+        [SerializeField, Min(0f)] private float comboWindow = 0.35f;
+        [Tooltip("Pulos extras no ar. 1 dá o pulo duplo.")]
+        [SerializeField, Min(0)] private int airJumps = 1;
+        [SerializeField, Min(0f)] private float airJumpSpeed = 7f;
 
         [Header("Modo autônomo")]
         [Tooltip("Segundos sem nenhuma tecla até o herói passar a se mexer sozinho. 0 desliga.")]
@@ -35,6 +40,9 @@ namespace Guavovic.Parallax.Samples
         private bool _jumpQueued;
         private bool _crouch;
         private float _attackStart = float.NegativeInfinity;
+        private DemoAttack _attack;
+        private int _airJumpsLeft;
+        private float _airJumpTime = float.NegativeInfinity;
         private float _lastActivityTime;
         private float _nextActionTime;
 
@@ -43,6 +51,8 @@ namespace Guavovic.Parallax.Samples
         public bool IsAutonomous => autonomousAfterSeconds > 0f && IdleSeconds >= autonomousAfterSeconds;
         public bool IsRunning => _run && Mathf.Abs(_input) > 0.01f;
         public bool IsCrouching => _crouch;
+        public bool IsAirJumping => Time.time - _airJumpTime < 0.25f;
+        public DemoAttack CurrentAttack => AttackProgress >= 0f ? _attack : DemoAttack.None;
 
         /// <summary>
         /// De 0 a 1 durante o golpe; negativo fora dele.
@@ -100,8 +110,18 @@ namespace Guavovic.Parallax.Samples
 
         private void Attack()
         {
-            if (AttackProgress < 0f)
-                _attackStart = Time.time;
+            if (AttackProgress >= 0f)
+                return;
+
+            bool combo = _attack == DemoAttack.Slash && Time.time - (_attackStart + attackDuration) < comboWindow;
+            if (!IsGrounded())
+                _attack = DemoAttack.Air;
+            else if (_crouch)
+                _attack = DemoAttack.Crouch;
+            else
+                _attack = combo ? DemoAttack.Rising : DemoAttack.Slash;
+
+            _attackStart = Time.time;
         }
 
         private void UpdateAutonomous()
@@ -141,8 +161,21 @@ namespace Guavovic.Parallax.Samples
                 velocity.x -= velocity.x * idleDrag * Time.fixedDeltaTime;
             }
 
-            if (_jumpQueued && IsGrounded())
-                velocity.y = jumpSpeed;
+            if (_jumpQueued || _airJumpsLeft < airJumps)
+            {
+                if (IsGrounded())
+                {
+                    _airJumpsLeft = airJumps;
+                    if (_jumpQueued)
+                        velocity.y = jumpSpeed;
+                }
+                else if (_jumpQueued && _airJumpsLeft > 0)
+                {
+                    _airJumpsLeft--;
+                    _airJumpTime = Time.time;
+                    velocity.y = airJumpSpeed;
+                }
+            }
 
             _jumpQueued = false;
             _body.linearVelocity = velocity;

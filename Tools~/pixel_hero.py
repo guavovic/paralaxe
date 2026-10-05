@@ -198,12 +198,12 @@ def line(px, a, b, color):
             y0 += sy
 
 
-def crescent(px, outer, inner, color, edge, dither=False):
+def crescent(px, outer, inner, color, edge, dither=False, min_x=19):
     """Meia-lua do golpe: dentro do círculo de fora e fora do de dentro, à frente do corpo.
     Grossa no meio e fina nas pontas. Com dither, só metade dos pixels, para o golpe sumindo."""
     (ox, oy, orad), (ix, iy, irad) = outer, inner
     for y in range(HEIGHT):
-        for x in range(19, ATTACK_WIDTH):
+        for x in range(min_x, ATTACK_WIDTH):
             if (x - ox) ** 2 + (y - oy) ** 2 > orad ** 2 or (x - ix) ** 2 + (y - iy) ** 2 <= irad ** 2:
                 continue
             if dither and (x + y) % 2:
@@ -213,7 +213,9 @@ def crescent(px, outer, inner, color, edge, dither=False):
                 px[x, y] = edge if near_edge else color
 
 
-def build_attack(frame):
+def build_attack(frame, kind="slash"):
+    if kind != "slash":
+        return build_variation(frame, kind)
     image = build("walk1", ATTACK_WIDTH)
     px = image.load()
     if frame == 0:
@@ -233,6 +235,57 @@ def build_attack(frame):
     return image
 
 
+def build_variation(frame, kind):
+    """Golpe subindo (segundo do combo), golpe agachado e golpe no ar."""
+    body = {"up": "walk1", "crouch": "crouch", "air": "jump"}[kind]
+    image = build(body, ATTACK_WIDTH)
+    px = image.load()
+    blade, grip = PALETTE["N"], PALETTE["G"]
+    if kind == "up":
+        if frame == 0:
+            line(px, (15, 18), (16, 19), grip)
+            line(px, (17, 20), (24, 24), blade)
+        elif frame == 1:
+            crescent(px, (19, 12, 12), (14, 17, 11), PALETTE["A"], blade)
+            line(px, (17, 15), (18, 14), grip)
+            line(px, (19, 13), (25, 7), blade)
+        else:
+            crescent(px, (19, 11, 11), (15, 15, 10), PALETTE["A"], blade, dither=True)
+            line(px, (17, 13), (19, 9), blade)
+    elif kind == "crouch":
+        if frame == 0:
+            line(px, (15, 19), (16, 18), grip)
+            line(px, (17, 17), (21, 13), blade)
+        elif frame == 1:
+            crescent(px, (21, 21, 8), (17, 21, 7), PALETTE["A"], blade)
+            line(px, (16, 21), (18, 21), grip)
+            line(px, (19, 21), (26, 21), blade)
+        else:
+            crescent(px, (21, 21, 8), (18, 21, 7), PALETTE["A"], blade, dither=True)
+            line(px, (17, 22), (23, 23), blade)
+    else:
+        if frame == 0:
+            line(px, (15, 14), (16, 13), grip)
+            line(px, (16, 12), (20, 4), blade)
+        elif frame == 1:
+            crescent(px, (19, 19, 11), (14, 14, 11), PALETTE["A"], blade, min_x=10)
+            line(px, (17, 18), (18, 19), grip)
+            line(px, (19, 20), (25, 26), blade)
+        else:
+            crescent(px, (19, 20, 10), (15, 15, 10), PALETTE["A"], blade, dither=True, min_x=10)
+            line(px, (17, 20), (21, 26), blade)
+    return image
+
+
+def build_double_jump():
+    """Pulo duplo: a capa abre e um sopro de ar sai debaixo dos pés."""
+    image = build("fall")
+    px = image.load()
+    for x, y in ((6, 25), (8, 26), (10, 25), (12, 26), (14, 25), (9, 27), (11, 27), (7, 27), (13, 27)):
+        px[x, y] = PALETTE["A"]
+    return image
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     for name in LEGS:
@@ -243,6 +296,14 @@ def main():
         path = os.path.join(OUT, "hero_attack%d.png" % frame)
         build_attack(frame).save(path)
         print(path)
+    for kind in ("up", "crouch", "air"):
+        for frame in range(3):
+            path = os.path.join(OUT, "hero_attack_%s%d.png" % (kind, frame))
+            build_attack(frame, kind).save(path)
+            print(path)
+    path = os.path.join(OUT, "hero_jump2.png")
+    build_double_jump().save(path)
+    print(path)
 
 
 if __name__ == "__main__":
