@@ -66,7 +66,7 @@ namespace Guavovic.Parallax
             if (applyProfileToWorld)
                 _world.ApplyProfile(profile);
 
-            if (layers.Count == 0)
+            if (layers.Count == 0 || layers.Contains(null))
                 CollectLayers();
 
             var all = profile.Layers;

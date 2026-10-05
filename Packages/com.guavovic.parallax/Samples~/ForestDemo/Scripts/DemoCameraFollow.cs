@@ -19,16 +19,13 @@ namespace Guavovic.Parallax.Samples
         private bool _hasRest;
         private DemoPlayer2D _player;
 
-        private void Start()
-        {
-            if (target != null)
-                _player = target.GetComponent<DemoPlayer2D>();
-        }
-
         private void LateUpdate()
         {
             if (target == null)
                 return;
+
+            if (_player == null)
+                _player = target.GetComponent<DemoPlayer2D>();
 
             // A referência vertical é a posição do alvo quando ele toca o chão pela primeira vez.
             if (!_hasRest && (_player == null || _player.IsGrounded()))

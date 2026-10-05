@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,6 +18,8 @@ namespace Guavovic.Parallax.Editor
             added.FindPropertyRelative("factor").vector2Value = new Vector2(0.5f, 0f);
             added.FindPropertyRelative("depth").floatValue = 0f;
             added.FindPropertyRelative("windInfluence").floatValue = 1f;
+            added.FindPropertyRelative("blur").floatValue = 0f;
+            added.FindPropertyRelative("autoScroll").vector2Value = Vector2.zero;
             added.FindPropertyRelative("loopHorizontally").boolValue = true;
             added.FindPropertyRelative("tint").colorValue = Color.white;
             profileObject.ApplyModifiedProperties();
@@ -31,12 +34,12 @@ namespace Guavovic.Parallax.Editor
 
         public static void Remove(ParallaxRig rig, SerializedObject profileObject, SerializedProperty layers, int index)
         {
-            ParallaxLayer removed = null;
+            var removed = new List<ParallaxLayer>();
 
             foreach (var layer in rig.GetComponentsInChildren<ParallaxLayer>(true))
             {
                 if (layer.SettingsIndex == index)
-                    removed = layer;
+                    removed.Add(layer);
                 else if (layer.SettingsIndex > index)
                 {
                     Undo.RecordObject(layer, "Remover camada");
@@ -47,8 +50,8 @@ namespace Guavovic.Parallax.Editor
             layers.DeleteArrayElementAtIndex(index);
             profileObject.ApplyModifiedProperties();
 
-            if (removed != null)
-                Undo.DestroyObjectImmediate(removed.gameObject);
+            foreach (var layer in removed)
+                Undo.DestroyObjectImmediate(layer.gameObject);
 
             RegisterLayers(rig);
         }
@@ -58,7 +61,13 @@ namespace Guavovic.Parallax.Editor
             foreach (var layer in rig.GetComponentsInChildren<ParallaxLayer>(true))
             {
                 int index = layer.SettingsIndex;
-                int updated = index == from ? to : (index == to ? from : index);
+                int updated = index;
+                if (index == from)
+                    updated = to;
+                else if (from < to && index > from && index <= to)
+                    updated = index - 1;
+                else if (from > to && index >= to && index < from)
+                    updated = index + 1;
 
                 if (updated != index)
                 {

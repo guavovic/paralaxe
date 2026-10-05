@@ -6,13 +6,11 @@ namespace Guavovic.Parallax.Samples
     {
         private ParallaxWorld _world;
 
-        private void Start()
-        {
-            _world = ParallaxWorld.Current;
-        }
-
         private void OnGUI()
         {
+            if (_world == null)
+                _world = ParallaxWorld.Current;
+
             if (_world == null)
                 return;
 
