@@ -10,12 +10,12 @@ namespace Guavovic.Parallax.Editor
     /// Boas-vindas com créditos e atalhos. Abre sozinha quando o pacote entra no projeto ou muda de versão,
     /// e também a cada vez que o projeto abre, se a pessoa marcar a opção.
     /// </summary>
-    [InitializeOnLoad]
     internal sealed class ParallaxWelcomeWindow : EditorWindow
     {
         private const string PackageName = "com.guavovic.parallax";
         private const string RepositoryUrl = "https://github.com/guavovic/paralaxe";
         private const string BannerPath = "Packages/com.guavovic.parallax/Editor/Welcome/Banner.png";
+        private const string IconPath = "Packages/com.guavovic.parallax/Editor/Icons/ParallaxRig.png";
         private const string SampleSceneGuid = "06c5b48c88d39bb43a002704d0ba083d";
         private const string ShownThisSession = "Paralaxe.Welcome.ShownThisSession";
 
@@ -23,14 +23,6 @@ namespace Guavovic.Parallax.Editor
         private static GUIStyle _body;
 
         private Texture2D _banner;
-
-        static ParallaxWelcomeWindow()
-        {
-            if (Application.isBatchMode)
-                return;
-
-            EditorApplication.delayCall += ShowIfDue;
-        }
 
         [MenuItem("Window/Parallax/Sobre", false, 100)]
         [MenuItem("Tools/Parallax/Sobre", false, 100)]
@@ -52,7 +44,7 @@ namespace Guavovic.Parallax.Editor
             set => EditorPrefs.SetBool(ProjectKey("ShowOnOpen"), value);
         }
 
-        private static void ShowIfDue()
+        public static void ShowIfDue()
         {
             bool newVersion = EditorPrefs.GetString(ProjectKey("Version"), "") != Version;
             bool openedNow = ShowOnOpen && !SessionState.GetBool(ShownThisSession, false);
@@ -67,6 +59,7 @@ namespace Guavovic.Parallax.Editor
         private void OnEnable()
         {
             _banner = AssetDatabase.LoadAssetAtPath<Texture2D>(BannerPath);
+            titleContent = new GUIContent("Paralaxe", AssetDatabase.LoadAssetAtPath<Texture2D>(IconPath));
         }
 
         private void OnGUI()
@@ -76,7 +69,8 @@ namespace Guavovic.Parallax.Editor
 
             if (_banner != null)
             {
-                var rect = GUILayoutUtility.GetRect(position.width, position.width * _banner.height / _banner.width);
+                // Altura limitada, para o rodapé com a opção de abrir caber na janela.
+                var rect = GUILayoutUtility.GetRect(position.width, Mathf.Min(220f, position.width * _banner.height / _banner.width));
                 GUI.DrawTexture(rect, _banner, ScaleMode.ScaleAndCrop);
             }
 
