@@ -5,34 +5,31 @@ namespace Guavovic.Parallax.Tests
 {
     public sealed class ModeSwitchTests
     {
-        private GameObject _object;
-        private ParallaxLayer _layer;
-
-        [SetUp]
-        public void SetUp()
-        {
-            _object = new GameObject("Layer");
-            _layer = _object.AddComponent<ParallaxLayer>();
-            _layer.Initialize(createCopies: false);
-        }
-
-        [TearDown]
-        public void TearDown()
-        {
-            Object.DestroyImmediate(_object);
-        }
-
         [Test]
         public void BackTo2DRestoresTheScaleSetByPerspective()
         {
-            var settings = new ParallaxLayerSettings("Céu", new Vector2(0.99f, 1f), 990f);
-            var context = new ParallaxContext(new Vector3(2f, 0f, -10f), new Vector3(0f, 0f, -10f), 1f, 10f);
+            var profile = ScriptableObject.CreateInstance<ParallaxProfile>();
+            var rig = new GameObject("Rig").AddComponent<ParallaxRig>();
+            try
+            {
+                profile.AddLayer(new ParallaxLayerSettings("Céu", new Vector2(0.99f, 1f), 990f));
+                profile.SetMode(ParallaxMode.Perspective);
+                rig.Profile = profile;
+                var layer = new GameObject("Camada").AddComponent<ParallaxLayer>();
+                layer.transform.SetParent(rig.transform, false);
 
-            new PerspectiveSolver().Solve(_layer, settings, context);
-            Assert.Greater(_layer.transform.localScale.x, 50f);
+                rig.Preview(new Vector3(2f, 0f, 0f), withWind: false);
+                Assert.Greater(layer.transform.localScale.x, 50f);
 
-            new Simulated2DSolver().Solve(_layer, settings, context);
-            Assert.AreEqual(Vector3.one, _layer.transform.localScale);
+                profile.SetMode(ParallaxMode.Simulated2D);
+                rig.Preview(new Vector3(2f, 0f, 0f), withWind: false);
+                Assert.AreEqual(Vector3.one, layer.transform.localScale);
+            }
+            finally
+            {
+                Object.DestroyImmediate(rig.gameObject);
+                Object.DestroyImmediate(profile);
+            }
         }
 
         [Test]

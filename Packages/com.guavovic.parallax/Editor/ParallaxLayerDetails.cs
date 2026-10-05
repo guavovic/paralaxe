@@ -8,6 +8,8 @@ namespace Guavovic.Parallax.Editor
     /// </summary>
     internal sealed class ParallaxLayerDetails
     {
+        private static GUIStyle _scaleLabel;
+
         private bool _effectsOpen = true;
         private bool _motionOpen;
         private bool _advancedOpen;
@@ -74,12 +76,13 @@ namespace Guavovic.Parallax.Editor
             var labels = GUILayoutUtility.GetRect(10f, 14f, GUILayout.ExpandWidth(true));
             labels.xMin += EditorGUIUtility.labelWidth;
             labels.xMax -= 55f;
-            var style = new GUIStyle(EditorStyles.miniLabel) { alignment = TextAnchor.MiddleLeft };
-            GUI.Label(labels, "perto", style);
-            style.alignment = TextAnchor.MiddleCenter;
-            GUI.Label(labels, "foco", style);
-            style.alignment = TextAnchor.MiddleRight;
-            GUI.Label(labels, "longe", style);
+            _scaleLabel ??= new GUIStyle(EditorStyles.miniLabel);
+            _scaleLabel.alignment = TextAnchor.MiddleLeft;
+            GUI.Label(labels, "perto", _scaleLabel);
+            _scaleLabel.alignment = TextAnchor.MiddleCenter;
+            GUI.Label(labels, "foco", _scaleLabel);
+            _scaleLabel.alignment = TextAnchor.MiddleRight;
+            GUI.Label(labels, "longe", _scaleLabel);
         }
 
         private static void DrawAdvanced(SerializedProperty layer, ParallaxLayer layerObject)

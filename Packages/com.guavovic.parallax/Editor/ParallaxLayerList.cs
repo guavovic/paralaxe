@@ -32,6 +32,7 @@ namespace Guavovic.Parallax.Editor
                 onReorderCallbackWithDetails = (list, from, to) =>
                 {
                     _profileObject.ApplyModifiedProperties();
+                    ParallaxLayerCommands.ReorderDrawing(_rig, _objects, from, to);
                     ParallaxLayerCommands.RemapAfterMove(_rig, from, to);
                 }
             };
@@ -41,6 +42,11 @@ namespace Guavovic.Parallax.Editor
         {
             get => _list.index;
             set => _list.index = value;
+        }
+
+        public ParallaxLayer ObjectAt(int index)
+        {
+            return index >= 0 && index < _objects.Length ? _objects[index] : null;
         }
 
         public void Draw()
@@ -76,6 +82,15 @@ namespace Guavovic.Parallax.Editor
             var sprite = spriteRenderer != null ? spriteRenderer.sprite : null;
             if (sprite == null || sprite.texture == null)
                 return;
+
+            // Sprite compactado em atlas não tem um retângulo na textura; usa a prévia da Unity.
+            if (sprite.packed && sprite.packingMode == SpritePackingMode.Tight)
+            {
+                var previewTexture = AssetPreview.GetAssetPreview(sprite);
+                if (previewTexture != null)
+                    GUI.DrawTexture(rect, previewTexture, ScaleMode.ScaleToFit);
+                return;
+            }
 
             var texture = sprite.texture;
             var area = sprite.textureRect;
@@ -129,20 +144,15 @@ namespace Guavovic.Parallax.Editor
 
         private static void DrawEye(Rect rect, GameObject layerObject)
         {
-            var visibility = SceneVisibilityManager.instance;
-            bool hidden = visibility.IsHidden(layerObject, true);
-            var icon = EditorGUIUtility.IconContent(hidden ? "scenevis_hidden_hover" : "scenevis_visible_hover");
-            icon.tooltip = hidden ? "Mostrar na cena" : "Esconder na cena (Alt+clique mostra só esta, de novo volta todas)";
+            bool visible = layerObject.activeSelf;
+            var icon = EditorGUIUtility.IconContent(visible ? "scenevis_visible_hover" : "scenevis_hidden_hover");
+            icon.tooltip = visible ? "Desligar a camada" : "Ligar a camada";
 
             if (!GUI.Button(rect, icon, EditorStyles.iconButton))
                 return;
 
-            if (Event.current.alt && visibility.IsCurrentStageIsolated())
-                visibility.ExitIsolation();
-            else if (Event.current.alt)
-                visibility.Isolate(layerObject, true);
-            else
-                visibility.ToggleVisibility(layerObject, true);
+            Undo.RecordObject(layerObject, visible ? "Desligar camada" : "Ligar camada");
+            layerObject.SetActive(!visible);
         }
     }
 }

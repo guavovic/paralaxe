@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Guavovic.Parallax
@@ -19,6 +20,7 @@ namespace Guavovic.Parallax
         private Vector3 _baseScale = Vector3.one;
         private float _tileWidth;
         private bool _copiesCreated;
+        private readonly List<GameObject> _temporaryCopies = new List<GameObject>();
         private bool _materialApplied;
         private float _windStrength;
         private float _windSpeed;
@@ -30,6 +32,15 @@ namespace Guavovic.Parallax
         public float TileWidth => _tileWidth;
 
         public void Initialize(bool createCopies)
+        {
+            Initialize(createCopies, temporaryCopies: false);
+        }
+
+        /// <summary>
+        /// Com <paramref name="temporaryCopies"/>, as cópias do loop não são salvas na cena e saem em
+        /// <see cref="RemoveTemporaryCopies"/>. Serve para o preview do editor.
+        /// </summary>
+        internal void Initialize(bool createCopies, bool temporaryCopies)
         {
             _origin = transform.position;
             _baseScale = transform.localScale;
@@ -44,7 +55,23 @@ namespace Guavovic.Parallax
             _tileWidth = first != null ? first.bounds.size.x : 0f;
 
             if (createCopies && !_copiesCreated && _tileWidth > 0f)
-                CreateCopies();
+                CreateCopies(temporaryCopies);
+        }
+
+        internal void RemoveTemporaryCopies()
+        {
+            if (_temporaryCopies.Count == 0)
+                return;
+
+            foreach (var copy in _temporaryCopies)
+            {
+                if (copy != null)
+                    DestroyImmediate(copy);
+            }
+
+            _temporaryCopies.Clear();
+            _copiesCreated = false;
+            _renderers = GetComponentsInChildren<SpriteRenderer>(true);
         }
 
         public void Restore()
@@ -119,7 +146,7 @@ namespace Guavovic.Parallax
             }
         }
 
-        private void CreateCopies()
+        private void CreateCopies(bool temporary)
         {
             var source = transform.GetChild(0);
 
@@ -128,6 +155,12 @@ namespace Guavovic.Parallax
                 var copy = Instantiate(source, transform);
                 copy.name = source.name + (side < 0 ? " (esquerda)" : " (direita)");
                 copy.position = source.position + Vector3.right * (_tileWidth * side);
+
+                if (!temporary)
+                    continue;
+
+                copy.gameObject.hideFlags = HideFlags.HideAndDontSave;
+                _temporaryCopies.Add(copy.gameObject);
             }
 
             _renderers = GetComponentsInChildren<SpriteRenderer>(true);

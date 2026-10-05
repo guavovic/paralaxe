@@ -16,8 +16,6 @@ namespace Guavovic.Parallax
             if (settings.LoopHorizontally && layer.TileWidth > 0f)
                 wrap = layer.TileWidth * Mathf.Round((offset.x * (1f - factor.x) - scroll.x) / layer.TileWidth);
 
-            // Desfaz a escala que o modo perspectiva aplica, para a troca de modo voltar ao normal.
-            layer.transform.localScale = layer.BaseScale;
             layer.transform.position = new Vector3(
                 origin.x + offset.x * factor.x + scroll.x + wrap,
                 origin.y + offset.y * factor.y + scroll.y,

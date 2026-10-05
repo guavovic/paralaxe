@@ -9,10 +9,12 @@ namespace Guavovic.Parallax.Editor
     internal sealed class ParallaxWorldPopup : PopupWindowContent
     {
         private readonly SerializedObject _profileObject;
+        private readonly System.Action _changed;
 
-        public ParallaxWorldPopup(SerializedObject profileObject)
+        public ParallaxWorldPopup(SerializedObject profileObject, System.Action changed)
         {
             _profileObject = profileObject;
+            _changed = changed;
         }
 
         public override Vector2 GetWindowSize()
@@ -34,7 +36,8 @@ namespace Guavovic.Parallax.Editor
             if ((ParallaxMode)_profileObject.FindProperty("mode").enumValueIndex == ParallaxMode.Perspective)
                 EditorGUILayout.PropertyField(_profileObject.FindProperty("focusDistance"), new GUIContent("Distância de foco"));
 
-            _profileObject.ApplyModifiedProperties();
+            if (_profileObject.ApplyModifiedProperties())
+                _changed?.Invoke();
         }
     }
 }

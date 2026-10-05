@@ -25,6 +25,7 @@ namespace Guavovic.Parallax
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
         public IReadOnlyList<ParallaxLayer> Layers => layers;
         public ParallaxWorld World => _world;
+        public bool IsPreviewing => _previewing;
 
         private void Start()
         {
@@ -69,7 +70,7 @@ namespace Guavovic.Parallax
             if (!ParallaxCamera.Matches(targetCamera, profile.Mode))
                 Debug.LogWarning($"Paralaxe: o modo {profile.Mode} pede uma câmera {(profile.Mode == ParallaxMode.Perspective ? "em perspectiva" : "ortográfica")}. Ajuste a câmera ou use o botão do editor de parallax.", this);
 
-            InitializeLayers(createCopies: true);
+            InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
             _initialized = true;
         }
@@ -93,7 +94,7 @@ namespace Guavovic.Parallax
 
             if (!_previewing)
             {
-                InitializeLayers(createCopies: false);
+                InitializeLayers(createCopies: true, temporaryCopies: true);
                 _previewing = true;
             }
 
@@ -111,14 +112,17 @@ namespace Guavovic.Parallax
 
             foreach (var layer in layers)
             {
-                if (layer != null)
-                    layer.Restore();
+                if (layer == null)
+                    continue;
+
+                layer.RemoveTemporaryCopies();
+                layer.Restore();
             }
 
             _previewing = false;
         }
 
-        private void InitializeLayers(bool createCopies)
+        private void InitializeLayers(bool createCopies, bool temporaryCopies)
         {
             // Camada apagada na cena deixa uma referência nula; tira só ela e mantém a lista que o usuário montou.
             layers.RemoveAll(layer => layer == null);
@@ -127,7 +131,7 @@ namespace Guavovic.Parallax
 
             foreach (var layer in layers)
             {
-                layer.Initialize(createCopies);
+                layer.Initialize(createCopies, temporaryCopies);
                 if (TryGetSettings(layer, out var settings))
                     layer.ApplyTint(settings.Tint);
             }
@@ -137,6 +141,16 @@ namespace Guavovic.Parallax
         {
             if (_solver == null || _solverMode != profile.Mode)
             {
+                // O modo perspectiva amplia as camadas; ao trocar de modo, todas voltam à escala original.
+                if (_solver != null)
+                {
+                    foreach (var layer in layers)
+                    {
+                        if (layer != null)
+                            layer.transform.localScale = layer.BaseScale;
+                    }
+                }
+
                 _solverMode = profile.Mode;
                 _solver = ParallaxSolvers.Create(profile.Mode);
             }

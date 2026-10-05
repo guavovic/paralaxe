@@ -6,7 +6,7 @@ namespace Guavovic.Parallax.Editor
     /// <summary>
     /// Um valor só de distância no lugar de fator e profundidade. É o fator X do modo 2D:
     /// negativo fica na frente do plano de foco, 0 no plano e perto de 1 bem longe.
-    /// Ao mudar, grava o fator e a profundidade equivalentes, então trocar de modo mantém o visual.
+    /// Ao mudar, grava o fator e a profundidade equivalentes, então trocar de modo mantém a distância da camada.
     /// </summary>
     internal static class ParallaxDistance
     {

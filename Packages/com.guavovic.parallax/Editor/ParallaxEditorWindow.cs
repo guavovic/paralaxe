@@ -84,14 +84,20 @@ namespace Guavovic.Parallax.Editor
 
         private void OnGUI()
         {
-            if (_rig != null && (_profileObject == null || _profileObject.targetObject != _rig.Profile))
+            if (_rig != null && _rig.Profile != null && (_profileObject == null || _profileObject.targetObject != _rig.Profile))
                 SetRig(_rig);
 
             DrawToolbar();
 
-            if (_rig == null || _profileObject == null)
+            if (_rig == null)
             {
                 DrawEmptyState();
+                return;
+            }
+
+            if (_rig.Profile == null || _profileObject == null)
+            {
+                DrawMissingProfile();
                 return;
             }
 
@@ -139,10 +145,16 @@ namespace Guavovic.Parallax.Editor
                 gear.tooltip = "Mundo: velocidade, vento e foco";
                 var gearRect = GUILayoutUtility.GetRect(gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
                 if (GUI.Button(gearRect, gear, EditorStyles.toolbarButton))
-                    PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject));
+                    PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject, OnWorldChanged));
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        private void OnWorldChanged()
+        {
+            _preview.Refresh();
+            Repaint();
         }
 
         private Camera RigCamera => _rig.TargetCamera != null ? _rig.TargetCamera : Camera.main;
@@ -178,16 +190,17 @@ namespace Guavovic.Parallax.Editor
         private void DrawListColumn()
         {
             EditorGUILayout.BeginVertical(GUILayout.Width(Mathf.Max(220f, position.width * 0.45f)));
-            EditorGUILayout.LabelField("longe ↑", EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.LabelField("atrás ↑", EditorStyles.centeredGreyMiniLabel);
 
             _listScroll = EditorGUILayout.BeginScrollView(_listScroll);
             _list.Draw();
             EditorGUILayout.EndScrollView();
 
-            EditorGUILayout.LabelField("perto ↓", EditorStyles.centeredGreyMiniLabel);
+            EditorGUILayout.LabelField("na frente ↓", EditorStyles.centeredGreyMiniLabel);
             var sprites = ParallaxDropZone.Draw("+ Arraste imagens aqui", 34f);
             if (sprites.Count > 0)
             {
+                _preview.Stop();
                 ParallaxLayerCommands.AddSprites(_rig, _profileObject, sprites, spread: false);
                 _list.Selected = _rig.Profile.Layers.Count - 1;
                 GUIUtility.ExitGUI();
@@ -211,8 +224,7 @@ namespace Guavovic.Parallax.Editor
             }
             else
             {
-                var objects = ParallaxLayerList.FindLayerObjects(_rig, layers.arraySize);
-                if (_details.Draw(_rig, layers.GetArrayElementAtIndex(selected), objects[selected]))
+                if (_details.Draw(_rig, layers.GetArrayElementAtIndex(selected), _list.ObjectAt(selected)))
                 {
                     _preview.Stop();
                     ParallaxLayerCommands.Remove(_rig, _profileObject, layers, selected);
@@ -244,9 +256,35 @@ namespace Guavovic.Parallax.Editor
             }
         }
 
+        private void DrawMissingProfile()
+        {
+            EditorGUILayout.HelpBox("Este rig não tem um ParallaxProfile.", MessageType.Warning);
+            if (!GUILayout.Button("Criar profile"))
+                return;
+
+            string path = AskProfilePath();
+            if (string.IsNullOrEmpty(path))
+                return;
+
+            var profile = CreateInstance<ParallaxProfile>();
+            AssetDatabase.CreateAsset(profile, path);
+            Undo.RecordObject(_rig, "Criar profile");
+            _rig.Profile = profile;
+            EditorUtility.SetDirty(_rig);
+            SetRig(_rig);
+            GUIUtility.ExitGUI();
+        }
+
+        private static string AskProfilePath()
+        {
+            // Sugere um nome livre, para não substituir o profile de outro rig sem querer.
+            string suggested = System.IO.Path.GetFileNameWithoutExtension(AssetDatabase.GenerateUniqueAssetPath("Assets/ParallaxProfile.asset"));
+            return EditorUtility.SaveFilePanelInProject("Salvar o ParallaxProfile", suggested, "asset", "Onde salvar o profile do parallax.");
+        }
+
         private void CreateRig(List<Sprite> sprites)
         {
-            string path = EditorUtility.SaveFilePanelInProject("Salvar o ParallaxProfile", "ParallaxProfile", "asset", "Onde salvar o profile do parallax.");
+            string path = AskProfilePath();
             if (string.IsNullOrEmpty(path))
                 return;
 

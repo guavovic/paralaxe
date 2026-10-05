@@ -73,6 +73,37 @@ namespace Guavovic.Parallax.Editor
         }
 
         /// <summary>
+        /// Leva a ordem de desenho junto quando uma camada muda de posição na lista, mas só se o desenho
+        /// já seguia a lista (de trás para a frente). Ordem ajustada à mão, como a do sample, fica como está.
+        /// </summary>
+        public static void ReorderDrawing(ParallaxRig rig, ParallaxLayer[] objectsBeforeMove, int from, int to)
+        {
+            var orders = new List<int>();
+            foreach (var layer in objectsBeforeMove)
+            {
+                var spriteRenderer = layer != null ? layer.GetComponentInChildren<SpriteRenderer>(true) : null;
+                if (spriteRenderer == null)
+                    return;
+                if (orders.Count > 0 && spriteRenderer.sortingOrder <= orders[orders.Count - 1])
+                    return;
+                orders.Add(spriteRenderer.sortingOrder);
+            }
+
+            var moved = new List<ParallaxLayer>(objectsBeforeMove);
+            var item = moved[from];
+            moved.RemoveAt(from);
+            moved.Insert(to, item);
+
+            for (int i = 0; i < moved.Count; i++)
+            {
+                var renderers = moved[i].GetComponentsInChildren<SpriteRenderer>(true);
+                Undo.RecordObjects(renderers, "Mover camada");
+                foreach (var spriteRenderer in renderers)
+                    spriteRenderer.sortingOrder = orders[i];
+            }
+        }
+
+        /// <summary>
         /// Cria um rig novo, com o profile salvo em <paramref name="profilePath"/>.
         /// </summary>
         public static ParallaxRig CreateRig(string name, ParallaxMode mode, string profilePath)
