@@ -95,6 +95,7 @@ namespace Guavovic.Parallax.Editor
                 return;
             }
 
+            DrawCameraWarning();
             _profileObject.Update();
             EditorGUI.BeginChangeCheck();
 
@@ -129,7 +130,10 @@ namespace Guavovic.Parallax.Editor
                 var mode = _profileObject.FindProperty("mode");
                 mode.enumValueIndex = GUILayout.Toolbar(mode.enumValueIndex, ModeNames, EditorStyles.toolbarButton, GUILayout.Width(150f));
                 if (_profileObject.ApplyModifiedProperties())
+                {
+                    MatchCamera();
                     _preview.Refresh();
+                }
 
                 var gear = EditorGUIUtility.IconContent("_Popup");
                 gear.tooltip = "Mundo: velocidade, vento e foco";
@@ -139,6 +143,36 @@ namespace Guavovic.Parallax.Editor
             }
 
             EditorGUILayout.EndHorizontal();
+        }
+
+        private Camera RigCamera => _rig.TargetCamera != null ? _rig.TargetCamera : Camera.main;
+
+        private void DrawCameraWarning()
+        {
+            if (ParallaxCamera.Matches(RigCamera, _rig.Profile.Mode))
+                return;
+
+            EditorGUILayout.BeginHorizontal(EditorStyles.helpBox);
+            EditorGUILayout.LabelField(_rig.Profile.Mode == ParallaxMode.Perspective
+                ? "O modo Perspectiva precisa de câmera em perspectiva."
+                : "O modo 2D precisa de câmera ortográfica.", EditorStyles.wordWrappedMiniLabel);
+            if (GUILayout.Button("Ajustar câmera", GUILayout.Width(110f)))
+                MatchCamera();
+            EditorGUILayout.EndHorizontal();
+        }
+
+        /// <summary>
+        /// Deixa a câmera do rig no tipo que o modo pede, mostrando a mesma área no plano de foco.
+        /// </summary>
+        private void MatchCamera()
+        {
+            var camera = RigCamera;
+            if (camera == null || ParallaxCamera.Matches(camera, _rig.Profile.Mode))
+                return;
+
+            Undo.RecordObject(camera, "Ajustar câmera ao modo");
+            ParallaxCamera.Match(camera, _rig.Profile.Mode, _rig.Profile.FocusDistance);
+            SceneView.RepaintAll();
         }
 
         private void DrawListColumn()
@@ -151,7 +185,7 @@ namespace Guavovic.Parallax.Editor
             EditorGUILayout.EndScrollView();
 
             EditorGUILayout.LabelField("perto ↓", EditorStyles.centeredGreyMiniLabel);
-            var sprites = DropZone("+ Arraste imagens aqui", 34f);
+            var sprites = ParallaxDropZone.Draw("+ Arraste imagens aqui", 34f);
             if (sprites.Count > 0)
             {
                 ParallaxLayerCommands.AddSprites(_rig, _profileObject, sprites, spread: false);
@@ -199,7 +233,7 @@ namespace Guavovic.Parallax.Editor
             _newMode = (ParallaxMode)GUILayout.Toolbar((int)_newMode, ModeNames);
             EditorGUILayout.Space(6f);
 
-            var sprites = DropZone("Arraste as imagens aqui", 120f);
+            var sprites = ParallaxDropZone.Draw("Arraste as imagens aqui", 120f);
             EditorGUILayout.LabelField("Ou selecione um ParallaxRig na cena.", EditorStyles.centeredGreyMiniLabel);
             GUILayout.FlexibleSpace();
 
@@ -223,40 +257,6 @@ namespace Guavovic.Parallax.Editor
 
             Selection.activeGameObject = rig.gameObject;
             SetRig(rig);
-        }
-
-        /// <summary>
-        /// Área que aceita sprites e texturas arrastados do Project. Devolve as imagens soltas nela neste evento.
-        /// </summary>
-        private static List<Sprite> DropZone(string label, float height)
-        {
-            var result = new List<Sprite>();
-            var rect = GUILayoutUtility.GetRect(10f, height, GUILayout.ExpandWidth(true));
-            GUI.Box(rect, label, EditorStyles.helpBox);
-
-            var current = Event.current;
-            if (!rect.Contains(current.mousePosition) || (current.type != EventType.DragUpdated && current.type != EventType.DragPerform))
-                return result;
-
-            foreach (var item in DragAndDrop.objectReferences)
-            {
-                var sprite = item as Sprite;
-                if (sprite == null && item is Texture2D)
-                    sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GetAssetPath(item));
-                if (sprite != null)
-                    result.Add(sprite);
-            }
-
-            DragAndDrop.visualMode = result.Count > 0 ? DragAndDropVisualMode.Copy : DragAndDropVisualMode.Rejected;
-            if (current.type != EventType.DragPerform || result.Count == 0)
-            {
-                result.Clear();
-                return result;
-            }
-
-            DragAndDrop.AcceptDrag();
-            current.Use();
-            return result;
         }
     }
 }

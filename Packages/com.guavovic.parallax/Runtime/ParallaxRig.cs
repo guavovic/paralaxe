@@ -66,6 +66,9 @@ namespace Guavovic.Parallax
             if (applyProfileToWorld)
                 _world.ApplyProfile(profile);
 
+            if (!ParallaxCamera.Matches(targetCamera, profile.Mode))
+                Debug.LogWarning($"Paralaxe: o modo {profile.Mode} pede uma câmera {(profile.Mode == ParallaxMode.Perspective ? "em perspectiva" : "ortográfica")}. Ajuste a câmera ou use o botão do editor de parallax.", this);
+
             InitializeLayers(createCopies: true);
             _cameraOrigin = targetCamera.transform.position;
             _initialized = true;
@@ -95,7 +98,9 @@ namespace Guavovic.Parallax
             }
 
             var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
-            var context = new ParallaxContext(cameraOrigin + cameraOffset, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance);
+            var context = profile.Mode == ParallaxMode.Perspective
+                ? new ParallaxContext(cameraOrigin, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance, 0f, cameraOffset)
+                : new ParallaxContext(cameraOrigin + cameraOffset, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance);
             SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
         }
 
