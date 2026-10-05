@@ -43,6 +43,13 @@ namespace Guavovic.Parallax.Samples
         private DemoAttack _attack;
         private int _airJumpsLeft;
         private float _airJumpTime = float.NegativeInfinity;
+        private bool _wasGrounded = true;
+
+        /// <summary>Avisos para efeitos (poeira, som): pousou, pulou do chão, pulou no ar, começou um golpe.</summary>
+        public event System.Action Landed;
+        public event System.Action Jumped;
+        public event System.Action AirJumped;
+        public event System.Action AttackStarted;
         private float _lastActivityTime;
         private float _nextActionTime;
 
@@ -122,6 +129,7 @@ namespace Guavovic.Parallax.Samples
                 _attack = combo ? DemoAttack.Rising : DemoAttack.Slash;
 
             _attackStart = Time.time;
+            AttackStarted?.Invoke();
         }
 
         private void UpdateAutonomous()
@@ -161,20 +169,25 @@ namespace Guavovic.Parallax.Samples
                 velocity.x -= velocity.x * idleDrag * Time.fixedDeltaTime;
             }
 
-            if (_jumpQueued || _airJumpsLeft < airJumps)
+            bool grounded = IsGrounded();
+            if (grounded && !_wasGrounded && velocity.y <= 0.01f)
+                Landed?.Invoke();
+            _wasGrounded = grounded;
+
+            if (grounded)
+                _airJumpsLeft = airJumps;
+
+            if (_jumpQueued && grounded)
             {
-                if (IsGrounded())
-                {
-                    _airJumpsLeft = airJumps;
-                    if (_jumpQueued)
-                        velocity.y = jumpSpeed;
-                }
-                else if (_jumpQueued && _airJumpsLeft > 0)
-                {
-                    _airJumpsLeft--;
-                    _airJumpTime = Time.time;
-                    velocity.y = airJumpSpeed;
-                }
+                velocity.y = jumpSpeed;
+                Jumped?.Invoke();
+            }
+            else if (_jumpQueued && _airJumpsLeft > 0)
+            {
+                _airJumpsLeft--;
+                _airJumpTime = Time.time;
+                velocity.y = airJumpSpeed;
+                AirJumped?.Invoke();
             }
 
             _jumpQueued = false;
