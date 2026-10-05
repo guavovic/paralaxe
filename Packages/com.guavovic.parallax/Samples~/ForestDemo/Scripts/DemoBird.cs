@@ -27,11 +27,15 @@ namespace Guavovic.Parallax.Samples
             _phase = Random.value * 10f;
         }
 
+        private void Start()
+        {
+            var main = Camera.main;
+            if (main != null)
+                _camera = main.transform;
+        }
+
         private void Update()
         {
-            if (_camera == null && Camera.main != null)
-                _camera = Camera.main.transform;
-
             var position = transform.position;
             position.x += speed * Time.deltaTime;
             position.y = _baseY + Mathf.Sin((Time.time + _phase) * bobSpeed) * bobAmplitude;

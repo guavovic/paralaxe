@@ -21,11 +21,12 @@ namespace Guavovic.Parallax.Samples
         private void Awake()
         {
             _shownAt = new float[dots != null ? dots.Length : 0];
+            ResetDots();
         }
 
         private void Update()
         {
-            if (player == null || dots == null || dots.Length == 0)
+            if (player == null || bubble == null || dots == null || dots.Length == 0)
                 return;
 
             float idle = player.IdleSeconds;
@@ -37,8 +38,7 @@ namespace Guavovic.Parallax.Samples
 
             if (!visible)
             {
-                for (int i = 0; i < _shownAt.Length; i++)
-                    _shownAt[i] = -1f;
+                ResetDots();
                 return;
             }
 
@@ -60,6 +60,12 @@ namespace Guavovic.Parallax.Samples
                     dots[i].localScale = new Vector3(scale, scale, 1f);
                 }
             }
+        }
+
+        private void ResetDots()
+        {
+            for (int i = 0; i < _shownAt.Length; i++)
+                _shownAt[i] = -1f;
         }
     }
 }

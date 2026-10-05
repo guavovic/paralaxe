@@ -72,6 +72,9 @@ namespace Guavovic.Parallax
             var all = profile.Layers;
             foreach (var layer in layers)
             {
+                if (layer == null)
+                    continue;
+
                 layer.Initialize(createCopies: true);
                 if (layer.SettingsIndex >= 0 && layer.SettingsIndex < all.Count)
                     layer.ApplyTint(all[layer.SettingsIndex].Tint);
