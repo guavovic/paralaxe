@@ -1,7 +1,7 @@
 """Gera os blocos de transição da floresta para a caverna, camada por camada.
 
 Uso: python Tools~/pixel_transition.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Transition/forest_to_cave_NN.png
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Transition/forest_to_cave_NN.png
 
 Cada bloco começa igual à floresta na borda esquerda e termina igual à caverna na direita, misturando as duas
 em dithering no meio. Como floresta e caverna são loops sem emenda, as bordas do bloco casam com os vizinhos.
@@ -16,7 +16,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from pixel_forest import bayer, periodic  # noqa: E402
 
-BASE = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites")
+BASE = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites")
 OUT = os.path.join(BASE, "Transition")
 
 

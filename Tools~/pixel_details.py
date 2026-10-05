@@ -1,7 +1,7 @@
 """Gera os detalhes espalhados pelos cenários e os bichos que se mexem, nas cores de cada profundidade.
 
 Uso: python Tools~/pixel_details.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Details/
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Details/
 
 Cada imagem é recortada no próprio conteúdo, com a base embaixo, para o ParallaxScatter espalhar pela camada.
 A luz de contorno vem do alto e da esquerda, como nas camadas.
@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from pixel_forest import bayer, dead_tree, giant_tree, hexc, mix, pine, round_tree, statue, broken_pillar, branch  # noqa: E402
 from pixel_cave import CYAN, PINK, RIM, boulder, column, crystal, stalactite, stalagmite  # noqa: E402
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Details")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites", "Details")
 VIOLET = hexc("#b38cff")
 
 

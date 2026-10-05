@@ -41,7 +41,7 @@ PART 2 - ARTWORK: ALL RIGHTS RESERVED
 Applies to the following files, and to any image produced by the scripts
 listed below:
 
-- Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/ (all files)
+- Packages/com.guavovic.parallax/Samples~/Demo/Sprites/ (all files)
 - Packages/com.guavovic.parallax/Editor/Welcome/ (all files)
 - Docs/ (all files)
 - Tools~/pixel_forest.py

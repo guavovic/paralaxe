@@ -1,14 +1,14 @@
 """Gera os adereços pequenos do sample: ponto de luz, fumaça e pássaros.
 
 Uso: python Tools~/pixel_props.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Props/
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Props/
 """
 import math
 import os
 
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Props")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites", "Props")
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
 
 
