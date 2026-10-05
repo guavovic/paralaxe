@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace Guavovic.Parallax.Samples
 {
+    /// <summary>
+    /// Segue o alvo com suavização. Os limites da cena ficam no ParallaxCameraBounds da câmera.
+    /// </summary>
     public sealed class DemoCameraFollow : MonoBehaviour
     {
         [SerializeField] private Transform target;
@@ -9,9 +12,6 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private bool followY = true;
         [Tooltip("Quanto da subida ou descida do alvo a câmera acompanha na vertical.")]
         [SerializeField, Range(0f, 1f)] private float verticalFactor = 0.6f;
-        [Tooltip("Limites da câmera na vertical, para não mostrar o vazio acima do céu nem abaixo do chão.")]
-        [SerializeField] private float minY = -1.6f;
-        [SerializeField] private float maxY = 2.4f;
 
         private Vector3 _velocity;
         private float _restY;
@@ -37,7 +37,7 @@ namespace Guavovic.Parallax.Samples
 
             float goalY = transform.position.y;
             if (followY && _hasRest)
-                goalY = Mathf.Clamp(_restY + (target.position.y - _targetRestY) * verticalFactor, minY, maxY);
+                goalY = _restY + (target.position.y - _targetRestY) * verticalFactor;
 
             var goal = new Vector3(target.position.x, goalY, transform.position.z);
             transform.position = Vector3.SmoothDamp(transform.position, goal, ref _velocity, smoothTime);
