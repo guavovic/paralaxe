@@ -50,6 +50,7 @@ listed below:
 - Tools~/pixel_cave.py
 - Tools~/pixel_elements.py
 - Tools~/pixel_transition.py
+- Tools~/pixel_details.py
 
 Copyright (c) 2026 Gustavo Victor. All rights reserved.
 

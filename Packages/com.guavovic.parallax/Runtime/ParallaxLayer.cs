@@ -33,6 +33,7 @@ namespace Guavovic.Parallax
         private readonly ParallaxStageTracker _stageTracker = new ParallaxStageTracker();
         private Color _tint = Color.white;
         private float _lastStageTime = -1f;
+        private ParallaxScatter[] _scatters = System.Array.Empty<ParallaxScatter>();
 
         public int SettingsIndex { get => settingsIndex; set => settingsIndex = value; }
         public Vector3 Origin => _origin;
@@ -43,6 +44,9 @@ namespace Guavovic.Parallax
 
         /// <summary>Índice do loop atual, escrito pelo solver: quantos blocos a camada já deu a volta.</summary>
         public int WrapIndex { get; internal set; }
+
+        /// <summary>Quanto o loop deslocou a camada no último quadro, em unidades do mundo. Escrito pelo solver.</summary>
+        public float LoopOffset { get; internal set; }
 
         public void AddStage(ParallaxStage stage) => stages.Add(stage);
 
@@ -62,6 +66,7 @@ namespace Guavovic.Parallax
             _renderers = GetComponentsInChildren<SpriteRenderer>(true);
             _block = new MaterialPropertyBlock();
             _materialApplied = false;
+            _scatters = GetComponentsInChildren<ParallaxScatter>(true);
 
             if (transform.childCount == 0)
                 return;
@@ -95,6 +100,18 @@ namespace Guavovic.Parallax
             _lastStageTime = now;
             _stageTracker.UpdateFade(stages, cameraX, delta, fadeSeconds);
             ApplyTint(_tint);
+        }
+
+        /// <summary>
+        /// Leva os elementos espalhados para perto da câmera, sem seguir o loop da imagem.
+        /// </summary>
+        internal void UpdateScatters(float cameraX)
+        {
+            foreach (var scatter in _scatters)
+            {
+                if (scatter != null)
+                    scatter.Recycle(this, cameraX);
+            }
         }
 
         internal void ResetStages()
@@ -149,6 +166,12 @@ namespace Guavovic.Parallax
         {
             transform.position = _origin;
             transform.localScale = _baseScale;
+            LoopOffset = 0f;
+            foreach (var scatter in _scatters)
+            {
+                if (scatter != null)
+                    scatter.Restore();
+            }
         }
 
         public void ApplyTint(Color tint)

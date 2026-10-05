@@ -3,7 +3,8 @@ using UnityEngine;
 namespace Guavovic.Parallax.Samples
 {
     /// <summary>
-    /// Pássaro que bate asas e voa em volta da câmera. Quando sai muito longe, volta pelo outro lado.
+    /// Bicho que voa em volta da câmera batendo asas (pássaro, borboleta, morcego, esporo). Quando sai muito longe,
+    /// volta pelo outro lado. Com fator de parallax, ele parece estar numa camada de trás (positivo) ou da frente (negativo).
     /// </summary>
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class DemoBird : MonoBehaviour
@@ -14,11 +15,14 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private float bobSpeed = 1.5f;
         [SerializeField, Min(0.01f)] private float frameTime = 0.14f;
         [SerializeField] private float wrapDistance = 16f;
+        [Tooltip("Como o fator 2D das camadas: 0 fica no plano do herói, 0.5 anda metade da câmera (longe), negativo passa na frente.")]
+        [SerializeField] private float parallaxFactor;
 
         private SpriteRenderer _renderer;
         private Transform _camera;
         private float _baseY;
         private float _phase;
+        private float _lastCameraX;
 
         private void Awake()
         {
@@ -30,10 +34,18 @@ namespace Guavovic.Parallax.Samples
         private void Update()
         {
             if (_camera == null && Camera.main != null)
+            {
                 _camera = Camera.main.transform;
+                _lastCameraX = _camera.position.x;
+            }
 
             var position = transform.position;
             position.x += speed * Time.deltaTime;
+            if (_camera != null)
+            {
+                position.x += (_camera.position.x - _lastCameraX) * parallaxFactor;
+                _lastCameraX = _camera.position.x;
+            }
             position.y = _baseY + Mathf.Sin((Time.time + _phase) * bobSpeed) * bobAmplitude;
 
             if (_camera != null)

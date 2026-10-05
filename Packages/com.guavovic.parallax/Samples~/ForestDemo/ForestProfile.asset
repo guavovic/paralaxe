@@ -134,6 +134,30 @@ MonoBehaviour:
     autoScroll: {x: 0, y: 0}
     loopHorizontally: 1
     tint: {r: 1, g: 1, b: 1, a: 0.5}
+  - name: "Camada 15 - \xC1rvores pr\xF3ximas"
+    factor: {x: 0.35, y: 0.5}
+    depth: 5.3846154
+    windInfluence: 0.4
+    blur: 0.2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.75, g: 0.8, b: 0.85, a: 1}
+  - name: "Camada 16 - Arbustos de tr\xE1s"
+    factor: {x: 0.1, y: 0.1}
+    depth: 1.1111112
+    windInfluence: 0.6
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.85, g: 0.9, b: 1, a: 1}
+  - name: Camada 17 - Folhagem da frente
+    factor: {x: -0.25, y: 1}
+    depth: -2
+    windInfluence: 0.8
+    blur: 1.2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.25, g: 0.3, b: 0.35, a: 1}
   speedMultiplier: 1
   windDirection: {x: 1, y: 0}
   windStrength: 0.6

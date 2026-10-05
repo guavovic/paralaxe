@@ -6,6 +6,8 @@ Shader "Parallax/Glow Sprite"
         _Color ("Tint", Color) = (1, 1, 1, 1)
         _Intensity ("Intensity", Range(0, 4)) = 1
         _Blur ("Blur (texels)", Range(0, 6)) = 0
+        _PulseSpeed ("Pulse Speed", Float) = 0
+        _PulseAmount ("Pulse Amount", Range(0, 1)) = 0
     }
 
     SubShader
@@ -43,7 +45,11 @@ Shader "Parallax/Glow Sprite"
                 half4 _Color;
                 float _Intensity;
                 float _Blur;
+                float _PulseSpeed;
+                float _PulseAmount;
             CBUFFER_END
+
+            #include "ParallaxSprite.hlsl"
 
             struct Attributes
             {
@@ -57,6 +63,7 @@ Shader "Parallax/Glow Sprite"
                 float4 positionCS : SV_POSITION;
                 float2 uv : TEXCOORD0;
                 half4 color : COLOR;
+                float phase : TEXCOORD1;
             };
 
             Varyings vert(Attributes input)
@@ -65,39 +72,16 @@ Shader "Parallax/Glow Sprite"
                 output.positionCS = TransformObjectToHClip(input.positionOS.xyz);
                 output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 output.color = input.color * _Color;
+                output.phase = ParallaxPhase(TransformObjectToWorld(input.positionOS.xyz));
                 return output;
-            }
-
-            half4 SampleBlurred(float2 uv)
-            {
-                if (_Blur < 0.01)
-                    return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv);
-
-                // Desfoque de 9 pontos com pesos de um filtro gaussiano pequeno.
-                // A cor é ponderada pelo alpha, para o contorno não escurecer ao misturar com o transparente.
-                float2 step = _MainTex_TexelSize.xy * _Blur;
-                float2 offsets[9] = {
-                    float2(0, 0), float2(step.x, 0), float2(-step.x, 0), float2(0, step.y), float2(0, -step.y),
-                    step, -step, float2(step.x, -step.y), float2(-step.x, step.y)
-                };
-                float weights[9] = { 0.2270, 0.1135, 0.1135, 0.1135, 0.1135, 0.0680, 0.0680, 0.0680, 0.0680 };
-
-                half3 color = 0;
-                half alpha = 0;
-                [unroll] for (int i = 0; i < 9; i++)
-                {
-                    half4 tap = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv + offsets[i]);
-                    color += tap.rgb * tap.a * weights[i];
-                    alpha += tap.a * weights[i];
-                }
-
-                return half4(color / max(alpha, 0.0001h), alpha);
             }
 
             half4 frag(Varyings input) : SV_Target
             {
-                half4 color = SampleBlurred(input.uv) * input.color;
-                color.rgb *= _Intensity;
+                half4 color = ParallaxSampleBlurred(input.uv) * input.color;
+                // Pulsar: a luz respira entre (1 - amount) e 1 da intensidade, cada objeto na sua fase.
+                float pulse = 1.0 - _PulseAmount * (0.5 + 0.5 * sin(_Time.y * _PulseSpeed + input.phase * 6.2831));
+                color.rgb *= _Intensity * pulse;
                 return color;
             }
             ENDHLSL
