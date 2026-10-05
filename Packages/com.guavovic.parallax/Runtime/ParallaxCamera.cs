@@ -4,9 +4,21 @@ namespace Guavovic.Parallax
 {
     /// <summary>
     /// Cada modo pede um tipo de câmera: 2D usa ortográfica e perspectiva usa câmera em perspectiva.
+    /// O rig escolhe o modo pela câmera, então os dois nunca ficam desencontrados.
     /// </summary>
     public static class ParallaxCamera
     {
+        /// <summary>
+        /// O modo que a câmera pede. Sem câmera, vale <paramref name="fallback"/>.
+        /// </summary>
+        public static ParallaxMode ModeOf(Camera camera, ParallaxMode fallback)
+        {
+            if (camera == null)
+                return fallback;
+
+            return camera.orthographic ? ParallaxMode.Simulated2D : ParallaxMode.Perspective;
+        }
+
         public static bool Matches(Camera camera, ParallaxMode mode)
         {
             return camera == null || camera.orthographic == (mode == ParallaxMode.Simulated2D);
