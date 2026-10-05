@@ -37,3 +37,9 @@ Cada camada tem um controle só de distância, de perto a longe. O preview anda 
 - **Efeitos:** shaders próprios, para o vento e o brilho aditivo.
 - **Arte do exemplo e ícones:** Python com PIL, em pixel art.
 - **Testes:** Unity Test Framework, com testes de desempenho.
+
+## Licença
+
+O código é livre para usar, inclusive em jogos comerciais, com uma condição: o jogo ou projeto tem que creditar **Paralaxe, por Gustavo Victor** nos créditos, na tela de sobre ou na documentação, com o link do repositório quando der.
+
+A arte do exemplo (imagens, banner, GIFs e os scripts que geram a arte) é só para conhecer o pacote e não pode ser usada em outros projetos. Os detalhes estão em [LICENSE](LICENSE).
