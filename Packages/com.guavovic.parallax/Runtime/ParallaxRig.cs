@@ -66,17 +66,7 @@ namespace Guavovic.Parallax
             if (applyProfileToWorld)
                 _world.ApplyProfile(profile);
 
-            if (layers.Count == 0)
-                CollectLayers();
-
-            var all = profile.Layers;
-            foreach (var layer in layers)
-            {
-                layer.Initialize(createCopies: true);
-                if (layer.SettingsIndex >= 0 && layer.SettingsIndex < all.Count)
-                    layer.ApplyTint(all[layer.SettingsIndex].Tint);
-            }
-
+            InitializeLayers(createCopies: true);
             _cameraOrigin = targetCamera.transform.position;
             _initialized = true;
         }
@@ -86,25 +76,8 @@ namespace Guavovic.Parallax
             if (profile == null || targetCamera == null)
                 return;
 
-            if (_solver == null || _solverMode != profile.Mode)
-            {
-                _solverMode = profile.Mode;
-                _solver = ParallaxSolvers.Create(profile.Mode);
-            }
-
             var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance, Time.time);
-            var all = profile.Layers;
-
-            foreach (var layer in layers)
-            {
-                if (layer == null || layer.SettingsIndex < 0 || layer.SettingsIndex >= all.Count)
-                    continue;
-
-                var settings = all[layer.SettingsIndex];
-                _solver.Solve(layer, settings, context);
-                layer.ApplyWind(_world.WindStrength * settings.WindInfluence, _world.WindSpeed);
-                layer.ApplyBlur(settings.Blur);
-            }
+            SolveLayers(context, _world.WindStrength, _world.WindSpeed);
         }
 
         /// <summary>
@@ -117,37 +90,13 @@ namespace Guavovic.Parallax
 
             if (!_previewing)
             {
-                if (layers.Count == 0)
-                    CollectLayers();
-
-                foreach (var layer in layers)
-                {
-                    if (layer == null)
-                        continue;
-
-                    layer.Initialize(createCopies: false);
-                    if (layer.SettingsIndex >= 0 && layer.SettingsIndex < profile.Layers.Count)
-                        layer.ApplyTint(profile.Layers[layer.SettingsIndex].Tint);
-                }
-
+                InitializeLayers(createCopies: false);
                 _previewing = true;
             }
 
             var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
             var context = new ParallaxContext(cameraOrigin + cameraOffset, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance);
-            var solver = ParallaxSolvers.Create(profile.Mode);
-            var all = profile.Layers;
-
-            foreach (var layer in layers)
-            {
-                if (layer == null || layer.SettingsIndex < 0 || layer.SettingsIndex >= all.Count)
-                    continue;
-
-                var settings = all[layer.SettingsIndex];
-                solver.Solve(layer, settings, context);
-                layer.ApplyWind(withWind ? profile.WindStrength * settings.WindInfluence : 0f, profile.WindSpeed);
-                layer.ApplyBlur(settings.Blur);
-            }
+            SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
         }
 
         public void ResetPreview()
@@ -162,6 +111,47 @@ namespace Guavovic.Parallax
             }
 
             _previewing = false;
+        }
+
+        private void InitializeLayers(bool createCopies)
+        {
+            // Camada apagada na cena deixa uma referência nula; tira só ela e mantém a lista que o usuário montou.
+            layers.RemoveAll(layer => layer == null);
+            if (layers.Count == 0)
+                CollectLayers();
+
+            foreach (var layer in layers)
+            {
+                layer.Initialize(createCopies);
+                if (TryGetSettings(layer, out var settings))
+                    layer.ApplyTint(settings.Tint);
+            }
+        }
+
+        private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed)
+        {
+            if (_solver == null || _solverMode != profile.Mode)
+            {
+                _solverMode = profile.Mode;
+                _solver = ParallaxSolvers.Create(profile.Mode);
+            }
+
+            foreach (var layer in layers)
+            {
+                if (!TryGetSettings(layer, out var settings))
+                    continue;
+
+                _solver.Solve(layer, settings, context);
+                layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
+            }
+        }
+
+        private bool TryGetSettings(ParallaxLayer layer, out ParallaxLayerSettings settings)
+        {
+            var all = profile.Layers;
+            bool valid = layer != null && layer.SettingsIndex >= 0 && layer.SettingsIndex < all.Count;
+            settings = valid ? all[layer.SettingsIndex] : null;
+            return valid;
         }
     }
 }
