@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
@@ -5,12 +6,16 @@ namespace Guavovic.Parallax.Editor
 {
     public sealed class ParallaxEditorWindow : EditorWindow
     {
+        private static readonly string[] ModeNames = { "2D", "Perspectiva" };
+
         private ParallaxRig _rig;
         private SerializedObject _profileObject;
-        private Vector2 _scroll;
-        private Vector2 _previewOffset;
-        private bool _previewWind;
-        private bool _previewActive;
+        private ParallaxLayerList _list;
+        private readonly ParallaxLayerDetails _details = new ParallaxLayerDetails();
+        private readonly ParallaxPreviewBar _preview = new ParallaxPreviewBar();
+        private ParallaxMode _newMode = ParallaxMode.Simulated2D;
+        private Vector2 _listScroll;
+        private Vector2 _detailsScroll;
 
         [MenuItem("Window/Parallax/Editor")]
         [MenuItem("Tools/Parallax/Editor")]
@@ -19,14 +24,22 @@ namespace Guavovic.Parallax.Editor
             GetWindow<ParallaxEditorWindow>("Parallax");
         }
 
+        [MenuItem("GameObject/Parallax/Novo parallax", false, 10)]
+        [MenuItem("Window/Parallax/Novo parallax")]
+        [MenuItem("Tools/Parallax/Novo parallax")]
+        public static void OpenNew()
+        {
+            GetWindow<ParallaxEditorWindow>("Parallax").SetRig(null);
+        }
+
         public static void Open(ParallaxRig rig)
         {
-            var window = GetWindow<ParallaxEditorWindow>("Parallax");
-            window.SetRig(rig);
+            GetWindow<ParallaxEditorWindow>("Parallax").SetRig(rig);
         }
 
         private void OnEnable()
         {
+            minSize = new Vector2(480f, 320f);
             Selection.selectionChanged += OnSelectionChanged;
             EditorApplication.playModeStateChanged += OnPlayModeChanged;
             Undo.undoRedoPerformed += Repaint;
@@ -38,7 +51,7 @@ namespace Guavovic.Parallax.Editor
             Selection.selectionChanged -= OnSelectionChanged;
             EditorApplication.playModeStateChanged -= OnPlayModeChanged;
             Undo.undoRedoPerformed -= Repaint;
-            StopPreview();
+            _preview.Stop();
         }
 
         private void OnSelectionChanged()
@@ -56,193 +69,194 @@ namespace Guavovic.Parallax.Editor
         private void OnPlayModeChanged(PlayModeStateChange state)
         {
             if (state == PlayModeStateChange.ExitingEditMode)
-                StopPreview();
+                _preview.Stop();
         }
 
         private void SetRig(ParallaxRig rig)
         {
-            StopPreview();
+            _preview.Stop();
             _rig = rig;
             _profileObject = rig != null && rig.Profile != null ? new SerializedObject(rig.Profile) : null;
+            _list = _profileObject != null ? new ParallaxLayerList(rig, _profileObject) : null;
+            _preview.SetRig(rig);
+            Repaint();
         }
 
         private void OnGUI()
         {
-            EditorGUI.BeginChangeCheck();
-            var rig = (ParallaxRig)EditorGUILayout.ObjectField("Rig", _rig, typeof(ParallaxRig), true);
-            if (EditorGUI.EndChangeCheck())
-                SetRig(rig);
+            if (_rig != null && (_profileObject == null || _profileObject.targetObject != _rig.Profile))
+                SetRig(_rig);
 
-            if (_rig == null)
+            DrawToolbar();
+
+            if (_rig == null || _profileObject == null)
             {
-                EditorGUILayout.HelpBox("Selecione um ParallaxRig na cena ou crie um em GameObject > Parallax > Novo parallax.", MessageType.Info);
+                DrawEmptyState();
                 return;
             }
-
-            if (_rig.Profile == null)
-            {
-                EditorGUILayout.HelpBox("O rig não tem um ParallaxProfile.", MessageType.Warning);
-                return;
-            }
-
-            if (_profileObject == null || _profileObject.targetObject != _rig.Profile)
-                _profileObject = new SerializedObject(_rig.Profile);
 
             _profileObject.Update();
             EditorGUI.BeginChangeCheck();
 
-            _scroll = EditorGUILayout.BeginScrollView(_scroll);
-            DrawGlobals();
-            EditorGUILayout.Space();
-            DrawLayers();
-            EditorGUILayout.Space();
-            DrawPreview();
-            EditorGUILayout.EndScrollView();
+            EditorGUILayout.BeginHorizontal(GUILayout.ExpandHeight(true));
+            DrawListColumn();
+            DrawDetailsColumn();
+            EditorGUILayout.EndHorizontal();
 
             if (EditorGUI.EndChangeCheck())
             {
                 _profileObject.ApplyModifiedProperties();
-                if (_previewActive)
-                    ApplyPreview();
+                _preview.Refresh();
             }
+
+            _preview.Draw();
         }
 
-        private void DrawGlobals()
+        private void DrawToolbar()
         {
-            EditorGUILayout.LabelField("Valores globais", EditorStyles.boldLabel);
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("mode"), new GUIContent("Modo"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("speedMultiplier"), new GUIContent("Velocidade"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("windDirection"), new GUIContent("Direção do vento"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("windStrength"), new GUIContent("Força do vento"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("windSpeed"), new GUIContent("Velocidade do vento"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("gustDecay"), new GUIContent("Perda da rajada"));
-            EditorGUILayout.PropertyField(_profileObject.FindProperty("maxGust"), new GUIContent("Rajada máxima"));
+            EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
 
-            if (_rig.Profile.Mode == ParallaxMode.Perspective)
-                EditorGUILayout.PropertyField(_profileObject.FindProperty("focusDistance"), new GUIContent("Distância de foco"));
+            EditorGUI.BeginChangeCheck();
+            var rig = (ParallaxRig)EditorGUILayout.ObjectField(_rig, typeof(ParallaxRig), true, GUILayout.MinWidth(120f), GUILayout.MaxWidth(240f));
+            if (EditorGUI.EndChangeCheck())
+                SetRig(rig);
+
+            GUILayout.FlexibleSpace();
+
+            if (_profileObject != null)
+            {
+                _profileObject.Update();
+                var mode = _profileObject.FindProperty("mode");
+                mode.enumValueIndex = GUILayout.Toolbar(mode.enumValueIndex, ModeNames, EditorStyles.toolbarButton, GUILayout.Width(150f));
+                if (_profileObject.ApplyModifiedProperties())
+                    _preview.Refresh();
+
+                var gear = EditorGUIUtility.IconContent("_Popup");
+                gear.tooltip = "Mundo: velocidade, vento e foco";
+                var gearRect = GUILayoutUtility.GetRect(gear, EditorStyles.toolbarButton, GUILayout.Width(28f));
+                if (GUI.Button(gearRect, gear, EditorStyles.toolbarButton))
+                    PopupWindow.Show(gearRect, new ParallaxWorldPopup(_profileObject));
+            }
+
+            EditorGUILayout.EndHorizontal();
         }
 
-        private void DrawLayers()
+        private void DrawListColumn()
         {
-            EditorGUILayout.LabelField("Camadas (de trás para a frente)", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(GUILayout.Width(Mathf.Max(220f, position.width * 0.45f)));
+            EditorGUILayout.LabelField("longe ↑", EditorStyles.centeredGreyMiniLabel);
+
+            _listScroll = EditorGUILayout.BeginScrollView(_listScroll);
+            _list.Draw();
+            EditorGUILayout.EndScrollView();
+
+            EditorGUILayout.LabelField("perto ↓", EditorStyles.centeredGreyMiniLabel);
+            var sprites = DropZone("+ Arraste imagens aqui", 34f);
+            if (sprites.Count > 0)
+            {
+                ParallaxLayerCommands.AddSprites(_rig, _profileObject, sprites, spread: false);
+                _list.Selected = _rig.Profile.Layers.Count - 1;
+                GUIUtility.ExitGUI();
+            }
+
+            EditorGUILayout.EndVertical();
+        }
+
+        private void DrawDetailsColumn()
+        {
+            EditorGUILayout.BeginVertical();
+            _detailsScroll = EditorGUILayout.BeginScrollView(_detailsScroll);
 
             var layers = _profileObject.FindProperty("layers");
-            var perspective = _rig.Profile.Mode == ParallaxMode.Perspective;
-            int remove = -1;
-            int moveFrom = -1;
-            int moveTo = -1;
-
-            for (int i = 0; i < layers.arraySize; i++)
+            int selected = _list.Selected;
+            if (selected < 0 || selected >= layers.arraySize)
             {
-                var layer = layers.GetArrayElementAtIndex(i);
-                var nameProperty = layer.FindPropertyRelative("name");
-
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-                EditorGUILayout.BeginHorizontal();
-                nameProperty.stringValue = EditorGUILayout.TextField(nameProperty.stringValue);
-
-                using (new EditorGUI.DisabledScope(i == 0))
+                EditorGUILayout.HelpBox(layers.arraySize == 0
+                    ? "Arraste as imagens do cenário para a lista, da mais distante para a mais próxima."
+                    : "Clique numa camada para ver os detalhes.", MessageType.None);
+            }
+            else
+            {
+                var objects = ParallaxLayerList.FindLayerObjects(_rig, layers.arraySize);
+                if (_details.Draw(_rig, layers.GetArrayElementAtIndex(selected), objects[selected]))
                 {
-                    if (GUILayout.Button("↑", GUILayout.Width(26))) { moveFrom = i; moveTo = i - 1; }
+                    _preview.Stop();
+                    ParallaxLayerCommands.Remove(_rig, _profileObject, layers, selected);
+                    _list.Selected = Mathf.Min(selected, layers.arraySize - 1);
+                    GUIUtility.ExitGUI();
                 }
-
-                using (new EditorGUI.DisabledScope(i == layers.arraySize - 1))
-                {
-                    if (GUILayout.Button("↓", GUILayout.Width(26))) { moveFrom = i; moveTo = i + 1; }
-                }
-
-                if (GUILayout.Button("×", GUILayout.Width(26)))
-                    remove = i;
-
-                EditorGUILayout.EndHorizontal();
-
-                if (perspective)
-                {
-                    var depth = layer.FindPropertyRelative("depth");
-                    EditorGUILayout.PropertyField(depth, new GUIContent("Profundidade"));
-                    EditorGUILayout.LabelField("Fator equivalente", _rig.Profile.DepthToFactor(depth.floatValue).ToString("F2"));
-                }
-                else
-                {
-                    var factor = layer.FindPropertyRelative("factor");
-                    EditorGUILayout.PropertyField(factor, new GUIContent("Fator (X, Y)"));
-                    EditorGUILayout.LabelField("Profundidade equivalente", _rig.Profile.FactorToDepth(factor.vector2Value.x).ToString("F1"));
-                }
-
-                EditorGUILayout.PropertyField(layer.FindPropertyRelative("windInfluence"), new GUIContent("Influência do vento"));
-                EditorGUILayout.PropertyField(layer.FindPropertyRelative("blur"), new GUIContent("Desfoque"));
-                EditorGUILayout.PropertyField(layer.FindPropertyRelative("autoScroll"), new GUIContent("Rolagem automática"));
-                EditorGUILayout.PropertyField(layer.FindPropertyRelative("loopHorizontally"), new GUIContent("Repetir na horizontal"));
-                EditorGUILayout.PropertyField(layer.FindPropertyRelative("tint"), new GUIContent("Cor"));
-                EditorGUILayout.EndVertical();
             }
 
-            if (remove >= 0)
-                RemoveLayer(layers, remove);
-            else if (moveFrom >= 0)
-                MoveLayer(layers, moveFrom, moveTo);
-
-            if (GUILayout.Button("+ Camada"))
-                AddLayer(layers);
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
         }
 
-        private void DrawPreview()
+        private void DrawEmptyState()
         {
-            EditorGUILayout.LabelField("Preview", EditorStyles.boldLabel);
-            EditorGUI.BeginChangeCheck();
-            _previewOffset.x = EditorGUILayout.Slider("Câmera X", _previewOffset.x, -40f, 40f);
-            _previewOffset.y = EditorGUILayout.Slider("Câmera Y", _previewOffset.y, -10f, 10f);
-            _previewWind = EditorGUILayout.Toggle("Vento", _previewWind);
-            if (EditorGUI.EndChangeCheck())
-            {
-                _previewActive = true;
-                ApplyPreview();
-            }
+            GUILayout.FlexibleSpace();
+            EditorGUILayout.LabelField("Novo parallax", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Arraste as imagens do cenário, da mais distante para a mais próxima. As distâncias já saem espalhadas.", EditorStyles.wordWrappedLabel);
+            _newMode = (ParallaxMode)GUILayout.Toolbar((int)_newMode, ModeNames);
+            EditorGUILayout.Space(6f);
 
-            using (new EditorGUI.DisabledScope(!_previewActive))
+            var sprites = DropZone("Arraste as imagens aqui", 120f);
+            EditorGUILayout.LabelField("Ou selecione um ParallaxRig na cena.", EditorStyles.centeredGreyMiniLabel);
+            GUILayout.FlexibleSpace();
+
+            if (sprites.Count > 0)
             {
-                if (GUILayout.Button("Voltar ao normal"))
-                {
-                    _previewOffset = Vector2.zero;
-                    StopPreview();
-                }
+                CreateRig(sprites);
+                GUIUtility.ExitGUI();
             }
         }
 
-        private void ApplyPreview()
+        private void CreateRig(List<Sprite> sprites)
         {
-            if (_rig == null || EditorApplication.isPlaying)
+            string path = EditorUtility.SaveFilePanelInProject("Salvar o ParallaxProfile", "ParallaxProfile", "asset", "Onde salvar o profile do parallax.");
+            if (string.IsNullOrEmpty(path))
                 return;
 
-            _rig.Preview(new Vector3(_previewOffset.x, _previewOffset.y, 0f), _previewWind);
-            SceneView.RepaintAll();
+            var rig = ParallaxLayerCommands.CreateRig("Parallax", _newMode, path);
+            var profileObject = new SerializedObject(rig.Profile);
+            ParallaxLayerCommands.AddSprites(rig, profileObject, sprites, spread: true);
+            AssetDatabase.SaveAssetIfDirty(rig.Profile);
+
+            Selection.activeGameObject = rig.gameObject;
+            SetRig(rig);
         }
 
-        private void StopPreview()
+        /// <summary>
+        /// Área que aceita sprites e texturas arrastados do Project. Devolve as imagens soltas nela neste evento.
+        /// </summary>
+        private static List<Sprite> DropZone(string label, float height)
         {
-            if (_rig != null && _previewActive)
-                _rig.ResetPreview();
+            var result = new List<Sprite>();
+            var rect = GUILayoutUtility.GetRect(10f, height, GUILayout.ExpandWidth(true));
+            GUI.Box(rect, label, EditorStyles.helpBox);
 
-            _previewActive = false;
-            SceneView.RepaintAll();
-        }
+            var current = Event.current;
+            if (!rect.Contains(current.mousePosition) || (current.type != EventType.DragUpdated && current.type != EventType.DragPerform))
+                return result;
 
-        private void AddLayer(SerializedProperty layers)
-        {
-            StopPreview();
-            ParallaxLayerCommands.Add(_rig, _profileObject);
-        }
+            foreach (var item in DragAndDrop.objectReferences)
+            {
+                var sprite = item as Sprite;
+                if (sprite == null && item is Texture2D)
+                    sprite = AssetDatabase.LoadAssetAtPath<Sprite>(AssetDatabase.GetAssetPath(item));
+                if (sprite != null)
+                    result.Add(sprite);
+            }
 
-        private void RemoveLayer(SerializedProperty layers, int index)
-        {
-            StopPreview();
-            ParallaxLayerCommands.Remove(_rig, _profileObject, layers, index);
-        }
+            DragAndDrop.visualMode = result.Count > 0 ? DragAndDropVisualMode.Copy : DragAndDropVisualMode.Rejected;
+            if (current.type != EventType.DragPerform || result.Count == 0)
+            {
+                result.Clear();
+                return result;
+            }
 
-        private void MoveLayer(SerializedProperty layers, int from, int to)
-        {
-            StopPreview();
-            ParallaxLayerCommands.Move(_rig, _profileObject, layers, from, to);
+            DragAndDrop.AcceptDrag();
+            current.Use();
+            return result;
         }
     }
 }
