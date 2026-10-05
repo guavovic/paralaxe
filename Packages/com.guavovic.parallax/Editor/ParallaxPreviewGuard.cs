@@ -25,9 +25,10 @@ namespace Guavovic.Parallax.Editor
 
         public static void ResetAll()
         {
-            foreach (var rig in Object.FindObjectsByType<ParallaxRig>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+            // Funciona em todo o Unity 6 e pega também rigs desligados; o filtro de cena descarta prefabs do Project.
+            foreach (var rig in Resources.FindObjectsOfTypeAll<ParallaxRig>())
             {
-                if (rig.IsPreviewing)
+                if (rig.gameObject.scene.IsValid() && rig.IsPreviewing)
                     rig.ResetPreview();
             }
         }
