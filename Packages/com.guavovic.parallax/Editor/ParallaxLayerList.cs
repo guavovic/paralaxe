@@ -142,7 +142,7 @@ namespace Guavovic.Parallax.Editor
             var nameRect = new Rect(rect.x + thumbWidth + 6f, rect.y, rect.width - thumbWidth - dotsWidth - eyeWidth - 14f, rect.height);
             EditorGUI.LabelField(nameRect, element.FindPropertyRelative("name").stringValue, EditorStyles.label);
 
-            float distance = ParallaxDistance.Normalized(ParallaxDistance.Get(_rig.Profile, element));
+            float distance = ParallaxDistance.Normalized(ParallaxDistance.Get(_rig.Profile, _rig.Mode, element));
             DrawDots(new Rect(nameRect.xMax + 4f, rect.y + rect.height * 0.5f - 3f, dotsWidth, 6f), distance);
 
             if (layer != null)
