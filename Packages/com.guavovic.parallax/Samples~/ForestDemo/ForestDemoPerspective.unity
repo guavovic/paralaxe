@@ -5987,6 +5987,24 @@ MonoBehaviour:
   - {fileID: 21300000, guid: f23f1589d79333d4a973c45a38e54286, type: 3}
   jump: {fileID: 21300000, guid: 0c1f7493c281b16409abe47dbf78c685, type: 3}
   fall: {fileID: 21300000, guid: ab305e8cb0632564bb5d96b0619ecc70, type: 3}
+  crouch: {fileID: 21300000, guid: f942c9c070596f349887eac3f9ad5efd, type: 3}
+  airJump: {fileID: 21300000, guid: 8dbc2a8416047b6459464665ebdbce9e, type: 3}
+  attack:
+  - {fileID: 21300000, guid: d98029fdacc0d3949af67612efbdc27d, type: 3}
+  - {fileID: 21300000, guid: a6927e610e9a467498beff05ff04529f, type: 3}
+  - {fileID: 21300000, guid: c1fc1f7e74bab7848aa7f06d946a5de8, type: 3}
+  attackRising:
+  - {fileID: 21300000, guid: 8aabb1d26724e1c4eb1d2048ea42d71e, type: 3}
+  - {fileID: 21300000, guid: 336898d05242be244914816770949979, type: 3}
+  - {fileID: 21300000, guid: 8fa9b84feb2cfb64bb364e8ab7189ddb, type: 3}
+  attackCrouch:
+  - {fileID: 21300000, guid: c4e0e9c81690cd94c87f03253edf5121, type: 3}
+  - {fileID: 21300000, guid: 21b1b37ea8813a74bab0068656a8850e, type: 3}
+  - {fileID: 21300000, guid: 94f935279add624409e3faba2208a922, type: 3}
+  attackAir:
+  - {fileID: 21300000, guid: db95d07c8ac61e84c91e354399d13e68, type: 3}
+  - {fileID: 21300000, guid: f0cf8d158a7339e4185a0b0090a08399, type: 3}
+  - {fileID: 21300000, guid: 031092cee42a0184bbba591dce2308f9, type: 3}
   idleFrameTime: 0.6
   walkFrameTime: 0.11
   walkThreshold: 0.3
@@ -6040,12 +6058,17 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 4294967295
   groundCheckDistance: 0.1
+  attackDuration: 0.3
+  comboWindow: 0.35
+  airJumps: 1
+  airJumpSpeed: 7
   autonomousAfterSeconds: 5
   actionMinSeconds: 1
   actionMaxSeconds: 3
   jumpChance: 0.35
   runChance: 0.35
   restChance: 0.2
+  attackChance: 0.25
 --- !u!61 &855756095
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -6080,7 +6103,7 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.03}
+  m_Offset: {x: 0, y: 0.123}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
