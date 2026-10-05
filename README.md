@@ -1,6 +1,6 @@
 # Paralaxe
 
-![Herói andando pela floresta em pixel art, com as camadas do parallax se movendo em velocidades diferentes](Docs/floresta.gif)
+<img src="Docs/floresta.gif" alt="Herói andando pela floresta em pixel art, com as camadas do parallax se movendo em velocidades diferentes" width="100%">
 
 Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.
 
@@ -10,11 +10,11 @@ Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de e
 
 Arraste as imagens do cenário para a janela, da mais distante para a mais próxima, e o parallax sai montado, com as distâncias já espalhadas.
 
-![Janela do editor criando um parallax a partir de seis imagens da floresta e animando a câmera](Docs/editor-criar.gif)
+<img src="Docs/editor-criar.gif" alt="Janela do editor criando um parallax a partir de seis imagens da floresta e animando a câmera" width="100%">
 
 Cada camada tem um controle só de distância, de perto a longe. O preview anda com a câmera sem entrar em Play, e trocar entre 2D e perspectiva ajusta a câmera junto.
 
-![Janela do editor mudando a distância de uma camada, animando o preview e trocando para o modo perspectiva](Docs/editor-usar.gif)
+<img src="Docs/editor-usar.gif" alt="Janela do editor mudando a distância de uma camada, animando o preview e trocando para o modo perspectiva" width="100%">
 
 ## Como foi feito
 
