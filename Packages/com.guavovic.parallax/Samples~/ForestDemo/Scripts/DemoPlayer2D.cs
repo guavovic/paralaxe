@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 namespace Guavovic.Parallax.Samples
 {
     [RequireComponent(typeof(Rigidbody2D))]
-    public sealed class DemoPlayer2D : MonoBehaviour
+    public sealed class DemoPlayer2D : MonoBehaviour, IParallaxTraveler
     {
         [SerializeField, Min(0f)] private float moveSpeed = 3.2f;
         [SerializeField, Min(1f)] private float runMultiplier = 1.7f;
@@ -128,6 +128,16 @@ namespace Guavovic.Parallax.Samples
         /// <summary>
         /// Anda sozinho numa direção por um tempo, ignorando as teclas. Serve para entrar na cena por uma passagem.
         /// </summary>
+        public bool CanTravel => !IsAutonomous;
+
+        public void Arrive(Vector3 position, float direction)
+        {
+            transform.position = position;
+            _body.position = position;
+            _body.linearVelocity = Vector2.zero;
+            WalkFor(direction, 0.5f);
+        }
+
         public void WalkFor(float direction, float seconds)
         {
             _forcedInput = Mathf.Sign(direction);

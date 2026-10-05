@@ -105,12 +105,12 @@ namespace Guavovic.Parallax
         /// <summary>
         /// Leva os elementos espalhados para perto da câmera, sem seguir o loop da imagem.
         /// </summary>
-        internal void UpdateScatters(float cameraX)
+        internal void UpdateScatters(float cameraX, float factor)
         {
             foreach (var scatter in _scatters)
             {
                 if (scatter != null)
-                    scatter.Recycle(this, cameraX);
+                    scatter.Recycle(this, cameraX, factor);
             }
         }
 

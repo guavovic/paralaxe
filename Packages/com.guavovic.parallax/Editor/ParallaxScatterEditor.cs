@@ -19,15 +19,8 @@ namespace Guavovic.Parallax.Editor
             if (GUILayout.Button("Espalhar de novo") || changed)
             {
                 foreach (var scatter in targets)
-                    Rebuild((ParallaxScatter)scatter);
+                    ParallaxScatterSection.Rebuild((ParallaxScatter)scatter);
             }
-        }
-
-        private static void Rebuild(ParallaxScatter scatter)
-        {
-            Undo.RegisterFullObjectHierarchyUndo(scatter.gameObject, "Espalhar de novo");
-            scatter.Rebuild();
-            EditorUtility.SetDirty(scatter.gameObject);
         }
     }
 }

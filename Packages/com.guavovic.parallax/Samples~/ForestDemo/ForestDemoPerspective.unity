@@ -2449,6 +2449,7 @@ MonoBehaviour:
   profile: {fileID: 11400000, guid: b003fe41de4ded644bfbde72374af1cc, type: 2}
   targetCamera: {fileID: 2035013546}
   applyProfileToWorld: 1
+  continueFromPreviousScene: 0
   layers:
   - {fileID: 1024068918}
   - {fileID: 1877432517}
@@ -2525,6 +2526,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 8
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &84295324
 Transform:
   m_ObjectHideFlags: 0
@@ -2597,6 +2601,8 @@ MonoBehaviour:
   bobSpeed: 1.5
   frameTime: 0.14
   wrapDistance: 16
+  parallaxFactor: 0
+  activeRangeX: {x: 0, y: 0}
 --- !u!212 &172861328
 SpriteRenderer:
   serializedVersion: 3
@@ -2687,6 +2693,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 11
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &235704841
 Transform:
   m_ObjectHideFlags: 0
@@ -5554,6 +5563,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 12
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &372947284
 Transform:
   m_ObjectHideFlags: 0
@@ -6031,6 +6043,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 3
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &561646016
 Transform:
   m_ObjectHideFlags: 0
@@ -8931,7 +8946,7 @@ GameObject:
   - component: {fileID: 855756099}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -9426,6 +9441,8 @@ MonoBehaviour:
   bobSpeed: 1.5
   frameTime: 0.14
   wrapDistance: 16
+  parallaxFactor: 0
+  activeRangeX: {x: 0, y: 0}
 --- !u!212 &994643464
 SpriteRenderer:
   serializedVersion: 3
@@ -9541,6 +9558,8 @@ MonoBehaviour:
   bobSpeed: 1.5
   frameTime: 0.14
   wrapDistance: 16
+  parallaxFactor: 0
+  activeRangeX: {x: 0, y: 0}
 --- !u!212 &1019411468
 SpriteRenderer:
   serializedVersion: 3
@@ -9631,6 +9650,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 0
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1024068919
 Transform:
   m_ObjectHideFlags: 0
@@ -15174,6 +15196,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 9
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1488526615
 Transform:
   m_ObjectHideFlags: 0
@@ -17518,6 +17543,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 10
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1509158875
 Transform:
   m_ObjectHideFlags: 0
@@ -17773,6 +17801,8 @@ MonoBehaviour:
   bobSpeed: 1.5
   frameTime: 0.14
   wrapDistance: 16
+  parallaxFactor: 0
+  activeRangeX: {x: 0, y: 0}
 --- !u!212 &1532254500
 SpriteRenderer:
   serializedVersion: 3
@@ -17863,6 +17893,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 5
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1532449134
 Transform:
   m_ObjectHideFlags: 0
@@ -17909,6 +17942,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 13
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1554021019
 Transform:
   m_ObjectHideFlags: 0
@@ -18389,6 +18425,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 6
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1660511208
 Transform:
   m_ObjectHideFlags: 0
@@ -18527,6 +18566,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 14
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1744226045
 Transform:
   m_ObjectHideFlags: 0
@@ -18573,6 +18615,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 1
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1877432518
 Transform:
   m_ObjectHideFlags: 0
@@ -18691,6 +18736,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 7
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1898845361
 Transform:
   m_ObjectHideFlags: 0
@@ -18737,6 +18785,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 2
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &1972547042
 Transform:
   m_ObjectHideFlags: 0
@@ -18788,6 +18839,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 4
+  stages: []
+  fadeBetweenStages: 0
+  fadeSeconds: 1
 --- !u!4 &2009259388
 Transform:
   m_ObjectHideFlags: 0
@@ -19029,6 +19083,8 @@ MonoBehaviour:
   bobSpeed: 1.5
   frameTime: 0.14
   wrapDistance: 16
+  parallaxFactor: 0
+  activeRangeX: {x: 0, y: 0}
 --- !u!212 &2064349318
 SpriteRenderer:
   serializedVersion: 3

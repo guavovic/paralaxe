@@ -22,7 +22,7 @@ namespace Guavovic.Parallax
         [Tooltip("Vazio, usa o material da primeira imagem da camada (com o vento e o desfoque dela).")]
         [SerializeField] private Material material;
         [SerializeField] private int sortingOrder;
-        [Tooltip("Mostra só os elementos que estão entre estes X do mundo. Serve para a cena que muda de cenário. Mínimo igual ao máximo desliga.")]
+        [Tooltip("Mostra só os elementos que passam pelo meio da tela com a câmera entre estes X. Serve para a fase que muda de cenário. Mínimo igual ao máximo desliga.")]
         [SerializeField] private Vector2 visibleRangeX;
 
         private readonly List<Transform> _items = new List<Transform>();
@@ -89,7 +89,8 @@ namespace Guavovic.Parallax
             CollectItems();
         }
 
-        internal void Recycle(ParallaxLayer layer, float cameraX)
+        /// <param name="factor">Fator X da camada (modo 2D), para saber onde a câmera vai estar quando cada elemento passar pelo meio da tela.</param>
+        internal void Recycle(ParallaxLayer layer, float cameraX, float factor)
         {
             if (_items.Count != transform.childCount)
                 CollectItems();
@@ -117,8 +118,11 @@ namespace Guavovic.Parallax
 
                 if (limited && _renderers[i] != null)
                 {
+                    // O elemento anda "factor" por unidade da câmera, então cruza o meio da tela quando a câmera chega
+                    // em (x - factor * câmera) / (1 - factor). Esse ponto não muda enquanto a câmera anda: nada pisca.
                     float x = layer.transform.position.x + (offset + position.x) * scale;
-                    _renderers[i].enabled = x >= visibleRangeX.x && x <= visibleRangeX.y;
+                    float crossing = Mathf.Abs(1f - factor) < 0.001f ? cameraX : (x - factor * cameraX) / (1f - factor);
+                    _renderers[i].enabled = crossing >= visibleRangeX.x && crossing <= visibleRangeX.y;
                 }
             }
         }

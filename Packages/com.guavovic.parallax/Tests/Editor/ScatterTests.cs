@@ -116,6 +116,40 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void VisibleRangeDoesNotFlickerWhileTheCameraMoves()
+        {
+            _scatter.VisibleRangeX = new Vector2(-10f, 10f);
+            _rig.Initialize();
+            MoveCamera(0f);
+            var before = ItemsX();
+            var shown = Visible();
+
+            // Um elemento só pode trocar de visível para escondido quando dá a volta no trecho (fora da tela).
+            for (float cameraX = 0.25f; cameraX <= 60f; cameraX += 0.25f)
+            {
+                MoveCamera(cameraX);
+                var after = ItemsX();
+                var now = Visible();
+                for (int i = 0; i < now.Length; i++)
+                {
+                    bool turned = Mathf.Abs(after[i] - before[i]) > 50f;
+                    Assert.IsTrue(now[i] == shown[i] || turned, $"elemento {i} piscou com a câmera em {cameraX}");
+                }
+
+                before = after;
+                shown = now;
+            }
+        }
+
+        private bool[] Visible()
+        {
+            var shown = new bool[_scatter.transform.childCount];
+            for (int i = 0; i < shown.Length; i++)
+                shown[i] = _scatter.transform.GetChild(i).GetComponent<SpriteRenderer>().enabled;
+            return shown;
+        }
+
+        [Test]
         public void PreviewResetPutsTheItemsBack()
         {
             var placed = ItemsX();

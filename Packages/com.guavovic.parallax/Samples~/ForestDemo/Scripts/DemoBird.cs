@@ -17,16 +17,21 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private float wrapDistance = 16f;
         [Tooltip("Como o fator 2D das camadas: 0 fica no plano do herói, 0.5 anda metade da câmera (longe), negativo passa na frente.")]
         [SerializeField] private float parallaxFactor;
+        [Tooltip("Só aparece com a câmera entre estes X (some e volta devagar). Mínimo igual ao máximo: sempre.")]
+        [SerializeField] private Vector2 activeRangeX;
 
         private SpriteRenderer _renderer;
         private Transform _camera;
         private float _baseY;
         private float _phase;
         private float _lastCameraX;
+        private float _baseAlpha = 1f;
+        private float _presence = 1f;
 
         private void Awake()
         {
             _renderer = GetComponent<SpriteRenderer>();
+            _baseAlpha = _renderer.color.a;
             _baseY = transform.position.y;
             _phase = Random.value * 10f;
         }
@@ -57,9 +62,23 @@ namespace Guavovic.Parallax.Samples
 
             transform.position = position;
             _renderer.flipX = speed < 0f;
+            UpdatePresence();
 
             if (frames != null && frames.Length > 0)
                 _renderer.sprite = frames[(int)((Time.time + _phase) / frameTime) % frames.Length];
+        }
+
+        private void UpdatePresence()
+        {
+            if (activeRangeX.y <= activeRangeX.x || _camera == null)
+                return;
+
+            float x = _camera.position.x;
+            bool inside = x >= activeRangeX.x && x <= activeRangeX.y;
+            _presence = Mathf.MoveTowards(_presence, inside ? 1f : 0f, Time.deltaTime);
+            var color = _renderer.color;
+            color.a = _baseAlpha * _presence;
+            _renderer.color = color;
         }
     }
 }
