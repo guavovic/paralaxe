@@ -15,6 +15,11 @@ Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de e
 - **Cenário de exemplo** em pixel art, com herói animado, câmera que acompanha na horizontal e na vertical, pássaros, vagalumes, luz e neblina. A arte é gerada por script, o que permite refazer o cenário com outra paleta ou outro bioma.
 - **Testes** do núcleo, para garantir que os fatores e as profundidades continuam certos.
 
+## Qual modo usar
+
+- **2D**, com câmera ortográfica: cada camada tem um fator de movimento e todas ficam na mesma grade de pixels. É o mais indicado para pixel art, como em Celeste e Dead Cells, e é o modo do cenário de exemplo.
+- **Perspectiva**, com câmera em perspectiva: as camadas ficam em profundidades de verdade e o parallax vem da própria câmera, nos dois eixos. É o caminho do Hollow Knight, que usa arte pintada. Em pixel art, a escala muda com a distância e os pixels deixam de ter o mesmo tamanho entre as camadas.
+
 ## Tecnologias
 
 - **Pacote:** C# e a API de editor da Unity 6, com o Universal Render Pipeline.
