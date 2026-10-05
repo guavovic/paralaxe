@@ -74,3 +74,6 @@ crashlytics-build.properties
 # Junção local para o sample (Samples~ fica escondido da Unity)
 /[Aa]ssets/[Ss]amples/
 /[Aa]ssets/[Ss]amples.meta
+
+# Cache do Python dos geradores de arte
+__pycache__/

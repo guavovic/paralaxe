@@ -8,7 +8,7 @@ namespace Guavovic.Parallax.Samples
     /// </summary>
     public sealed class DemoControlPanel : MonoBehaviour
     {
-        private const string Help = "A/D andam, espaço pula (2x no ar), S agacha, J ataca";
+        private const string Help = "A/D anda, espaço pula (2x), S agacha, J ataca";
 
         private int _speedShown = int.MinValue;
         private int _windShown = int.MinValue;
@@ -30,12 +30,12 @@ namespace Guavovic.Parallax.Samples
 
             UpdateLabels(world);
 
-            GUI.Box(new Rect(12f, 12f, 260f, 150f), "Parallax");
-            GUI.Label(new Rect(20f, 36f, 244f, 20f), _speedLabel);
-            world.SpeedMultiplier = GUI.HorizontalSlider(new Rect(20f, 58f, 244f, 16f), world.SpeedMultiplier, 0f, 2f);
-            GUI.Label(new Rect(20f, 80f, 244f, 20f), _windLabel);
-            world.BaseWindStrength = GUI.HorizontalSlider(new Rect(20f, 102f, 244f, 16f), world.BaseWindStrength, 0f, 3f);
-            GUI.Label(new Rect(20f, 126f, 244f, 20f), Help);
+            GUI.Box(new Rect(12f, 12f, 320f, 150f), "Parallax");
+            GUI.Label(new Rect(20f, 36f, 304f, 20f), _speedLabel);
+            world.SpeedMultiplier = GUI.HorizontalSlider(new Rect(20f, 58f, 304f, 16f), world.SpeedMultiplier, 0f, 2f);
+            GUI.Label(new Rect(20f, 80f, 304f, 20f), _windLabel);
+            world.BaseWindStrength = GUI.HorizontalSlider(new Rect(20f, 102f, 304f, 16f), world.BaseWindStrength, 0f, 3f);
+            GUI.Label(new Rect(20f, 126f, 304f, 20f), Help);
         }
 
         private void UpdateLabels(ParallaxWorld world)

@@ -47,6 +47,7 @@ listed below:
 - Tools~/pixel_forest.py
 - Tools~/pixel_hero.py
 - Tools~/pixel_props.py
+- Tools~/pixel_cave.py
 
 Copyright (c) 2026 Gustavo Victor. All rights reserved.
 
