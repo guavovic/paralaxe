@@ -11,7 +11,10 @@ namespace Guavovic.Parallax.Editor
     {
         public const string IconFolder = "Packages/com.guavovic.parallax/Editor/Icons/";
 
-        public static ParallaxRig CreateFromSprites(IReadOnlyList<Sprite> sprites, ParallaxMode mode)
+        /// <summary>
+        /// Com <paramref name="preset"/>, as camadas recebem os valores daquele bioma; sem, as distâncias só se espalham.
+        /// </summary>
+        public static ParallaxRig CreateFromSprites(IReadOnlyList<Sprite> sprites, ParallaxMode mode, string preset = null)
         {
             string path = AskProfilePath();
             if (string.IsNullOrEmpty(path))
@@ -19,6 +22,14 @@ namespace Guavovic.Parallax.Editor
 
             var rig = ParallaxLayerCommands.CreateRig("Parallax", mode, path);
             ParallaxLayerCommands.AddSprites(rig, new SerializedObject(rig.Profile), sprites, spread: true);
+            if (!string.IsNullOrEmpty(preset))
+            {
+                var template = ParallaxPresets.CreateBuiltIn(preset);
+                ParallaxPresets.Apply(template, rig.Profile);
+                Object.DestroyImmediate(template);
+                EditorUtility.SetDirty(rig.Profile);
+            }
+
             AssetDatabase.SaveAssetIfDirty(rig.Profile);
             return rig;
         }
