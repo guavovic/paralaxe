@@ -10,22 +10,6 @@ namespace Guavovic.Parallax.Editor
     /// </summary>
     internal static class ParallaxLayerCommands
     {
-        public static void Add(ParallaxRig rig, SerializedObject profileObject)
-        {
-            profileObject.ApplyModifiedProperties();
-            var profile = rig.Profile;
-            int index = profile.Layers.Count;
-
-            // Os valores padrão vêm do próprio ParallaxLayerSettings.
-            Undo.RecordObject(profile, "Adicionar camada");
-            profile.AddLayer(new ParallaxLayerSettings()).SetName("Camada " + index);
-            EditorUtility.SetDirty(profile);
-            profileObject.Update();
-
-            CreateLayerObject(rig, index, "Camada " + index);
-            RegisterLayers(rig);
-        }
-
         public static void Remove(ParallaxRig rig, SerializedObject profileObject, SerializedProperty layers, int index)
         {
             var removed = new List<ParallaxLayer>();
@@ -43,13 +27,6 @@ namespace Guavovic.Parallax.Editor
                 Undo.DestroyObjectImmediate(layer.gameObject);
 
             RegisterLayers(rig);
-        }
-
-        public static void Move(ParallaxRig rig, SerializedObject profileObject, SerializedProperty layers, int from, int to)
-        {
-            layers.MoveArrayElement(from, to);
-            profileObject.ApplyModifiedProperties();
-            RemapAfterMove(rig, from, to);
         }
 
         /// <summary>
