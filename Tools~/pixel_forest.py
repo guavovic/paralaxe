@@ -508,8 +508,7 @@ def layer_beams():
     def density(x, y):
         u = (x + y * 0.55) % 96
         band = max(0.0, 1 - abs(u - 48) / 30.0)
-        # os raios nascem abaixo das copas, então não cobrem a lua nem as árvores em volta dela
-        fade = min(1.0, max(0.0, (y - H * 0.3) / (H * 0.12))) * max(0.0, 1 - (y - H * 0.3) / (H * 0.55))
+        fade = max(0.0, 1 - y / (H * 0.85))
         return band * fade * (0.3 + 0.25 * (noise(x) * 0.5 + 0.5))
 
     return dither_fill((W, H), density, hexc("#b9e6ea", 255), scale=1)
