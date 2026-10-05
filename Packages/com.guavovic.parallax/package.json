@@ -1,6 +1,6 @@
 {
   "name": "com.guavovic.parallax",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "displayName": "Paralaxe",
   "description": "Parallax em 2D simulado e em perspectiva, com valores globais que o jogador pode afetar e que afetam o jogador.",
   "unity": "6000.0",
@@ -9,5 +9,12 @@
   },
   "dependencies": {
     "com.unity.render-pipelines.universal": "17.0.0"
-  }
+  },
+  "samples": [
+    {
+      "displayName": "Floresta em pixel art",
+      "description": "Floresta com 15 camadas nos modos 2D e perspectiva, herói, pássaros, partículas e pós-processamento. Precisa do URP ativo no projeto, do Input System e do 2D Sprite.",
+      "path": "Samples~/ForestDemo"
+    }
+  ]
 }
