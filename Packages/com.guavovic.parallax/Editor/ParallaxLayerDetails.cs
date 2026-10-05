@@ -22,6 +22,7 @@ namespace Guavovic.Parallax.Editor
         private bool _effectsOpen = true;
         private bool _motionOpen;
         private bool _advancedOpen;
+        private bool _stagesOpen;
 
         /// <summary>
         /// Devolve true quando o usuário pediu para remover a camada.
@@ -53,6 +54,11 @@ namespace Guavovic.Parallax.Editor
                 EditorGUILayout.PropertyField(layer.FindPropertyRelative("autoScroll"), ScrollLabel);
                 EditorGUILayout.PropertyField(layer.FindPropertyRelative("loopHorizontally"), LoopLabel);
             }
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            _stagesOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_stagesOpen, "Trechos");
+            if (_stagesOpen)
+                ParallaxStagesSection.Draw(layerObject);
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             _advancedOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_advancedOpen, "Avançado");

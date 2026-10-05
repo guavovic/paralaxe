@@ -12,6 +12,8 @@ namespace Guavovic.Parallax
         [SerializeField] private ParallaxProfile profile;
         [SerializeField] private Camera targetCamera;
         [SerializeField] private bool applyProfileToWorld = true;
+        [Tooltip("Começa o fundo de onde a cena anterior parou, se ela chamou SaveForNextScene.")]
+        [SerializeField] private bool continueFromPreviousScene;
         [SerializeField] private List<ParallaxLayer> layers = new List<ParallaxLayer>();
 
         private ParallaxWorld _world;
@@ -82,6 +84,12 @@ namespace Guavovic.Parallax
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
+            if (continueFromPreviousScene && ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind))
+            {
+                _cameraOrigin -= offset;
+                _world.SpeedMultiplier = speed;
+                _world.BaseWindStrength = wind;
+            }
             _initialized = true;
         }
 
@@ -113,6 +121,15 @@ namespace Guavovic.Parallax
             SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
         }
 
+        /// <summary>
+        /// Guarda onde o fundo está, para o rig da próxima cena continuar dali.
+        /// </summary>
+        public void SaveForNextScene()
+        {
+            if (_initialized)
+                ParallaxSceneLink.Save(targetCamera.transform.position - _cameraOrigin, _world);
+        }
+
         public void ResetPreview()
         {
             if (!_previewing)
@@ -124,6 +141,7 @@ namespace Guavovic.Parallax
                     continue;
 
                 layer.RemoveTemporaryCopies();
+                layer.ResetStages();
                 layer.Restore();
             }
 
@@ -170,6 +188,7 @@ namespace Guavovic.Parallax
                     continue;
 
                 _solver.Solve(layer, settings, context);
+                layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
             }
         }

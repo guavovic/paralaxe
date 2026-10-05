@@ -19,6 +19,13 @@ namespace Guavovic.Parallax
 
         private float _gust;
 
+        // Com "Enter Play Mode Options" sem recarregar o domínio, estáticos sobrevivem entre um Play e outro.
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetOnPlay()
+        {
+            _current = null;
+        }
+
         public static ParallaxWorld Current
         {
             get
