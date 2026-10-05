@@ -6,14 +6,25 @@ Pacote para a Unity que monta cenários com parallax em camadas, direto no edito
 
 Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de exemplo em pixel art que mostra o que dá para fazer.
 
+## O editor
+
+Arraste as imagens do cenário para a janela, da mais distante para a mais próxima, e o parallax sai montado, com as distâncias já espalhadas.
+
+![Janela do editor criando um parallax a partir de seis imagens da floresta e animando a câmera](Docs/editor-criar.gif)
+
+Cada camada tem um controle só de distância, de perto a longe. O preview anda com a câmera sem entrar em Play, e trocar entre 2D e perspectiva ajusta a câmera junto.
+
+![Janela do editor mudando a distância de uma camada, animando o preview e trocando para o modo perspectiva](Docs/editor-usar.gif)
+
 ## Como foi feito
 
-- **Dois modos de cálculo**, simulado em 2D e em perspectiva, que trocam de um para o outro no mesmo perfil, com a profundidade e o fator equivalentes calculados um a partir do outro.
+- **Dois modos de cálculo**, simulado em 2D e em perspectiva. O modo segue a câmera: ortográfica usa 2D, em perspectiva usa perspectiva, então os dois nunca ficam desencontrados.
+- **Uma janela só para tudo**: lista das camadas com miniatura, detalhes da camada escolhida, valores do mundo e preview com animação. O preview usa cópias temporárias e é desfeito antes de salvar, recompilar ou entrar em Play, então nada dele fica gravado na cena.
 - **Valores globais** de velocidade e de vento, que o jogador pode afetar e que também afetam o jogador.
 - **Efeitos por camada**: desfoque, brilho aditivo, rolagem automática, influência do vento e repetição horizontal sem emenda.
-- **Editor próprio**, em `Window > Parallax`, para criar o parallax a partir de imagens, ordenar as camadas e ver o resultado na hora, sem entrar em Play.
+- **Leve de rodar**: o rig custa cerca de 3 µs por quadro e não aloca memória, e testes de desempenho travam isso. O cenário de exemplo roda a 165 FPS num notebook.
+- **Ícones em pixel art** e uma tela de boas-vindas com créditos e atalhos, gerados por script como o resto da arte.
 - **Cenário de exemplo** em pixel art, com herói animado, câmera que acompanha na horizontal e na vertical, pássaros, vagalumes, luz e neblina. A arte é gerada por script, o que permite refazer o cenário com outra paleta ou outro bioma.
-- **Testes** do núcleo, para garantir que os fatores e as profundidades continuam certos.
 
 ## Qual modo usar
 
@@ -24,5 +35,5 @@ Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de e
 
 - **Pacote:** C# e a API de editor da Unity 6, com o Universal Render Pipeline.
 - **Efeitos:** shaders próprios, para o vento e o brilho aditivo.
-- **Arte do exemplo:** Python com PIL, em pixel art.
-- **Testes:** Unity Test Framework.
+- **Arte do exemplo e ícones:** Python com PIL, em pixel art.
+- **Testes:** Unity Test Framework, com testes de desempenho.
