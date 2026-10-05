@@ -19,6 +19,10 @@ namespace Guavovic.Parallax
             float centerX = cameraOrigin.x + (origin.x - cameraOrigin.x) * scale;
             float centerY = cameraOrigin.y + (origin.y - cameraOrigin.y) * scale;
 
+            // Visto da câmera parada, uma camada com escala s anda (s - 1) vezes o deslocamento,
+            // o mesmo que pareceria andar se a câmera tivesse se movido.
+            centerX += context.VirtualCameraOffset.x * (scale - 1f);
+
             Vector2 scroll = settings.AutoScroll * context.Time * scale;
             centerX += scroll.x;
             centerY += scroll.y;
