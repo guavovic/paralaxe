@@ -230,7 +230,7 @@ namespace Guavovic.Parallax.Editor
         private void AddLayer(SerializedProperty layers)
         {
             StopPreview();
-            ParallaxLayerCommands.Add(_rig, _profileObject, layers);
+            ParallaxLayerCommands.Add(_rig, _profileObject);
         }
 
         private void RemoveLayer(SerializedProperty layers, int index)
