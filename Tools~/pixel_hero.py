@@ -1,13 +1,13 @@
 """Gera os quadros do herói em pixel art (20x28).
 
 Uso: python Tools~/pixel_hero.py
-Saída: Assets/Sprites/Hero/hero_NOME.png
+Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Hero/hero_NOME.png
 """
 import os
 
 from PIL import Image
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "Assets", "Sprites", "Hero")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Hero")
 
 PALETTE = {
     ".": (0, 0, 0, 0),
