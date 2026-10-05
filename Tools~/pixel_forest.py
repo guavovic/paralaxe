@@ -10,7 +10,7 @@ import math
 import os
 import random
 
-from PIL import Image, ImageChops, ImageDraw
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 W, H = 480, 270
 OUT = os.path.join(os.path.dirname(__file__), "..", "Assets", "Sprites", "Forest")
@@ -54,11 +54,20 @@ def periodic(seed, harmonics=6):
     return lambda x: sum(a * math.sin(math.tau * k * x / W + ph) for k, ph, a in parts) / total
 
 
-def rim_light(layer, color, strength=170):
-    """Contorno claro nas bordas voltadas para a luz (cima e esquerda)."""
+def rim_light(layer, color, strength=170, skip_thin=False):
+    """Contorno claro nas bordas voltadas para a luz (cima e esquerda).
+
+    Com skip_thin, partes com menos de 3 px (pontas de galho) ficam escuras, como silhueta contra a lua.
+    """
     alpha = layer.split()[3]
     shifted = ImageChops.offset(alpha, 1, 1)
     edge = ImageChops.subtract(alpha, shifted).point(lambda v: 255 if v > 0 else 0)
+    if skip_thin:
+        tiled = Image.new("L", (W * 3, H))
+        for k in range(3):
+            tiled.paste(alpha, (k * W, 0))
+        thick = tiled.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.MaxFilter(3)).crop((W, 0, W * 2, H))
+        edge = ImageChops.multiply(edge, thick.point(lambda v: 255 if v > 0 else 0))
     rim = Image.new("RGBA", layer.size, color[:3] + (255,))
     rim.putalpha(edge.point(lambda v: strength if v else 0))
     return Image.alpha_composite(layer, rim)
@@ -228,7 +237,7 @@ def silhouette_layer(seed, base_fn, build, color, rim=None, rim_strength=150, fa
                 if a:
                     px[x, y] = mix((r, g, b, a), fade_to[:3] + (a,), t * 0.75 * (bayer(x, y) < t))
     if rim:
-        img = rim_light(img, rim, rim_strength)
+        img = rim_light(img, rim, rim_strength, skip_thin=True)
     return img
 
 
