@@ -1,7 +1,7 @@
 """Gera as camadas da caverna de cristal em pixel art, com loop horizontal sem emenda.
 
 Uso: python Tools~/pixel_cave.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Cave/cave_NN_nome.png (480x270, RGBA)
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Cave/cave_NN_nome.png (480x270, RGBA)
 
 São 15 camadas, uma para cada camada da floresta na mesma posição, então a cena da caverna reaproveita
 a montagem da floresta trocando só as imagens. Usa as mesmas ferramentas de pixel_forest.py.
@@ -17,7 +17,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from pixel_forest import (H, W, Canvas, bayer, dither_fill, hexc, mix, periodic,  # noqa: E402
                           rim_light)
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Cave")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites", "Cave")
 FLOOR_Y = 216  # mesmo chão da floresta, para o herói andar na mesma altura
 
 RIM = hexc("#9aa8ff")

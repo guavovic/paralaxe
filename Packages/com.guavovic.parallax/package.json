@@ -15,9 +15,9 @@
   },
   "samples": [
     {
-      "displayName": "Floresta em pixel art",
-      "description": "Floresta com 15 camadas nos modos 2D e perspectiva, herói, pássaros, partículas e pós-processamento. Precisa do URP ativo no projeto, do Input System e do 2D Sprite.",
-      "path": "Samples~/ForestDemo"
+      "displayName": "Floresta e caverna em pixel art",
+      "description": "Uma jornada da floresta até a caverna, com a arte mudando aos poucos, passagem entre cenas, 18 camadas com elementos espalhados, bichos, partículas, shaders de vento, brilho e ondulação e pós-processamento, nos modos 2D e perspectiva. Precisa do URP ativo no projeto, do Input System e do 2D Sprite.",
+      "path": "Samples~/Demo"
     }
   ]
 }

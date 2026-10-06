@@ -35,6 +35,46 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void ScatterWithoutWindStaysStillWhileTheLayerSways()
+        {
+            var scatter = new GameObject("Pedras").AddComponent<ParallaxScatter>();
+            scatter.transform.SetParent(_object.transform, false);
+            scatter.WindInfluence = 0f;
+            var stone = new GameObject("Pedra").AddComponent<SpriteRenderer>();
+            stone.transform.SetParent(scatter.transform, false);
+            stone.sharedMaterial = _material;
+            _layer.Initialize(createCopies: false);
+
+            _layer.ApplyMaterialProperties(0.8f, 1f, 0f);
+
+            Assert.AreEqual(0.8f, Read(WindStrengthId), 0.001f);
+            stone.GetPropertyBlock(_block);
+            Assert.AreEqual(0f, _block.GetFloat(WindStrengthId), 0.001f);
+        }
+
+        [Test]
+        public void StageWithoutWindStopsItsBlocks()
+        {
+            var texture = new Texture2D(4, 4);
+            var sprite = Sprite.Create(texture, new Rect(0, 0, 4, 4), new Vector2(0.5f, 0.5f), 1f);
+            _renderer.sprite = sprite;
+            _layer.AddStage(new ParallaxStage(10f, sprite, null, windInfluence: 0f));
+            _layer.Initialize(createCopies: false);
+
+            _layer.UpdateStages(5f);
+            _layer.ApplyMaterialProperties(0.8f, 1f, 0f);
+            Assert.AreEqual(0.8f, Read(WindStrengthId), 0.001f, "antes do trecho");
+
+            _layer.ResetStages();
+            _layer.UpdateStages(20f);
+            _layer.ApplyMaterialProperties(0.8f, 1f, 0f);
+            Assert.AreEqual(0f, Read(WindStrengthId), 0.001f, "dentro do trecho sem vento");
+
+            Object.DestroyImmediate(sprite);
+            Object.DestroyImmediate(texture);
+        }
+
+        [Test]
         public void FirstCallWritesWindAndBlur()
         {
             _layer.ApplyMaterialProperties(0.8f, 1f, 2f);

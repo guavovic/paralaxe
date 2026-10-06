@@ -1,10 +1,10 @@
-﻿# Cria a junção Assets/Samples/ForestDemo -> Packages/com.guavovic.parallax/Samples~/ForestDemo.
+﻿# Cria a junção Assets/Samples/Demo -> Packages/com.guavovic.parallax/Samples~/Demo.
 # A pasta Samples~ fica escondida da Unity; pela junção o sample abre e é editado no próprio repositório.
 # Uso: powershell -ExecutionPolicy Bypass -File Tools~/criar_juncao_sample.ps1
 
 $root = Split-Path -Parent $PSScriptRoot
-$target = Join-Path $root "Packages\com.guavovic.parallax\Samples~\ForestDemo"
-$link = Join-Path $root "Assets\Samples\ForestDemo"
+$target = Join-Path $root "Packages\com.guavovic.parallax\Samples~\Demo"
+$link = Join-Path $root "Assets\Samples\Demo"
 
 if (Test-Path $link) {
     Write-Output "A junção já existe: $link"

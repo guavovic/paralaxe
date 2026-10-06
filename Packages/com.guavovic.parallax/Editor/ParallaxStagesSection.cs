@@ -11,6 +11,7 @@ namespace Guavovic.Parallax.Editor
         private static readonly GUIContent StartLabel = new GUIContent("Começa em X", "Posição X da câmera a partir da qual os blocos novos usam esta imagem.");
         private static readonly GUIContent SpriteLabel = new GUIContent("Imagem");
         private static readonly GUIContent TransitionLabel = new GUIContent("Transição", "Bloco de costura com o trecho anterior. Opcional.");
+        private static readonly GUIContent WindLabel = new GUIContent("Vento", "Quanto o vento balança este trecho. 0 deixa parado (pedra, construção).");
         private static readonly GUIContent FadeLabel = new GUIContent("Esmaecer a camada inteira", "Para camadas muito distantes, que quase não andam e não trocariam de bloco.");
 
         public static void Draw(ParallaxLayer layerObject)
@@ -37,6 +38,7 @@ namespace Guavovic.Parallax.Editor
                     EditorGUILayout.PropertyField(stage.FindPropertyRelative("startX"), StartLabel);
                     EditorGUILayout.PropertyField(stage.FindPropertyRelative("sprite"), SpriteLabel);
                     EditorGUILayout.PropertyField(stage.FindPropertyRelative("transition"), TransitionLabel);
+                    EditorGUILayout.PropertyField(stage.FindPropertyRelative("windInfluence"), WindLabel);
                     EditorGUILayout.EndVertical();
                 }
 
@@ -52,6 +54,7 @@ namespace Guavovic.Parallax.Editor
                         added.FindPropertyRelative("startX").floatValue = 20f;
                         added.FindPropertyRelative("sprite").objectReferenceValue = null;
                         added.FindPropertyRelative("transition").objectReferenceValue = null;
+                        added.FindPropertyRelative("windInfluence").floatValue = 1f;
                     }
                     else
                     {

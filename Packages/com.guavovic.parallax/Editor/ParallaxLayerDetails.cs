@@ -23,6 +23,7 @@ namespace Guavovic.Parallax.Editor
         private bool _motionOpen;
         private bool _advancedOpen;
         private bool _stagesOpen;
+        private bool _scatterOpen;
 
         /// <summary>
         /// Devolve true quando o usuário pediu para remover a camada.
@@ -59,6 +60,11 @@ namespace Guavovic.Parallax.Editor
             _stagesOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_stagesOpen, "Trechos");
             if (_stagesOpen)
                 ParallaxStagesSection.Draw(layerObject);
+            EditorGUILayout.EndFoldoutHeaderGroup();
+
+            _scatterOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_scatterOpen, "Elementos espalhados");
+            if (_scatterOpen)
+                ParallaxScatterSection.Draw(layerObject);
             EditorGUILayout.EndFoldoutHeaderGroup();
 
             _advancedOpen = EditorGUILayout.BeginFoldoutHeaderGroup(_advancedOpen, "Avançado");

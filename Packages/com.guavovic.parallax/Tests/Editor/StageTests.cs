@@ -88,6 +88,20 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void FadingLayerStartingInsideAStageShowsItWithoutFading()
+        {
+            // Chegando por uma passagem já depois do começo do trecho, a camada não pode esmaecer da arte antiga.
+            _layer.FadeBetweenStages = true;
+            _rig.Preview(new Vector3(60f, 0f, 0f), withWind: false);
+
+            foreach (var image in _layer.GetComponentsInChildren<SpriteRenderer>())
+            {
+                Assert.AreEqual("caverna", image.sprite.name);
+                Assert.AreEqual(1f, image.color.a, 0.001f);
+            }
+        }
+
+        [Test]
         public void ResetPreviewPutsTheOriginalArtBack()
         {
             for (float x = 0f; x <= 60f; x += 2f)

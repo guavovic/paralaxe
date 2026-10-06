@@ -1,7 +1,7 @@
 """Gera os elementos interativos do sample: o que o herói quebra e as plataformas em que sobe.
 
 Uso: python Tools~/pixel_elements.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Elements/
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Elements/
 
 Cada elemento tem contorno escuro e luz de contorno no alto, como as silhuetas do cenário.
 """
@@ -10,7 +10,7 @@ import random
 
 from PIL import Image, ImageDraw
 
-OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Elements")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites", "Elements")
 
 OUTLINE = (6, 10, 16, 255)
 
