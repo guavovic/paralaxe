@@ -17,6 +17,9 @@ namespace Guavovic.Parallax.Editor
         private static readonly GUIContent MaterialLabel = new GUIContent("Material", "Vazio, usa o da camada (com o vento e o desfoque dela).");
         private static readonly GUIContent OrderLabel = new GUIContent("Ordem de desenho");
         private static readonly GUIContent WindLabel = new GUIContent("Vento", "Quanto o vento balança estes elementos. 0 deixa parado (pedra, construção).");
+        private static readonly GUIContent ReactionLabel = new GUIContent("Reage ao herói", "Balança ou dá um pulinho quando o herói passa por eles na tela.");
+        private static readonly GUIContent RadiusLabel = new GUIContent("Distância da reação");
+        private static readonly GUIContent StrengthLabel = new GUIContent("Força da reação");
         private static readonly GUIContent RangeLabel = new GUIContent("Só entre X da câmera", "Para a fase que muda de cenário: os elementos só passam pela tela com a câmera neste trecho. Os dois iguais: sempre.");
 
         public static void Draw(ParallaxLayer layerObject)
@@ -74,6 +77,15 @@ namespace Guavovic.Parallax.Editor
                 EditorGUILayout.PropertyField(serialized.FindProperty("material"), MaterialLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("sortingOrder"), OrderLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("windInfluence"), WindLabel);
+                var reaction = serialized.FindProperty("reaction");
+                EditorGUILayout.PropertyField(reaction, ReactionLabel);
+                if (reaction.enumValueIndex != 0)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(serialized.FindProperty("reactionRadius"), RadiusLabel);
+                    EditorGUILayout.PropertyField(serialized.FindProperty("reactionStrength"), StrengthLabel);
+                    EditorGUI.indentLevel--;
+                }
                 EditorGUILayout.PropertyField(serialized.FindProperty("visibleRangeX"), RangeLabel);
                 bool changed = EditorGUI.EndChangeCheck();
                 serialized.ApplyModifiedProperties();

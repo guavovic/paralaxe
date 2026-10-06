@@ -22,6 +22,9 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Min(0)] private int airJumps = 1;
         [SerializeField, Min(0f)] private float airJumpSpeed = 7f;
 
+        [Header("Escalada")]
+        [SerializeField, Min(0f)] private float climbSpeed = 2.6f;
+
         [Header("Modo autônomo")]
         [Tooltip("Segundos sem nenhuma tecla até o herói passar a se mexer sozinho. 0 desliga.")]
         [SerializeField, Min(0f)] private float autonomousAfterSeconds = 5f;
@@ -46,6 +49,12 @@ namespace Guavovic.Parallax.Samples
         private bool _wasGrounded = true;
         private float _forcedUntil = float.NegativeInfinity;
         private float _forcedInput;
+        private float _gravity;
+        private DemoClimbable _climbable;
+        private bool _climbing;
+        private float _climbInput;
+        private float _forcedClimbUntil = float.NegativeInfinity;
+        private float _forcedClimb;
 
         /// <summary>Avisos para efeitos (poeira, som): pousou, pulou do chão, pulou no ar, começou um golpe.</summary>
         public event System.Action Landed;
@@ -60,6 +69,8 @@ namespace Guavovic.Parallax.Samples
         public bool IsAutonomous => autonomousAfterSeconds > 0f && IdleSeconds >= autonomousAfterSeconds;
         public bool IsRunning => _run && Mathf.Abs(_input) > 0.01f;
         public bool IsCrouching => _crouch;
+        public bool IsClimbing => _climbing;
+        public float ClimbInput => _climbInput;
         public bool IsAirJumping => Time.time - _airJumpTime < 0.25f;
         public DemoAttack CurrentAttack => AttackProgress >= 0f ? _attack : DemoAttack.None;
 
@@ -79,7 +90,24 @@ namespace Guavovic.Parallax.Samples
         {
             _body = GetComponent<Rigidbody2D>();
             _collider = GetComponent<Collider2D>();
+            _gravity = _body.gravityScale;
             _lastActivityTime = Time.time;
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            var climbable = other.GetComponent<DemoClimbable>();
+            if (climbable != null)
+                _climbable = climbable;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (_climbable == null || other.GetComponent<DemoClimbable>() != _climbable)
+                return;
+
+            _climbable = null;
+            _climbing = false;
         }
 
         private void Update()
@@ -87,6 +115,15 @@ namespace Guavovic.Parallax.Samples
             var keyboard = Keyboard.current;
             if (keyboard != null && keyboard.anyKey.isPressed)
                 _lastActivityTime = Time.time;
+
+            if (Time.time < _forcedClimbUntil)
+            {
+                _climbInput = _forcedClimb;
+                if (_climbable != null)
+                    _climbing = true;
+                _input = 0f;
+                return;
+            }
 
             if (Time.time < _forcedUntil)
             {
@@ -98,6 +135,7 @@ namespace Guavovic.Parallax.Samples
 
             if (IsAutonomous)
             {
+                _climbing = false;
                 UpdateAutonomous();
                 return;
             }
@@ -113,6 +151,19 @@ namespace Guavovic.Parallax.Samples
             if (keyboard.aKey.isPressed || keyboard.leftArrowKey.isPressed) _input -= 1f;
             if (keyboard.dKey.isPressed || keyboard.rightArrowKey.isPressed) _input += 1f;
             _run = keyboard.leftShiftKey.isPressed;
+
+            bool up = keyboard.wKey.isPressed || keyboard.upArrowKey.isPressed;
+            bool down = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+            _climbInput = (up ? 1f : 0f) - (down ? 1f : 0f);
+            if (!_climbing && _climbable != null && (up || (down && !IsGrounded())))
+                _climbing = true;
+
+            if (_climbing)
+            {
+                if (keyboard.spaceKey.wasPressedThisFrame)
+                    _jumpQueued = true;
+                return;
+            }
 
             _crouch = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
             if (_crouch)
@@ -136,6 +187,15 @@ namespace Guavovic.Parallax.Samples
             _body.position = position;
             _body.linearVelocity = Vector2.zero;
             WalkFor(direction, 0.5f);
+        }
+
+        /// <summary>
+        /// Sobe (1) ou desce (-1) o que estiver escalando por um tempo, ignorando as teclas.
+        /// </summary>
+        public void ClimbFor(float direction, float seconds)
+        {
+            _forcedClimb = Mathf.Sign(direction);
+            _forcedClimbUntil = Time.time + seconds;
         }
 
         public void WalkFor(float direction, float seconds)
@@ -169,6 +229,13 @@ namespace Guavovic.Parallax.Samples
 
             _nextActionTime = Time.time + Random.Range(actionMinSeconds, actionMaxSeconds);
 
+            // Passando por um cipó, às vezes sobe um pouco e solta.
+            if (_climbable != null && Random.value < 0.5f)
+            {
+                ClimbFor(1f, Random.Range(0.8f, 2f));
+                return;
+            }
+
             if (Random.value < restChance)
             {
                 _input = 0f;
@@ -188,6 +255,9 @@ namespace Guavovic.Parallax.Samples
 
         private void FixedUpdate()
         {
+            if (_climbing && Climb())
+                return;
+
             var velocity = _body.linearVelocity;
             if (Mathf.Abs(_input) > 0.01f)
             {
@@ -221,7 +291,48 @@ namespace Guavovic.Parallax.Samples
             }
 
             _jumpQueued = false;
+
+            // Parado no chão (de rampa também), sem gravidade: o herói não escorrega sem atrito.
+            bool standing = grounded && Mathf.Abs(_input) < 0.01f && velocity.y <= 0.01f;
+            _body.gravityScale = standing ? 0f : _gravity;
+            if (standing)
+                velocity.y = 0f;
             _body.linearVelocity = velocity;
+        }
+
+        /// <summary>
+        /// Sobe e desce centrado no que escala. Pulo solta; chegar ao chão descendo também. Devolve false ao soltar.
+        /// </summary>
+        private bool Climb()
+        {
+            if (_climbable == null)
+            {
+                _climbing = false;
+                return false;
+            }
+
+            if (_jumpQueued || (_climbInput < 0f && IsGrounded()))
+            {
+                _climbing = false;
+                _body.gravityScale = _gravity;
+                if (_jumpQueued)
+                {
+                    _body.linearVelocity = new Vector2(_input * moveSpeed, jumpSpeed);
+                    _jumpQueued = false;
+                    _airJumpsLeft = airJumps;
+                    Jumped?.Invoke();
+                }
+                return false;
+            }
+
+            _body.gravityScale = 0f;
+            float vertical = _climbInput * climbSpeed;
+            float headY = _collider.bounds.center.y;
+            if (vertical > 0f && headY >= _climbable.Top)
+                vertical = 0f;
+            float toCenter = (_climbable.CenterX - _body.position.x) * 10f;
+            _body.linearVelocity = new Vector2(toCenter, vertical);
+            return true;
         }
 
         public bool IsGrounded()

@@ -49,6 +49,13 @@ namespace Guavovic.Parallax.Samples
                 return;
             }
 
+            // Escalando: os passos da caminhada só enquanto sobe ou desce.
+            if (_player.IsClimbing && walk != null && walk.Length > 0)
+            {
+                _renderer.sprite = Mathf.Abs(_player.ClimbInput) > 0.01f ? walk[(int)(Time.time * 8f) % walk.Length] : walk[0];
+                return;
+            }
+
             if (_player.IsAirJumping && airJump != null)
             {
                 _renderer.sprite = airJump;

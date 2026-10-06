@@ -52,6 +52,7 @@ listed below:
 - Tools~/pixel_transition.py
 - Tools~/pixel_details.py
 - Tools~/pixel_temple.py
+- Tools~/pixel_terrain.py
 
 Copyright (c) 2026 Gustavo Victor. All rights reserved.
 
