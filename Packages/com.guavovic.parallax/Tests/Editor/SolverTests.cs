@@ -84,6 +84,23 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void LoopCoversTheCameraWhenItStartsFarFromTheLayer()
+        {
+            // Ao continuar o fundo da cena anterior, a origem da câmera fica longe da origem da camada.
+            var settings = new ParallaxLayerSettings("L", new Vector2(0.99f, 0f), 0f);
+            var solver = new Simulated2DSolver();
+            var cameraOrigin = new Vector3(51f, 0f, -10f);
+
+            foreach (var cameraX in new[] { 31f, 40f, 75f, -12f })
+            {
+                var context = new ParallaxContext(new Vector3(cameraX, 0f, -10f), cameraOrigin, 1f, 10f, 0f);
+                solver.Solve(_layer, settings, context);
+                float distance = Mathf.Abs(_layer.transform.position.x - cameraX);
+                Assert.LessOrEqual(distance, TileWidth * 0.5f + 0.001f, "câmera em " + cameraX);
+            }
+        }
+
+        [Test]
         public void PerspectiveAtTheFocusPlaneKeepsScaleOne()
         {
             var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);

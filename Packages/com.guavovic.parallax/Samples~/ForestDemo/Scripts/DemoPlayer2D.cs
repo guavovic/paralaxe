@@ -44,6 +44,8 @@ namespace Guavovic.Parallax.Samples
         private int _airJumpsLeft;
         private float _airJumpTime = float.NegativeInfinity;
         private bool _wasGrounded = true;
+        private float _forcedUntil = float.NegativeInfinity;
+        private float _forcedInput;
 
         /// <summary>Avisos para efeitos (poeira, som): pousou, pulou do chão, pulou no ar, começou um golpe.</summary>
         public event System.Action Landed;
@@ -86,6 +88,14 @@ namespace Guavovic.Parallax.Samples
             if (keyboard != null && keyboard.anyKey.isPressed)
                 _lastActivityTime = Time.time;
 
+            if (Time.time < _forcedUntil)
+            {
+                _input = _forcedInput;
+                _run = false;
+                _crouch = false;
+                return;
+            }
+
             if (IsAutonomous)
             {
                 UpdateAutonomous();
@@ -113,6 +123,16 @@ namespace Guavovic.Parallax.Samples
 
             if (keyboard.jKey.wasPressedThisFrame)
                 Attack();
+        }
+
+        /// <summary>
+        /// Anda sozinho numa direção por um tempo, ignorando as teclas. Serve para entrar na cena por uma passagem.
+        /// </summary>
+        public void WalkFor(float direction, float seconds)
+        {
+            _forcedInput = Mathf.Sign(direction);
+            _forcedUntil = Time.time + seconds;
+            _lastActivityTime = Time.time;
         }
 
         private void Attack()
