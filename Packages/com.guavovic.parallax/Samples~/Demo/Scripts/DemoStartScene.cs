@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Guavovic.Parallax.Samples
 {
@@ -15,17 +14,8 @@ namespace Guavovic.Parallax.Samples
 
         private void Awake()
         {
-            if (ParallaxSceneTravel.Arriving)
-                return;
-
-#if UNITY_EDITOR
-            if (!Application.CanStreamedLevelBeLoaded(sceneName) && !string.IsNullOrEmpty(scenePath))
-            {
-                UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(scenePath, new LoadSceneParameters(LoadSceneMode.Single));
-                return;
-            }
-#endif
-            SceneManager.LoadScene(sceneName);
+            if (!ParallaxSceneTravel.Arriving)
+                ParallaxSceneTravel.TryLoadScene(sceneName, scenePath);
         }
     }
 }

@@ -12,7 +12,6 @@ namespace Guavovic.Parallax.Samples
 
         public float CenterX => Area.bounds.center.x;
         public float Top => Area.bounds.max.y;
-        public float Bottom => Area.bounds.min.y;
 
         private Collider2D Area => _area != null ? _area : _area = GetComponent<Collider2D>();
 

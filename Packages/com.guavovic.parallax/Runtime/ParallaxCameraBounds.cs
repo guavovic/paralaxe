@@ -20,6 +20,9 @@ namespace Guavovic.Parallax
 
         private Camera _camera;
 
+        /// <summary>Cor dos gizmos do Paralaxe (limites, passagens, pontos de chegada).</summary>
+        public static readonly Color GizmoColor = new Color(0.62f, 0.83f, 0.85f);
+
         public Rect Area { get => area; set => area = value; }
         public bool LimitX { get => limitX; set => limitX = value; }
         public bool LimitY { get => limitY; set => limitY = value; }
@@ -70,7 +73,7 @@ namespace Guavovic.Parallax
 
         private void OnDrawGizmosSelected()
         {
-            Gizmos.color = new Color(0.62f, 0.83f, 0.85f);
+            Gizmos.color = GizmoColor;
             Gizmos.DrawWireCube(new Vector3(area.center.x, area.center.y, transform.position.z + FocusDistance), new Vector3(area.width, area.height, 0f));
         }
     }

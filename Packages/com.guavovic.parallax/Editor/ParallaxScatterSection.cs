@@ -79,7 +79,12 @@ namespace Guavovic.Parallax.Editor
                 EditorGUILayout.PropertyField(serialized.FindProperty("seed"), SeedLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("material"), MaterialLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("sortingOrder"), OrderLabel);
+                // Daqui para baixo nada muda a arrumação: não precisa espalhar de novo (nem encher o Undo).
+                bool layoutChanged = EditorGUI.EndChangeCheck();
+
+                EditorGUI.BeginChangeCheck();
                 EditorGUILayout.PropertyField(serialized.FindProperty("windInfluence"), WindLabel);
+                bool windChanged = EditorGUI.EndChangeCheck();
                 var reaction = serialized.FindProperty("reaction");
                 EditorGUILayout.PropertyField(reaction, ReactionLabel);
                 if (reaction.enumValueIndex != 0)
@@ -100,11 +105,12 @@ namespace Guavovic.Parallax.Editor
                     EditorGUI.indentLevel--;
                 }
                 EditorGUILayout.PropertyField(serialized.FindProperty("visibleRangeX"), RangeLabel);
-                bool changed = EditorGUI.EndChangeCheck();
                 serialized.ApplyModifiedProperties();
 
-                if (GUILayout.Button("Espalhar de novo", EditorStyles.miniButton) || changed)
+                if (GUILayout.Button("Espalhar de novo", EditorStyles.miniButton) || layoutChanged)
                     Rebuild(scatter);
+                else if (windChanged)
+                    RefreshLayer(scatter);
                 EditorGUILayout.EndVertical();
             }
 
@@ -154,6 +160,14 @@ namespace Guavovic.Parallax.Editor
             scatter.Configure(sprites, 10, 60f, new Vector2(floor, floor), Vector2.one, Random.Range(1, 9999), order);
             Rebuild(scatter);
             Selection.activeGameObject = go;
+        }
+
+        // O vento de cada elemento é aplicado pela camada; ela precisa reaplicar quando o vento do grupo muda.
+        private static void RefreshLayer(ParallaxScatter scatter)
+        {
+            var layer = scatter.GetComponentInParent<ParallaxLayer>();
+            if (layer != null)
+                layer.RefreshRenderers();
         }
 
         internal static void Rebuild(ParallaxScatter scatter)

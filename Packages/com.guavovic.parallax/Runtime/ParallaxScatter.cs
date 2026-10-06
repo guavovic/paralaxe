@@ -41,15 +41,22 @@ namespace Guavovic.Parallax
 
         private const float ReactionSeconds = 1.6f;
 
-        private readonly List<Transform> _items = new List<Transform>();
-        private readonly List<SpriteRenderer> _renderers = new List<SpriteRenderer>();
-        private readonly List<float> _baseX = new List<float>();
-        private readonly List<Vector3> _baseScale = new List<Vector3>();
-        private readonly List<float> _reactedAt = new List<float>();
-        private readonly List<bool> _near = new List<bool>();
-        private readonly List<float> _cutUntil = new List<float>();
+        /// <summary>Estado de um elemento espalhado: onde nasceu e o que está acontecendo com ele.</summary>
+        private sealed class Item
+        {
+            public Transform Transform;
+            public SpriteRenderer Renderer;
+            public float BaseX;
+            public Vector3 BaseScale;
+            public float ReactedAt = float.NegativeInfinity;
+            public bool Near;
+            public float CutUntil = float.NegativeInfinity;
+        }
+
+        private readonly List<Item> _items = new List<Item>();
         private Transform _target;
         private float _nextTargetSearch;
+        private bool _wasLimited;
 
         public int Count => count;
         public float Span => span;
@@ -72,21 +79,21 @@ namespace Guavovic.Parallax
             if (_items.Count != transform.childCount)
                 CollectItems();
 
-            int count = 0;
-            for (int i = 0; i < _items.Count; i++)
+            int cut = 0;
+            foreach (var item in _items)
             {
-                var spriteRenderer = _renderers[i];
-                if (spriteRenderer == null || !spriteRenderer.enabled || _cutUntil[i] > Time.time)
+                var spriteRenderer = item.Renderer;
+                if (spriteRenderer == null || !spriteRenderer.enabled || item.CutUntil > Time.time)
                     continue;
                 if (!spriteRenderer.bounds.Intersects(area))
                     continue;
 
-                _cutUntil[i] = regrowSeconds > 0f ? Time.time + regrowSeconds : float.PositiveInfinity;
+                item.CutUntil = regrowSeconds > 0f ? Time.time + regrowSeconds : float.PositiveInfinity;
                 spriteRenderer.enabled = false;
                 hits?.Add(spriteRenderer.bounds.center);
-                count++;
+                cut++;
             }
-            return count;
+            return cut;
         }
 
         public void Configure(Sprite[] sprites, int amount, float width, Vector2 height, Vector2 scale, int randomSeed, int order)
@@ -106,136 +113,140 @@ namespace Guavovic.Parallax
         [ContextMenu("Espalhar de novo")]
         public void Rebuild()
         {
+            // Sai da hierarquia antes de destruir: em Play o Destroy espera o fim do quadro, e a contagem de filhos
+            // (que a camada e este grupo usam para se atualizar) já tem que estar certa agora.
             for (int i = transform.childCount - 1; i >= 0; i--)
             {
-                var child = transform.GetChild(i).gameObject;
-                if (Application.isPlaying) Destroy(child);
-                else DestroyImmediate(child);
+                var child = transform.GetChild(i);
+                child.SetParent(null, false);
+                if (Application.isPlaying) Destroy(child.gameObject);
+                else DestroyImmediate(child.gameObject);
             }
 
-            _items.Clear();
-            _baseX.Clear();
-            _renderers.Clear();
-            if (variants == null || variants.Length == 0)
-                return;
-
-            var random = new System.Random(seed);
-            var shared = material != null ? material : LayerMaterial();
-            float slot = span / count;
-            for (int i = 0; i < count; i++)
+            var layer = GetComponentInParent<ParallaxLayer>();
+            if (variants != null && variants.Length > 0)
             {
-                var sprite = variants[random.Next(variants.Length)];
-                float x = -span * 0.5f + slot * (i + 0.15f + 0.7f * (float)random.NextDouble());
-                float y = Mathf.Lerp(heightRange.x, heightRange.y, (float)random.NextDouble());
-                float scale = Mathf.Lerp(scaleRange.x, scaleRange.y, (float)random.NextDouble());
-                bool flip = randomFlip && random.Next(2) == 1;
+                var random = new System.Random(seed);
+                var first = layer != null ? layer.FirstTile : null;
+                var shared = material != null ? material : first != null ? first.sharedMaterial : null;
+                float slot = span / count;
+                for (int i = 0; i < count; i++)
+                {
+                    var sprite = variants[random.Next(variants.Length)];
+                    float x = -span * 0.5f + slot * (i + 0.15f + 0.7f * (float)random.NextDouble());
+                    float y = Mathf.Lerp(heightRange.x, heightRange.y, (float)random.NextDouble());
+                    float scale = Mathf.Lerp(scaleRange.x, scaleRange.y, (float)random.NextDouble());
+                    bool flip = randomFlip && random.Next(2) == 1;
 
-                var item = new GameObject(sprite != null ? sprite.name : "Elemento");
-                item.transform.SetParent(transform, false);
-                item.transform.localPosition = new Vector3(x, y, 0f);
-                item.transform.localScale = new Vector3(scale, scale, 1f);
-                var spriteRenderer = item.AddComponent<SpriteRenderer>();
-                spriteRenderer.sprite = sprite;
-                spriteRenderer.flipX = flip;
-                spriteRenderer.sortingOrder = sortingOrder;
-                if (shared != null)
-                    spriteRenderer.sharedMaterial = shared;
+                    var item = new GameObject(sprite != null ? sprite.name : "Elemento");
+                    item.transform.SetParent(transform, false);
+                    item.transform.localPosition = new Vector3(x, y, 0f);
+                    item.transform.localScale = new Vector3(scale, scale, 1f);
+                    var spriteRenderer = item.AddComponent<SpriteRenderer>();
+                    spriteRenderer.sprite = sprite;
+                    spriteRenderer.flipX = flip;
+                    spriteRenderer.sortingOrder = sortingOrder;
+                    if (shared != null)
+                        spriteRenderer.sharedMaterial = shared;
+                }
             }
 
             CollectItems();
+
+            // A camada guarda os renderers para cor, vento e desfoque: sem avisar, ela segue mexendo nos apagados.
+            if (layer != null)
+                layer.RefreshRenderers();
         }
 
-        /// <param name="factor">Fator X da camada (modo 2D), para saber onde a câmera vai estar quando cada elemento passar pelo meio da tela.</param>
-        internal void Recycle(ParallaxLayer layer, float cameraX, float factor)
+        /// <summary>
+        /// Leva cada elemento para perto da câmera. O fator da câmera vem do solver da camada (quanto ela anda por
+        /// unidade da câmera), para saber onde a câmera vai estar quando cada elemento passar pelo meio da tela.
+        /// </summary>
+        internal void Recycle(ParallaxLayer layer, float layerX, float scale, float cameraX)
         {
             if (_items.Count != transform.childCount)
                 CollectItems();
-
-            float scale = Mathf.Abs(layer.transform.lossyScale.x);
             if (scale <= 0f)
                 return;
 
             // Sem o loop, a camada anda contínua; cada elemento dá a volta no próprio trecho, perto da câmera.
+            float factor = layer.CameraFactor;
             float offset = transform.localPosition.x;
-            float unwrapped = layer.transform.position.x - layer.LoopOffset;
+            float unwrapped = layerX - layer.LoopOffset;
             float loopLocal = layer.LoopOffset / scale;
             bool limited = visibleRangeX.y > visibleRangeX.x;
+            bool unlimitedNow = _wasLimited && !limited;
+            _wasLimited = limited;
             bool reacts = reaction != ParallaxReaction.None && Application.isPlaying && FindTarget();
             float targetX = reacts ? _target.position.x : 0f;
-            for (int i = 0; i < _items.Count; i++)
+            foreach (var item in _items)
             {
-                var item = _items[i];
-                if (item == null)
+                if (item.Transform == null)
                     continue;
 
-                float worldX = unwrapped + (offset + _baseX[i]) * scale;
-                float turns = Mathf.Round((cameraX - worldX) / (span * scale));
-                var position = item.localPosition;
-                position.x = _baseX[i] + turns * span - loopLocal;
-                item.localPosition = position;
+                float turns = Mathf.Round((cameraX - (unwrapped + (offset + item.BaseX) * scale)) / (span * scale));
+                var position = item.Transform.localPosition;
+                position.x = item.BaseX + turns * span - loopLocal;
+                item.Transform.localPosition = position;
+                float worldX = layerX + (offset + position.x) * scale;
 
                 if (reacts)
-                    React(i, layer.transform.position.x + (offset + position.x) * scale, targetX);
+                    React(item, worldX, targetX);
 
-                bool wasCut = !float.IsNegativeInfinity(_cutUntil[i]);
-                if ((limited || wasCut) && _renderers[i] != null)
+                bool wasCut = !float.IsNegativeInfinity(item.CutUntil);
+                if ((!limited && !wasCut && !unlimitedNow) || item.Renderer == null)
+                    continue;
+
+                bool show = true;
+                if (limited)
                 {
-                    bool show = true;
-                    if (limited)
-                    {
-                        // O elemento anda "factor" por unidade da câmera, então cruza o meio da tela quando a câmera chega
-                        // em (x - factor * câmera) / (1 - factor). Esse ponto não muda enquanto a câmera anda: nada pisca.
-                        float x = layer.transform.position.x + (offset + position.x) * scale;
-                        float crossing = Mathf.Abs(1f - factor) < 0.001f ? cameraX : (x - factor * cameraX) / (1f - factor);
-                        show = crossing >= visibleRangeX.x && crossing <= visibleRangeX.y;
-                    }
-
-                    if (wasCut && Time.time >= _cutUntil[i])
-                        _cutUntil[i] = float.NegativeInfinity;
-                    else if (wasCut)
-                        show = false;
-                    _renderers[i].enabled = show;
+                    // O elemento anda "factor" por unidade da câmera, então cruza o meio da tela quando a câmera chega
+                    // em (x - factor * câmera) / (1 - factor). Esse ponto não muda enquanto a câmera anda: nada pisca.
+                    float crossing = Mathf.Abs(1f - factor) < 0.001f ? cameraX : (worldX - factor * cameraX) / (1f - factor);
+                    show = crossing >= visibleRangeX.x && crossing <= visibleRangeX.y;
                 }
+
+                if (wasCut && Time.time >= item.CutUntil)
+                    item.CutUntil = float.NegativeInfinity;
+                else if (wasCut)
+                    show = false;
+
+                if (item.Renderer.enabled != show)
+                    item.Renderer.enabled = show;
             }
         }
 
         internal void Restore()
         {
-            for (int i = 0; i < _items.Count; i++)
+            foreach (var item in _items)
             {
-                if (_items[i] == null)
+                if (item.Transform == null)
                     continue;
 
-                var position = _items[i].localPosition;
-                position.x = _baseX[i];
-                _items[i].localPosition = position;
-                _items[i].localRotation = Quaternion.identity;
-                _items[i].localScale = _baseScale[i];
-                _reactedAt[i] = float.NegativeInfinity;
-                _cutUntil[i] = float.NegativeInfinity;
-                if (_renderers[i] != null)
-                    _renderers[i].enabled = true;
+                var position = item.Transform.localPosition;
+                position.x = item.BaseX;
+                item.Transform.localPosition = position;
+                item.Transform.localRotation = Quaternion.identity;
+                item.Transform.localScale = item.BaseScale;
+                item.ReactedAt = float.NegativeInfinity;
+                item.CutUntil = float.NegativeInfinity;
+                if (item.Renderer != null)
+                    item.Renderer.enabled = true;
             }
         }
 
         private void CollectItems()
         {
             _items.Clear();
-            _baseX.Clear();
-            _renderers.Clear();
-            _baseScale.Clear();
-            _reactedAt.Clear();
-            _near.Clear();
-            _cutUntil.Clear();
             foreach (Transform child in transform)
             {
-                _items.Add(child);
-                _baseX.Add(child.localPosition.x);
-                _renderers.Add(child.GetComponent<SpriteRenderer>());
-                _baseScale.Add(child.localScale);
-                _reactedAt.Add(float.NegativeInfinity);
-                _near.Add(false);
-                _cutUntil.Add(float.NegativeInfinity);
+                _items.Add(new Item
+                {
+                    Transform = child,
+                    Renderer = child.GetComponent<SpriteRenderer>(),
+                    BaseX = child.localPosition.x,
+                    BaseScale = child.localScale,
+                });
             }
         }
 
@@ -256,23 +267,22 @@ namespace Guavovic.Parallax
         /// <summary>
         /// Reage quando o herói chega perto (na horizontal da tela) e assenta com amortecimento.
         /// </summary>
-        private void React(int i, float itemX, float targetX)
+        private void React(Item item, float itemX, float targetX)
         {
             bool near = Mathf.Abs(itemX - targetX) < reactionRadius;
-            if (near && !_near[i])
-                _reactedAt[i] = Time.time;
-            _near[i] = near;
+            if (near && !item.Near)
+                item.ReactedAt = Time.time;
+            item.Near = near;
 
-            float t = Time.time - _reactedAt[i];
+            float t = Time.time - item.ReactedAt;
             if (float.IsInfinity(t))
                 return;
 
-            var item = _items[i];
             if (t >= ReactionSeconds)
             {
-                item.localRotation = Quaternion.identity;
-                item.localScale = _baseScale[i];
-                _reactedAt[i] = float.NegativeInfinity;
+                item.Transform.localRotation = Quaternion.identity;
+                item.Transform.localScale = item.BaseScale;
+                item.ReactedAt = float.NegativeInfinity;
                 return;
             }
 
@@ -280,24 +290,14 @@ namespace Guavovic.Parallax
             if (reaction == ParallaxReaction.Sway)
             {
                 float side = targetX < itemX ? 1f : -1f;
-                item.localRotation = Quaternion.Euler(0f, 0f, side * 12f * reactionStrength * Mathf.Sin(t * 14f) * decay);
+                item.Transform.localRotation = Quaternion.Euler(0f, 0f, side * 12f * reactionStrength * Mathf.Sin(t * 14f) * decay);
             }
             else
             {
                 float stretch = 0.18f * reactionStrength * Mathf.Sin(t * 16f) * decay;
-                var baseScale = _baseScale[i];
-                item.localScale = new Vector3(baseScale.x * (1f - stretch * 0.5f), baseScale.y * (1f + stretch), baseScale.z);
+                var baseScale = item.BaseScale;
+                item.Transform.localScale = new Vector3(baseScale.x * (1f - stretch * 0.5f), baseScale.y * (1f + stretch), baseScale.z);
             }
-        }
-
-        private Material LayerMaterial()
-        {
-            var layer = transform.parent;
-            if (layer == null || layer.childCount == 0)
-                return null;
-
-            var first = layer.GetChild(0).GetComponent<SpriteRenderer>();
-            return first != null ? first.sharedMaterial : null;
         }
     }
 }

@@ -17,13 +17,14 @@ namespace Guavovic.Parallax
             // Conta a partir da posição da câmera em relação à camada, e não do deslocamento desde o início:
             // a câmera pode começar longe da camada (ao continuar o fundo da cena anterior, por exemplo).
             float view = context.CameraPosition.x - (origin.x + shiftX);
-            float wrap = 0f;
-            if (settings.LoopHorizontally && layer.TileWidth > 0f)
-                wrap = layer.TileWidth * Mathf.Round(view / layer.TileWidth);
+            bool loops = settings.LoopHorizontally && layer.TileWidth > 0f;
+            float wrap = loops ? layer.TileWidth * Mathf.Round(view / layer.TileWidth) : 0f;
+            layer.LoopOffset = wrap;
+            layer.CameraFactor = factor.x;
 
             // Os trechos seguem a câmera que o jogador veria (no preview, a virtual), não só a real.
-            layer.LoopOffset = wrap;
-            layer.WrapIndex = layer.TileWidth > 0f ? Mathf.RoundToInt((view + context.VirtualCameraOffset.x) / layer.TileWidth) : 0;
+            // Sem repetir, os blocos não andam: o índice fica fixo, senão a arte trocaria na frente da câmera.
+            layer.WrapIndex = loops ? Mathf.RoundToInt((view + context.VirtualCameraOffset.x) / layer.TileWidth) : 0;
 
             layer.transform.position = new Vector3(
                 origin.x + shiftX + wrap,

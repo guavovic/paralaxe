@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Guavovic.Parallax
 {
@@ -21,7 +20,12 @@ namespace Guavovic.Parallax
         [SerializeField] private ParallaxRig rig;
         [SerializeField, Min(0f)] private float fadeSeconds = 0.45f;
 
+        // Quem já está dentro da passagem logo depois de a cena começar (chegou em cima dela) precisa sair antes de
+        // usá-la, senão volta na hora. O tempo cobre a chegada andando do ponto de chegada.
+        private const float ArrivalGraceSeconds = 0.5f;
+
         private bool _leaving;
+        private bool _needsExit;
 
         /// <summary>Alguém entrou na passagem e a troca de cena começou (para som, efeito, salvar o jogo).</summary>
         public static event System.Action<ParallaxScenePortal> Leaving;
@@ -36,6 +40,9 @@ namespace Guavovic.Parallax
             if (_leaving || ParallaxSceneTravel.Arriving || !other.CompareTag(travelerTag))
                 return;
 
+            if (_needsExit)
+                return;
+
             var traveler = other.GetComponentInParent<IParallaxTraveler>();
             if (traveler != null && !traveler.CanTravel)
                 return;
@@ -43,6 +50,18 @@ namespace Guavovic.Parallax
             _leaving = true;
             Leaving?.Invoke(this);
             StartCoroutine(Leave());
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.CompareTag(travelerTag) && Time.timeSinceLevelLoad < ArrivalGraceSeconds)
+                _needsExit = true;
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag(travelerTag))
+                _needsExit = false;
         }
 
         private IEnumerator Leave()
@@ -59,14 +78,15 @@ namespace Guavovic.Parallax
                 sceneRig.SaveForNextScene();
             ParallaxSceneTravel.Begin(spawnId);
 
-#if UNITY_EDITOR
-            if (!Application.CanStreamedLevelBeLoaded(sceneName) && !string.IsNullOrEmpty(scenePath))
+            if (!ParallaxSceneTravel.TryLoadScene(sceneName, scenePath))
             {
-                UnityEditor.SceneManagement.EditorSceneManager.LoadSceneInPlayMode(scenePath, new LoadSceneParameters(LoadSceneMode.Single));
-                yield break;
+                // Cena errada ou fora da Build Settings: volta a tela e as passagens, em vez de travar no preto.
+                Debug.LogError($"Passagem '{name}': a cena '{sceneName}' não pode ser carregada. Confira o nome e a Build Settings.", this);
+                ParallaxSceneTravel.Cancel();
+                ParallaxSceneLink.Clear();
+                ParallaxScreenFade.FadeIn(fadeSeconds);
+                _leaving = false;
             }
-#endif
-            SceneManager.LoadScene(sceneName);
         }
 
         private void OnDrawGizmos()
@@ -75,7 +95,7 @@ namespace Guavovic.Parallax
             if (area == null)
                 return;
 
-            Gizmos.color = new Color(0.62f, 0.83f, 0.85f, 0.8f);
+            Gizmos.color = new Color(ParallaxCameraBounds.GizmoColor.r, ParallaxCameraBounds.GizmoColor.g, ParallaxCameraBounds.GizmoColor.b, 0.8f);
             Gizmos.DrawWireCube(area.bounds.center, area.bounds.size);
         }
     }

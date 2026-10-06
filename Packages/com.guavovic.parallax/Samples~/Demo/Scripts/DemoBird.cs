@@ -46,16 +46,13 @@ namespace Guavovic.Parallax.Samples
 
             var position = transform.position;
             position.x += speed * Time.deltaTime;
-            if (_camera != null)
-            {
-                position.x += (_camera.position.x - _lastCameraX) * parallaxFactor;
-                _lastCameraX = _camera.position.x;
-            }
             position.y = _baseY + Mathf.Sin((Time.time + _phase) * bobSpeed) * bobAmplitude;
-
             if (_camera != null)
             {
-                float distance = position.x - _camera.position.x;
+                float cameraX = _camera.position.x;
+                position.x += (cameraX - _lastCameraX) * parallaxFactor;
+                _lastCameraX = cameraX;
+                float distance = position.x - cameraX;
                 if (distance > wrapDistance) position.x -= wrapDistance * 2f;
                 else if (distance < -wrapDistance) position.x += wrapDistance * 2f;
             }

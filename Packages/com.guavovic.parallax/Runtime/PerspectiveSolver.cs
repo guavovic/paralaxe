@@ -31,16 +31,16 @@ namespace Guavovic.Parallax
             // então a borda do sprite nunca aparece quando a câmera sobe ou desce.
             centerY += context.CameraOffset.y * settings.Factor.y;
 
-            float wrap = 0f;
             float tileWidth = layer.TileWidth * scale;
-            if (settings.LoopHorizontally && tileWidth > 0f)
-                wrap = tileWidth * Mathf.Round((context.CameraPosition.x - centerX) / tileWidth);
-
+            bool loops = settings.LoopHorizontally && tileWidth > 0f;
+            float wrap = loops ? tileWidth * Mathf.Round((context.CameraPosition.x - centerX) / tileWidth) : 0f;
             layer.LoopOffset = wrap;
+            // A camada fica parada no mundo; o parallax vem da própria perspectiva da câmera.
+            layer.CameraFactor = 0f;
 
             // Os trechos seguem a câmera que o jogador veria (no preview, a virtual), não só a real.
             float virtualX = context.VirtualCameraOffset.x;
-            layer.WrapIndex = tileWidth > 0f
+            layer.WrapIndex = loops
                 ? Mathf.RoundToInt((context.CameraPosition.x + virtualX - (centerX - virtualX * (scale - 1f))) / tileWidth)
                 : 0;
 

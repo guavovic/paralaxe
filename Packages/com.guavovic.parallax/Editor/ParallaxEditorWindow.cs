@@ -163,7 +163,7 @@ namespace Guavovic.Parallax.Editor
             Repaint();
         }
 
-        private Camera RigCamera => _rig.TargetCamera != null ? _rig.TargetCamera : Camera.main;
+        private Camera RigCamera => _rig.ResolvedCamera;
 
         /// <summary>
         /// O modo vem da câmera, então trocar o modo troca a câmera (mantendo a área no plano de foco).
