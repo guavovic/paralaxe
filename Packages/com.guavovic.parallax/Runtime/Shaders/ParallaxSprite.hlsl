@@ -21,6 +21,21 @@ float ParallaxNoise(float2 p)
     return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
 }
 
+// Como ParallaxNoise, mas repete a cada "period" na horizontal: casa na emenda do loop da camada.
+float ParallaxNoiseWrap(float2 p, float period)
+{
+    float2 i = floor(p);
+    float2 f = frac(p);
+    float2 u = f * f * (3.0 - 2.0 * f);
+    float x0 = fmod(fmod(i.x, period) + period, period);
+    float x1 = fmod(x0 + 1.0, period);
+    float a = ParallaxHash(float2(x0, i.y));
+    float b = ParallaxHash(float2(x1, i.y));
+    float c = ParallaxHash(float2(x0, i.y + 1.0));
+    float d = ParallaxHash(float2(x1, i.y + 1.0));
+    return lerp(lerp(a, b, u.x), lerp(c, d, u.x), u.y);
+}
+
 // Fase pela posição no mundo: cada objeto mexe num tempo diferente, sem script por objeto.
 // Sprites entram em lote já no espaço do mundo, então a fase vem do vértice e não da origem do objeto.
 float ParallaxPhase(float3 positionWS)

@@ -8,6 +8,7 @@ Shader "Parallax/Glow Sprite"
         _Blur ("Blur (texels)", Range(0, 6)) = 0
         _PulseSpeed ("Pulse Speed", Float) = 0
         _PulseAmount ("Pulse Amount", Range(0, 1)) = 0
+        _Flicker ("Fire Flicker", Range(0, 1)) = 0
     }
 
     SubShader
@@ -47,6 +48,7 @@ Shader "Parallax/Glow Sprite"
                 float _Blur;
                 float _PulseSpeed;
                 float _PulseAmount;
+                float _Flicker;
             CBUFFER_END
 
             #include "ParallaxSprite.hlsl"
@@ -81,7 +83,9 @@ Shader "Parallax/Glow Sprite"
                 half4 color = ParallaxSampleBlurred(input.uv) * input.color;
                 // Pulsar: a luz respira entre (1 - amount) e 1 da intensidade, cada objeto na sua fase.
                 float pulse = 1.0 - _PulseAmount * (0.5 + 0.5 * sin(_Time.y * _PulseSpeed + input.phase * 6.2831));
-                color.rgb *= _Intensity * pulse;
+                // Tremular de fogo: ruído rápido, cada chama no seu ritmo (a fase vem da posição).
+                float flicker = 1.0 - _Flicker * ParallaxNoise(float2(_Time.y * 9.0 + input.phase * 13.0, input.phase * 3.0));
+                color.rgb *= _Intensity * pulse * flicker;
                 return color;
             }
             ENDHLSL

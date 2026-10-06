@@ -30,6 +30,7 @@ Material:
     m_Ints: []
     m_Floats:
     - _Blur: 0
+    - _Flicker: 0
     - _Intensity: 1.1
     - _PulseAmount: 0.5
     - _PulseSpeed: 1.6
