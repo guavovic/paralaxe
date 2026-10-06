@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace Guavovic.Parallax
 {
     /// <summary>
@@ -5,10 +7,10 @@ namespace Guavovic.Parallax
     /// </summary>
     public enum ParallaxReaction
     {
-        None,
+        [InspectorName("Nenhuma")] None,
         /// <summary>Balança e assenta, como planta ou estandarte.</summary>
-        Sway,
+        [InspectorName("Balança")] Sway,
         /// <summary>Dá um pulinho (estica e achata), como cogumelo ou cristal.</summary>
-        Hop
+        [InspectorName("Pula")] Hop
     }
 }
