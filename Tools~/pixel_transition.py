@@ -1,10 +1,10 @@
-"""Gera os blocos de transição da floresta para a caverna, camada por camada.
+"""Gera os blocos de transição da floresta para as ruínas do templo, camada por camada.
 
 Uso: python Tools~/pixel_transition.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Transition/forest_to_cave_NN.png
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Transition/forest_to_temple_NN.png
 
-Cada bloco começa igual à floresta na borda esquerda e termina igual à caverna na direita, misturando as duas
-em dithering no meio. Como floresta e caverna são loops sem emenda, as bordas do bloco casam com os vizinhos.
+Cada bloco começa igual à floresta na borda esquerda e termina igual às ruínas na direita, misturando as duas
+em dithering no meio. Como os dois biomas são loops sem emenda, as bordas do bloco casam com os vizinhos.
 """
 import glob
 import math
@@ -16,7 +16,7 @@ from PIL import Image
 sys.path.insert(0, os.path.dirname(__file__))
 from pixel_forest import bayer, periodic  # noqa: E402
 
-BASE = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites")
+BASE = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites")
 OUT = os.path.join(BASE, "Transition")
 
 
@@ -38,10 +38,10 @@ def blend(left, right, seed):
 def main():
     os.makedirs(OUT, exist_ok=True)
     forest = sorted(glob.glob(os.path.join(BASE, "Forest", "forest_*.png")))
-    cave = sorted(glob.glob(os.path.join(BASE, "Cave", "cave_*.png")))
-    for index, (f, c) in enumerate(zip(forest, cave)):
+    temple = sorted(glob.glob(os.path.join(BASE, "Temple", "temple_*.png")))
+    for index, (f, c) in enumerate(zip(forest, temple)):
         image = blend(Image.open(f).convert("RGBA"), Image.open(c).convert("RGBA"), 200 + index)
-        path = os.path.join(OUT, "forest_to_cave_%02d.png" % index)
+        path = os.path.join(OUT, "forest_to_temple_%02d.png" % index)
         image.save(path)
     print(len(forest), "blocos de transição")
 

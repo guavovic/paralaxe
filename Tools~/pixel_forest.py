@@ -1,7 +1,7 @@
 """Gera as camadas de floresta em pixel art, com loop horizontal sem emenda.
 
 Uso: python Tools~/pixel_forest.py
-Saída: Packages/com.guavovic.parallax/Samples~/ForestDemo/Sprites/Forest/forest_NN_nome.png (480x270, RGBA)
+Saída: Packages/com.guavovic.parallax/Samples~/Demo/Sprites/Forest/forest_NN_nome.png (480x270, RGBA)
 
 Cada camada é desenhada três vezes lado a lado e recortada no meio, então o loop não tem costura.
 O mundo tem 17,78 unidades de largura, então 480 px dão 27 pixels por unidade.
@@ -13,7 +13,7 @@ import random
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 W, H = 480, 270
-OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "ForestDemo", "Sprites", "Forest")
+OUT = os.path.join(os.path.dirname(__file__), "..", "Packages", "com.guavovic.parallax", "Samples~", "Demo", "Sprites", "Forest")
 GROUND_Y = 216  # y do topo do chão, em pixels, contado de cima
 
 BAYER = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]]
@@ -506,7 +506,7 @@ def layer_beams():
     noise = periodic(97)
 
     def density(x, y):
-        u = (x + y * 0.55) % 96
+        u = (x - y * 0.55) % 96
         band = max(0.0, 1 - abs(u - 48) / 30.0)
         fade = max(0.0, 1 - y / (H * 0.85))
         return band * fade * (0.3 + 0.25 * (noise(x) * 0.5 + 0.5))

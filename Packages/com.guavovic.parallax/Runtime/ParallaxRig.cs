@@ -189,6 +189,7 @@ namespace Guavovic.Parallax
 
                 _solver.Solve(layer, settings, context);
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
+                layer.UpdateScatters(context.CameraPosition.x, settings.Factor.x * context.SpeedMultiplier);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
             }
         }

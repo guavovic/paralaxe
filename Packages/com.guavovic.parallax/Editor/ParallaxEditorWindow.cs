@@ -140,6 +140,10 @@ namespace Guavovic.Parallax.Editor
                 if (chosen != current)
                     SetMode(chosen);
 
+                var mapRect = GUILayoutUtility.GetRect(new GUIContent("Mapa"), EditorStyles.toolbarDropDown, GUILayout.Width(56f));
+                if (GUI.Button(mapRect, "Mapa", EditorStyles.toolbarDropDown))
+                    PopupWindow.Show(mapRect, new ParallaxMapPopup(_rig));
+
                 var presetsRect = GUILayoutUtility.GetRect(new GUIContent("Presets"), EditorStyles.toolbarDropDown, GUILayout.Width(70f));
                 if (GUI.Button(presetsRect, "Presets", EditorStyles.toolbarDropDown))
                     ParallaxPresets.ShowMenu(presetsRect, _rig, OnWorldChanged);

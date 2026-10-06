@@ -1,0 +1,167 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960b13c5dbbda044f92e4fe57c328ba2, type: 3}
+  m_Name: ForestProfile
+  m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxProfile
+  mode: 0
+  layers:
+  - name: "C\xE9u"
+    factor: {x: 0.99, y: 1}
+    depth: 990.001
+    windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Nuvens
+    factor: {x: 0.96, y: 1}
+    depth: 239.99986
+    windInfluence: 0
+    blur: 0.6
+    autoScroll: {x: 0.12, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.55}
+  - name: Montanhas
+    factor: {x: 0.93, y: 1}
+    depth: 132.85716
+    windInfluence: 0
+    blur: 1
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Floresta distante
+    factor: {x: 0.88, y: 1}
+    depth: 73.33333
+    windInfluence: 0.15
+    blur: 0.8
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Neblina distante
+    factor: {x: 0.85, y: 1}
+    depth: 56.666676
+    windInfluence: 0
+    blur: 1.2
+    autoScroll: {x: -0.18, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.3}
+  - name: "\xC1rvores gigantes"
+    factor: {x: 0.75, y: 1}
+    depth: 30
+    windInfluence: 0.2
+    blur: 0.5
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Floresta do meio
+    factor: {x: 0.58, y: 0.75}
+    depth: 13.809523
+    windInfluence: 0.5
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Neblina do meio
+    factor: {x: 0.45, y: 1}
+    depth: 8.181818
+    windInfluence: 0
+    blur: 0.8
+    autoScroll: {x: 0.22, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.28}
+  - name: "Ru\xEDnas"
+    factor: {x: 0.2, y: 0.2}
+    depth: 2.5
+    windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Luz das lanternas
+    factor: {x: 0.2, y: 0.2}
+    depth: 2.5
+    windInfluence: 0
+    blur: 0.6
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.9}
+  - name: "Ch\xE3o"
+    factor: {x: 0, y: 0}
+    depth: 0
+    windInfluence: 0
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: "Cip\xF3s"
+    factor: {x: -0.12, y: 1}
+    depth: -1.0714285
+    windInfluence: 1
+    blur: 0.8
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Primeiro plano
+    factor: {x: -0.45, y: 1}
+    depth: -3.1034482
+    windInfluence: 0.6
+    blur: 2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 1}
+  - name: Neblina baixa
+    factor: {x: -0.25, y: 1}
+    depth: -2
+    windInfluence: 0
+    blur: 1
+    autoScroll: {x: 0.3, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.16}
+  - name: Raios de luz
+    factor: {x: -0.08, y: 1}
+    depth: -0.7407407
+    windInfluence: 0
+    blur: 1.2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 1
+    tint: {r: 1, g: 1, b: 1, a: 0.5}
+  - name: "\xC1rvores pr\xF3ximas"
+    factor: {x: 0.35, y: 0.5}
+    depth: 5.3846154
+    windInfluence: 0.4
+    blur: 0.2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.75, g: 0.8, b: 0.85, a: 1}
+  - name: "Arbustos de tr\xE1s"
+    factor: {x: 0.1, y: 0.1}
+    depth: 1.1111112
+    windInfluence: 0.6
+    blur: 0
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.85, g: 0.9, b: 1, a: 1}
+  - name: Folhagem da frente
+    factor: {x: -0.25, y: 1}
+    depth: -2
+    windInfluence: 0.8
+    blur: 1.2
+    autoScroll: {x: 0, y: 0}
+    loopHorizontally: 0
+    tint: {r: 0.25, g: 0.3, b: 0.35, a: 1}
+  speedMultiplier: 1
+  windDirection: {x: 1, y: 0}
+  windStrength: 0.6
+  windSpeed: 1
+  gustDecay: 1.5
+  maxGust: 2
+  focusDistance: 10
