@@ -38,10 +38,11 @@ SOFTWARE.
 PART 2 - ARTWORK: ALL RIGHTS RESERVED
 ================================================================================
 
-Applies to the following files, and to any image produced by the scripts
+Applies to the following files, and to any image or sound produced by the scripts
 listed below:
 
 - Packages/com.guavovic.parallax/Samples~/Demo/Sprites/ (all files)
+- Packages/com.guavovic.parallax/Samples~/Demo/Audio/ (all files)
 - Packages/com.guavovic.parallax/Editor/Welcome/ (all files)
 - Docs/ (all files)
 - Tools~/pixel_forest.py
@@ -53,6 +54,7 @@ listed below:
 - Tools~/pixel_details.py
 - Tools~/pixel_temple.py
 - Tools~/pixel_terrain.py
+- Tools~/audio_gen.py
 
 Copyright (c) 2026 Gustavo Victor. All rights reserved.
 

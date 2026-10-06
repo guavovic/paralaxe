@@ -18,6 +18,9 @@ namespace Guavovic.Parallax.Samples
         [SerializeField] private ParticleSystem cutPieces;
         [SerializeField, Min(0)] private int piecesPerCut = 7;
 
+        /// <summary>Aviso para sons: o golpe cortou mato ou cipó (quantos).</summary>
+        public static event System.Action<int> CutSomething;
+
         private readonly Collider2D[] _found = new Collider2D[8];
         private readonly List<Vector3> _cutHits = new List<Vector3>();
         private ParallaxScatter[] _cuttable;
@@ -81,13 +84,17 @@ namespace Guavovic.Parallax.Samples
             if (_cuttable == null)
                 return;
 
+            int total = 0;
             foreach (var scatter in _cuttable)
             {
                 if (scatter == null)
                     continue;
 
                 _cutHits.Clear();
-                if (scatter.Cut(area, _cutHits) == 0 || cutPieces == null || scatter.CutColor.a < 0.01f)
+                int count = scatter.Cut(area, _cutHits);
+                if (scatter.CutColor.a >= 0.01f)
+                    total += count;
+                if (count == 0 || cutPieces == null || scatter.CutColor.a < 0.01f)
                     continue;
 
                 foreach (var hit in _cutHits)
@@ -96,6 +103,9 @@ namespace Guavovic.Parallax.Samples
                     cutPieces.Emit(parameters, piecesPerCut);
                 }
             }
+
+            if (total > 0)
+                CutSomething?.Invoke(total);
         }
     }
 }

@@ -2,6 +2,14 @@ using UnityEngine;
 
 namespace Guavovic.Parallax.Samples
 {
+    /// <summary>Material do elemento, para o som da batida e da quebra.</summary>
+    public enum DemoBreakableSound
+    {
+        Clay,
+        Wood,
+        Crystal
+    }
+
     /// <summary>
     /// Elemento que o golpe acerta: treme e solta faíscas a cada batida e quebra em cacos na última.
     /// Volta sozinho depois de um tempo, para a demonstração seguir viva.
@@ -16,6 +24,12 @@ namespace Guavovic.Parallax.Samples
         [SerializeField, Min(0)] private int hitCount = 4;
         [Tooltip("Segundos até voltar depois de quebrar. 0 não volta.")]
         [SerializeField, Min(0f)] private float respawnSeconds = 8f;
+        [SerializeField] private DemoBreakableSound sound;
+
+        /// <summary>Aviso de batida para sons e efeitos: quem levou e se quebrou.</summary>
+        public static event System.Action<DemoBreakable, bool> Struck;
+
+        public DemoBreakableSound Sound { get => sound; set => sound = value; }
 
         private SpriteRenderer _renderer;
         private Collider2D _collider;
@@ -44,10 +58,12 @@ namespace Guavovic.Parallax.Samples
             {
                 _shakeUntil = Time.time + 0.15f;
                 Emit(hitCount);
+                Struck?.Invoke(this, false);
                 return;
             }
 
             Emit(shardCount);
+            Struck?.Invoke(this, true);
             _renderer.enabled = false;
             _collider.enabled = false;
             _respawnAt = respawnSeconds > 0f ? Time.time + respawnSeconds : float.PositiveInfinity;

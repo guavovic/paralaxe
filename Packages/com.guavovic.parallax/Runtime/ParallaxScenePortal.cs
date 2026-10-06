@@ -23,6 +23,9 @@ namespace Guavovic.Parallax
 
         private bool _leaving;
 
+        /// <summary>Alguém entrou na passagem e a troca de cena começou (para som, efeito, salvar o jogo).</summary>
+        public static event System.Action<ParallaxScenePortal> Leaving;
+
         public string SceneName { get => sceneName; set => sceneName = value; }
         public string ScenePath { get => scenePath; set => scenePath = value; }
         public string SpawnId { get => spawnId; set => spawnId = value; }
@@ -38,6 +41,7 @@ namespace Guavovic.Parallax
                 return;
 
             _leaving = true;
+            Leaving?.Invoke(this);
             StartCoroutine(Leave());
         }
 
