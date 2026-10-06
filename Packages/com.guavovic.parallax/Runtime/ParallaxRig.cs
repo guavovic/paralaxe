@@ -27,6 +27,9 @@ namespace Guavovic.Parallax
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
         public IReadOnlyList<ParallaxLayer> Layers => layers;
         public ParallaxWorld World => _world;
+
+        /// <summary>A câmera do rig, ou a principal se nenhuma foi escolhida.</summary>
+        public Camera ResolvedCamera => targetCamera != null ? targetCamera : Camera.main;
         public bool IsPreviewing => _previewing;
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace Guavovic.Parallax
             get
             {
                 var fallback = profile != null ? profile.Mode : ParallaxMode.Simulated2D;
-                return ParallaxCamera.ModeOf(targetCamera != null ? targetCamera : Camera.main, fallback);
+                return ParallaxCamera.ModeOf(ResolvedCamera, fallback);
             }
         }
 
@@ -142,7 +145,6 @@ namespace Guavovic.Parallax
                     continue;
 
                 layer.RemoveTemporaryCopies();
-                layer.ResetStages();
                 layer.Restore();
             }
 
@@ -190,9 +192,7 @@ namespace Guavovic.Parallax
 
                 _solver.Solve(layer, settings, context);
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
-                // Em perspectiva a camada fica parada no mundo e o parallax vem da câmera: para o limite, fator 0.
-                float factor = mode == ParallaxMode.Perspective ? 0f : settings.Factor.x * context.SpeedMultiplier;
-                layer.UpdateScatters(context.CameraPosition.x, factor);
+                layer.UpdateScatters(context.CameraPosition.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
             }
         }

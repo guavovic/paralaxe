@@ -165,7 +165,7 @@ namespace Guavovic.Parallax.Samples
                 return;
             }
 
-            _crouch = keyboard.sKey.isPressed || keyboard.downArrowKey.isPressed;
+            _crouch = down;
             if (_crouch)
                 _input = 0f;
 
@@ -176,9 +176,6 @@ namespace Guavovic.Parallax.Samples
                 Attack();
         }
 
-        /// <summary>
-        /// Anda sozinho numa direção por um tempo, ignorando as teclas. Serve para entrar na cena por uma passagem.
-        /// </summary>
         public bool CanTravel => !IsAutonomous;
 
         public void Arrive(Vector3 position, float direction)
@@ -198,6 +195,9 @@ namespace Guavovic.Parallax.Samples
             _forcedClimbUntil = Time.time + seconds;
         }
 
+        /// <summary>
+        /// Anda sozinho numa direção por um tempo, ignorando as teclas. Serve para entrar na cena por uma passagem.
+        /// </summary>
         public void WalkFor(float direction, float seconds)
         {
             _forcedInput = Mathf.Sign(direction);

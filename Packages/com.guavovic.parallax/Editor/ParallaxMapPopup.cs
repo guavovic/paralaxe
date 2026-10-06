@@ -34,12 +34,11 @@ namespace Guavovic.Parallax.Editor
             EditorGUILayout.EndScrollView();
         }
 
-        private Camera RigCamera => _rig.TargetCamera != null ? _rig.TargetCamera : Camera.main;
 
         private void DrawBounds()
         {
             EditorGUILayout.LabelField("Limites da câmera", EditorStyles.boldLabel);
-            var camera = RigCamera;
+            var camera = _rig.ResolvedCamera;
             if (camera == null)
             {
                 EditorGUILayout.HelpBox("O rig não tem câmera.", MessageType.None);

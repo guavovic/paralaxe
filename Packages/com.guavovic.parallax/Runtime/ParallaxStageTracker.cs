@@ -18,7 +18,6 @@ namespace Guavovic.Parallax
         private IReadOnlyList<ParallaxStage> _stages;
         private Sprite _baseSprite;
         private int _shownStage = -1;
-        private int _fadingTo = -1;
         private float _fade = 1f;
         private bool _started;
 
@@ -60,7 +59,6 @@ namespace Guavovic.Parallax
             _tileStage.Clear();
             WindChanged = true;
             _shownStage = -1;
-            _fadingTo = -1;
             _fade = 1f;
             _started = false;
             foreach (var tile in _tiles)
@@ -99,7 +97,10 @@ namespace Guavovic.Parallax
                 }
 
                 int left = _slotStage.TryGetValue(slot - 1, out int leftStage) ? leftStage : stage;
-                tile.renderer.sprite = SpriteFor(stages, stage, left);
+                // Só troca quando muda: o setter do sprite marca o renderer como sujo.
+                var sprite = SpriteFor(stages, stage, left);
+                if (tile.renderer.sprite != sprite)
+                    tile.renderer.sprite = sprite;
                 SetTileStage(tile.renderer, stage);
             }
         }
@@ -114,17 +115,14 @@ namespace Guavovic.Parallax
             if (!_started)
             {
                 _started = true;
-                _fadingTo = target;
                 _fade = 1f;
                 ShowStage(stages, target);
                 return;
             }
 
             // Sempre segue a câmera: se ela volta para o trecho mostrado no meio do esmaecer, a camada volta a aparecer.
-            _fadingTo = target;
-
             float step = deltaTime / Mathf.Max(0.01f, seconds * 0.5f);
-            if (_fadingTo == _shownStage)
+            if (target == _shownStage)
             {
                 _fade = Mathf.MoveTowards(_fade, 1f, step);
                 return;
@@ -134,7 +132,7 @@ namespace Guavovic.Parallax
             if (_fade > 0f)
                 return;
 
-            ShowStage(stages, _fadingTo);
+            ShowStage(stages, target);
         }
 
         private void ShowStage(IReadOnlyList<ParallaxStage> stages, int stage)
