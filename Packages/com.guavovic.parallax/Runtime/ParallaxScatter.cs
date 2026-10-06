@@ -32,6 +32,12 @@ namespace Guavovic.Parallax
         [SerializeField, Min(0.1f)] private float reactionRadius = 0.8f;
         [SerializeField, Min(0f)] private float reactionStrength = 1f;
         [SerializeField] private string reactionTag = "Player";
+        [Tooltip("O golpe do herói corta estes elementos (mato, cipó): somem e voltam depois de um tempo.")]
+        [SerializeField] private bool cuttable;
+        [Tooltip("Segundos até o que foi cortado voltar. 0 não volta.")]
+        [SerializeField, Min(0f)] private float regrowSeconds = 8f;
+        [Tooltip("Cor dos pedaços que voam ao cortar. Transparente: sem pedaços.")]
+        [SerializeField] private Color cutColor = new Color(0.4f, 0.75f, 0.55f, 1f);
 
         private const float ReactionSeconds = 1.6f;
 
@@ -41,6 +47,7 @@ namespace Guavovic.Parallax
         private readonly List<Vector3> _baseScale = new List<Vector3>();
         private readonly List<float> _reactedAt = new List<float>();
         private readonly List<bool> _near = new List<bool>();
+        private readonly List<float> _cutUntil = new List<float>();
         private Transform _target;
         private float _nextTargetSearch;
 
@@ -50,6 +57,37 @@ namespace Guavovic.Parallax
         public float WindInfluence { get => windInfluence; set => windInfluence = Mathf.Max(0f, value); }
         public ParallaxReaction Reaction { get => reaction; set => reaction = value; }
         public float ReactionRadius { get => reactionRadius; set => reactionRadius = Mathf.Max(0.1f, value); }
+        public bool Cuttable { get => cuttable; set => cuttable = value; }
+        public Color CutColor { get => cutColor; set => cutColor = value; }
+        public float RegrowSeconds { get => regrowSeconds; set => regrowSeconds = Mathf.Max(0f, value); }
+
+        /// <summary>
+        /// Corta os elementos visíveis que encostam em <paramref name="area"/> (no mundo). Devolve quantos cortou e,
+        /// em <paramref name="hits"/>, onde estavam, para quem quiser soltar pedaços ou tocar um som.
+        /// </summary>
+        public int Cut(Bounds area, List<Vector3> hits = null)
+        {
+            if (!cuttable)
+                return 0;
+            if (_items.Count != transform.childCount)
+                CollectItems();
+
+            int count = 0;
+            for (int i = 0; i < _items.Count; i++)
+            {
+                var spriteRenderer = _renderers[i];
+                if (spriteRenderer == null || !spriteRenderer.enabled || _cutUntil[i] > Time.time)
+                    continue;
+                if (!spriteRenderer.bounds.Intersects(area))
+                    continue;
+
+                _cutUntil[i] = regrowSeconds > 0f ? Time.time + regrowSeconds : float.PositiveInfinity;
+                spriteRenderer.enabled = false;
+                hits?.Add(spriteRenderer.bounds.center);
+                count++;
+            }
+            return count;
+        }
 
         public void Configure(Sprite[] sprites, int amount, float width, Vector2 height, Vector2 scale, int randomSeed, int order)
         {
@@ -139,13 +177,24 @@ namespace Guavovic.Parallax
                 if (reacts)
                     React(i, layer.transform.position.x + (offset + position.x) * scale, targetX);
 
-                if (limited && _renderers[i] != null)
+                bool wasCut = !float.IsNegativeInfinity(_cutUntil[i]);
+                if ((limited || wasCut) && _renderers[i] != null)
                 {
-                    // O elemento anda "factor" por unidade da câmera, então cruza o meio da tela quando a câmera chega
-                    // em (x - factor * câmera) / (1 - factor). Esse ponto não muda enquanto a câmera anda: nada pisca.
-                    float x = layer.transform.position.x + (offset + position.x) * scale;
-                    float crossing = Mathf.Abs(1f - factor) < 0.001f ? cameraX : (x - factor * cameraX) / (1f - factor);
-                    _renderers[i].enabled = crossing >= visibleRangeX.x && crossing <= visibleRangeX.y;
+                    bool show = true;
+                    if (limited)
+                    {
+                        // O elemento anda "factor" por unidade da câmera, então cruza o meio da tela quando a câmera chega
+                        // em (x - factor * câmera) / (1 - factor). Esse ponto não muda enquanto a câmera anda: nada pisca.
+                        float x = layer.transform.position.x + (offset + position.x) * scale;
+                        float crossing = Mathf.Abs(1f - factor) < 0.001f ? cameraX : (x - factor * cameraX) / (1f - factor);
+                        show = crossing >= visibleRangeX.x && crossing <= visibleRangeX.y;
+                    }
+
+                    if (wasCut && Time.time >= _cutUntil[i])
+                        _cutUntil[i] = float.NegativeInfinity;
+                    else if (wasCut)
+                        show = false;
+                    _renderers[i].enabled = show;
                 }
             }
         }
@@ -163,6 +212,7 @@ namespace Guavovic.Parallax
                 _items[i].localRotation = Quaternion.identity;
                 _items[i].localScale = _baseScale[i];
                 _reactedAt[i] = float.NegativeInfinity;
+                _cutUntil[i] = float.NegativeInfinity;
                 if (_renderers[i] != null)
                     _renderers[i].enabled = true;
             }
@@ -176,6 +226,7 @@ namespace Guavovic.Parallax
             _baseScale.Clear();
             _reactedAt.Clear();
             _near.Clear();
+            _cutUntil.Clear();
             foreach (Transform child in transform)
             {
                 _items.Add(child);
@@ -184,6 +235,7 @@ namespace Guavovic.Parallax
                 _baseScale.Add(child.localScale);
                 _reactedAt.Add(float.NegativeInfinity);
                 _near.Add(false);
+                _cutUntil.Add(float.NegativeInfinity);
             }
         }
 

@@ -150,6 +150,22 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void CutHidesOnlyWhatTouchesTheAreaAndOnlyWhenCuttable()
+        {
+            var first = _scatter.transform.GetChild(0).GetComponent<SpriteRenderer>();
+            var area = new Bounds(first.bounds.center, new Vector3(0.1f, 0.1f, 10f));
+
+            Assert.AreEqual(0, _scatter.Cut(area), "sem marcar como cortável");
+
+            _scatter.Cuttable = true;
+            var hits = new System.Collections.Generic.List<Vector3>();
+            Assert.AreEqual(1, _scatter.Cut(area, hits));
+            Assert.IsFalse(first.enabled);
+            Assert.AreEqual(1, hits.Count);
+            Assert.AreEqual(0, _scatter.Cut(area), "o que já foi cortado não corta de novo");
+        }
+
+        [Test]
         public void PreviewResetPutsTheItemsBack()
         {
             var placed = ItemsX();

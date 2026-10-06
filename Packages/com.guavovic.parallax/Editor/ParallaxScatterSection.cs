@@ -20,6 +20,9 @@ namespace Guavovic.Parallax.Editor
         private static readonly GUIContent ReactionLabel = new GUIContent("Reage ao herói", "Balança ou dá um pulinho quando o herói passa por eles na tela.");
         private static readonly GUIContent RadiusLabel = new GUIContent("Distância da reação");
         private static readonly GUIContent StrengthLabel = new GUIContent("Força da reação");
+        private static readonly GUIContent CutLabel = new GUIContent("Pode cortar", "O golpe do herói corta estes elementos (mato, cipó). Chame ParallaxScatter.Cut no seu golpe.");
+        private static readonly GUIContent RegrowLabel = new GUIContent("Volta em (s)", "0 não volta.");
+        private static readonly GUIContent CutColorLabel = new GUIContent("Cor dos pedaços");
         private static readonly GUIContent RangeLabel = new GUIContent("Só entre X da câmera", "Para a fase que muda de cenário: os elementos só passam pela tela com a câmera neste trecho. Os dois iguais: sempre.");
 
         public static void Draw(ParallaxLayer layerObject)
@@ -84,6 +87,16 @@ namespace Guavovic.Parallax.Editor
                     EditorGUI.indentLevel++;
                     EditorGUILayout.PropertyField(serialized.FindProperty("reactionRadius"), RadiusLabel);
                     EditorGUILayout.PropertyField(serialized.FindProperty("reactionStrength"), StrengthLabel);
+                    EditorGUI.indentLevel--;
+                }
+
+                var cuttable = serialized.FindProperty("cuttable");
+                EditorGUILayout.PropertyField(cuttable, CutLabel);
+                if (cuttable.boolValue)
+                {
+                    EditorGUI.indentLevel++;
+                    EditorGUILayout.PropertyField(serialized.FindProperty("regrowSeconds"), RegrowLabel);
+                    EditorGUILayout.PropertyField(serialized.FindProperty("cutColor"), CutColorLabel);
                     EditorGUI.indentLevel--;
                 }
                 EditorGUILayout.PropertyField(serialized.FindProperty("visibleRangeX"), RangeLabel);
