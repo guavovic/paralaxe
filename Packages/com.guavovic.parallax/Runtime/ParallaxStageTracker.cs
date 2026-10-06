@@ -18,7 +18,6 @@ namespace Guavovic.Parallax
         private IReadOnlyList<ParallaxStage> _stages;
         private Sprite _baseSprite;
         private int _shownStage = -1;
-        private int _fadingTo = -1;
         private float _fade = 1f;
         private bool _started;
 
@@ -48,7 +47,9 @@ namespace Guavovic.Parallax
         {
             _tiles.Clear();
             _tiles.AddRange(tiles);
-            if (_baseSprite == null && _tiles.Count > 0)
+            // A imagem original só é lida com a camada no estado original (nenhum trecho aplicado), para pegar
+            // a arte atual da cena e não uma antiga, nem a de um trecho.
+            if (_tiles.Count > 0 && _slotStage.Count == 0 && _shownStage < 0)
                 _baseSprite = _tiles[0].renderer.sprite;
         }
 
@@ -58,7 +59,6 @@ namespace Guavovic.Parallax
             _tileStage.Clear();
             WindChanged = true;
             _shownStage = -1;
-            _fadingTo = -1;
             _fade = 1f;
             _started = false;
             foreach (var tile in _tiles)
@@ -68,12 +68,13 @@ namespace Guavovic.Parallax
             }
         }
 
+        /// <summary>O trecho de maior início que a câmera já passou, em qualquer ordem da lista. -1 antes de todos.</summary>
         public static int StageAt(IReadOnlyList<ParallaxStage> stages, float cameraX)
         {
             int found = -1;
             for (int i = 0; i < stages.Count; i++)
             {
-                if (cameraX >= stages[i].StartX)
+                if (cameraX >= stages[i].StartX && (found < 0 || stages[i].StartX >= stages[found].StartX))
                     found = i;
             }
             return found;
@@ -96,7 +97,10 @@ namespace Guavovic.Parallax
                 }
 
                 int left = _slotStage.TryGetValue(slot - 1, out int leftStage) ? leftStage : stage;
-                tile.renderer.sprite = SpriteFor(stages, stage, left);
+                // Só troca quando muda: o setter do sprite marca o renderer como sujo.
+                var sprite = SpriteFor(stages, stage, left);
+                if (tile.renderer.sprite != sprite)
+                    tile.renderer.sprite = sprite;
                 SetTileStage(tile.renderer, stage);
             }
         }
@@ -111,17 +115,14 @@ namespace Guavovic.Parallax
             if (!_started)
             {
                 _started = true;
-                _fadingTo = target;
                 _fade = 1f;
                 ShowStage(stages, target);
                 return;
             }
 
-            if (target != _shownStage)
-                _fadingTo = target;
-
+            // Sempre segue a câmera: se ela volta para o trecho mostrado no meio do esmaecer, a camada volta a aparecer.
             float step = deltaTime / Mathf.Max(0.01f, seconds * 0.5f);
-            if (_fadingTo == _shownStage)
+            if (target == _shownStage)
             {
                 _fade = Mathf.MoveTowards(_fade, 1f, step);
                 return;
@@ -131,13 +132,13 @@ namespace Guavovic.Parallax
             if (_fade > 0f)
                 return;
 
-            ShowStage(stages, _fadingTo);
+            ShowStage(stages, target);
         }
 
         private void ShowStage(IReadOnlyList<ParallaxStage> stages, int stage)
         {
             _shownStage = stage;
-            var sprite = stage < 0 ? _baseSprite : stages[stage].Sprite;
+            var sprite = stage < 0 || stages[stage].Sprite == null ? _baseSprite : stages[stage].Sprite;
             foreach (var tile in _tiles)
             {
                 if (tile.renderer == null)
@@ -153,7 +154,8 @@ namespace Guavovic.Parallax
                 return _baseSprite;
 
             var current = stages[stage];
-            if (leftStage < stage && current.Transition != null)
+            bool comesAfterLeft = leftStage < 0 || stages[leftStage].StartX < current.StartX;
+            if (leftStage != stage && comesAfterLeft && current.Transition != null)
                 return current.Transition;
             return current.Sprite != null ? current.Sprite : _baseSprite;
         }

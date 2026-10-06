@@ -102,6 +102,37 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void StagesOutOfOrderUseTheLatestStartAlreadyPassed()
+        {
+            var stages = new System.Collections.Generic.List<ParallaxStage>
+            {
+                new ParallaxStage(40f, _cave),
+                new ParallaxStage(20f, _seam),
+            };
+
+            Assert.AreEqual(-1, ParallaxStageTracker.StageAt(stages, 10f));
+            Assert.AreEqual(1, ParallaxStageTracker.StageAt(stages, 30f));
+            Assert.AreEqual(0, ParallaxStageTracker.StageAt(stages, 50f));
+        }
+
+        [Test]
+        public void FadeComesBackWhenTheCameraReturnsMidway()
+        {
+            var image = _layer.GetComponentInChildren<SpriteRenderer>();
+            var tracker = new ParallaxStageTracker();
+            tracker.SetTiles(new System.Collections.Generic.List<(SpriteRenderer, int)> { (image, 0) });
+            tracker.Reset();
+
+            tracker.UpdateFade(_layer.Stages, 0f, 0f, 1f);
+            tracker.UpdateFade(_layer.Stages, 30f, 0.2f, 1f);
+            Assert.Less(tracker.Alpha, 1f, "começou a esmaecer ao passar do trecho");
+
+            tracker.UpdateFade(_layer.Stages, 0f, 0.2f, 1f);
+            Assert.AreEqual(1f, tracker.Alpha, 0.001f, "voltou a aparecer");
+            Assert.AreEqual("floresta", image.sprite.name, "continua no trecho em que a câmera está");
+        }
+
+        [Test]
         public void ResetPreviewPutsTheOriginalArtBack()
         {
             for (float x = 0f; x <= 60f; x += 2f)

@@ -27,6 +27,9 @@ namespace Guavovic.Parallax
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
         public IReadOnlyList<ParallaxLayer> Layers => layers;
         public ParallaxWorld World => _world;
+
+        /// <summary>A câmera do rig, ou a principal se nenhuma foi escolhida.</summary>
+        public Camera ResolvedCamera => targetCamera != null ? targetCamera : Camera.main;
         public bool IsPreviewing => _previewing;
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace Guavovic.Parallax
             get
             {
                 var fallback = profile != null ? profile.Mode : ParallaxMode.Simulated2D;
-                return ParallaxCamera.ModeOf(targetCamera != null ? targetCamera : Camera.main, fallback);
+                return ParallaxCamera.ModeOf(ResolvedCamera, fallback);
             }
         }
 
@@ -84,7 +87,8 @@ namespace Guavovic.Parallax
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
-            if (continueFromPreviousScene && ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind))
+            // Sempre consome o que foi salvo: se esta cena não continua, o fundo da anterior não pode valer numa próxima.
+            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind) && continueFromPreviousScene)
             {
                 _cameraOrigin -= offset;
                 _world.SpeedMultiplier = speed;
@@ -141,7 +145,6 @@ namespace Guavovic.Parallax
                     continue;
 
                 layer.RemoveTemporaryCopies();
-                layer.ResetStages();
                 layer.Restore();
             }
 
@@ -189,7 +192,7 @@ namespace Guavovic.Parallax
 
                 _solver.Solve(layer, settings, context);
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
-                layer.UpdateScatters(context.CameraPosition.x, settings.Factor.x * context.SpeedMultiplier);
+                layer.UpdateScatters(context.CameraPosition.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
             }
         }

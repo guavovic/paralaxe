@@ -108,7 +108,8 @@ namespace Guavovic.Parallax.Samples
 
             // Perto do fim da música, entra a próxima com o mesmo fade.
             var playing = _music[_musicSlot];
-            if (playing.clip != null && playing.isPlaying && playing.time >= playing.clip.length - crossfadeSeconds)
+            if (playing.clip != null && playing.isPlaying && playing.clip.length > crossfadeSeconds * 2f
+                && playing.time >= playing.clip.length - crossfadeSeconds)
                 PlayNextTrack();
 
             float step = Time.unscaledDeltaTime / crossfadeSeconds;

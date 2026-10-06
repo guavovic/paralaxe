@@ -42,7 +42,7 @@ namespace Guavovic.Parallax
 
         private void OnDrawGizmos()
         {
-            Gizmos.color = new Color(0.62f, 0.83f, 0.85f, 0.8f);
+            Gizmos.color = new Color(ParallaxCameraBounds.GizmoColor.r, ParallaxCameraBounds.GizmoColor.g, ParallaxCameraBounds.GizmoColor.b, 0.8f);
             Gizmos.DrawWireSphere(transform.position, 0.3f);
             Gizmos.DrawLine(transform.position, transform.position + Vector3.right * (0.6f * Mathf.Sign(walkDirection)));
         }

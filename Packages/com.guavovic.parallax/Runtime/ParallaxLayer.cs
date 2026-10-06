@@ -20,8 +20,9 @@ namespace Guavovic.Parallax
         [SerializeField, Min(0.05f)] private float fadeSeconds = 1f;
 
         private SpriteRenderer[] _renderers;
-        // Vento de cada renderer que é elemento espalhado (o do grupo dele); negativo para os blocos da camada.
-        private float[] _scatterWind = System.Array.Empty<float>();
+        // Grupo de elementos espalhados de cada renderer (nulo para os blocos da camada), para o vento de cada um.
+        private ParallaxScatter[] _rendererScatter = System.Array.Empty<ParallaxScatter>();
+        private float _appliedAlpha = 1f;
         private MaterialPropertyBlock _block;
         private Vector3 _origin;
         private Vector3 _baseScale = Vector3.one;
@@ -50,6 +51,15 @@ namespace Guavovic.Parallax
         /// <summary>Quanto o loop deslocou a camada no último quadro, em unidades do mundo. Escrito pelo solver.</summary>
         public float LoopOffset { get; internal set; }
 
+        /// <summary>
+        /// Quanto a camada anda no mundo por unidade da câmera, escrito pelo solver: o fator 2D, ou 0 em perspectiva
+        /// (a camada fica parada e o parallax vem da câmera).
+        /// </summary>
+        public float CameraFactor { get; internal set; }
+
+        /// <summary>A imagem que define a camada (o primeiro filho), ou nulo se a camada só tem elementos espalhados.</summary>
+        public SpriteRenderer FirstTile => transform.childCount > 0 ? transform.GetChild(0).GetComponent<SpriteRenderer>() : null;
+
         public void AddStage(ParallaxStage stage) => stages.Add(stage);
 
         public void Initialize(bool createCopies)
@@ -73,7 +83,7 @@ namespace Guavovic.Parallax
             if (transform.childCount == 0)
                 return;
 
-            var first = transform.GetChild(0).GetComponent<SpriteRenderer>();
+            var first = FirstTile;
             _tileWidth = first != null ? first.bounds.size.x : 0f;
 
             if (createCopies && !_copiesCreated && _tileWidth > 0f)
@@ -101,18 +111,25 @@ namespace Guavovic.Parallax
             float delta = _lastStageTime < 0f ? 0f : now - _lastStageTime;
             _lastStageTime = now;
             _stageTracker.UpdateFade(stages, cameraX, delta, fadeSeconds);
-            ApplyTint(_tint);
+            // Só reescreve a cor de todos os renderers enquanto o esmaecer anda.
+            if (!Mathf.Approximately(_stageTracker.Alpha, _appliedAlpha))
+                ApplyTint(_tint);
         }
 
         /// <summary>
         /// Leva os elementos espalhados para perto da câmera, sem seguir o loop da imagem.
         /// </summary>
-        internal void UpdateScatters(float cameraX, float factor)
+        internal void UpdateScatters(float cameraX)
         {
+            if (_scatters.Length == 0)
+                return;
+
+            float layerX = transform.position.x;
+            float scale = Mathf.Abs(transform.lossyScale.x);
             foreach (var scatter in _scatters)
             {
                 if (scatter != null)
-                    scatter.Recycle(this, cameraX, factor);
+                    scatter.Recycle(this, layerX, scale, cameraX);
             }
         }
 
@@ -182,9 +199,24 @@ namespace Guavovic.Parallax
             if (_renderers == null)
                 return;
 
-            tint.a *= _stageTracker.Alpha;
+            _appliedAlpha = _stageTracker.Alpha;
+            tint.a *= _appliedAlpha;
             foreach (var spriteRenderer in _renderers)
-                spriteRenderer.color = tint;
+            {
+                if (spriteRenderer != null)
+                    spriteRenderer.color = tint;
+            }
+        }
+
+        /// <summary>
+        /// Recolhe os renderers da camada, depois que os filhos mudaram (elementos espalhados de novo, por exemplo).
+        /// </summary>
+        public void RefreshRenderers()
+        {
+            _scatters = GetComponentsInChildren<ParallaxScatter>(true);
+            CollectRenderers();
+            _materialApplied = false;
+            ApplyTint(_tint);
         }
 
         public void ApplyWind(float strength, float speed)
@@ -219,18 +251,15 @@ namespace Guavovic.Parallax
         private void CollectRenderers()
         {
             _renderers = GetComponentsInChildren<SpriteRenderer>(true);
-            _scatterWind = new float[_renderers.Length];
+            _rendererScatter = new ParallaxScatter[_renderers.Length];
             for (int i = 0; i < _renderers.Length; i++)
-            {
-                var scatter = _renderers[i].GetComponentInParent<ParallaxScatter>(true);
-                _scatterWind[i] = scatter != null ? scatter.WindInfluence : -1f;
-            }
+                _rendererScatter[i] = _renderers[i].GetComponentInParent<ParallaxScatter>(true);
         }
 
         private float WindFactor(int index)
         {
-            float scatter = index < _scatterWind.Length ? _scatterWind[index] : -1f;
-            return scatter >= 0f ? scatter : _stageTracker.WindFor(_renderers[index]);
+            var scatter = _rendererScatter[index];
+            return scatter != null ? scatter.WindInfluence : _stageTracker.WindFor(_renderers[index]);
         }
 
         private void SetMaterialProperties(float? windStrength, float windSpeed, float? blur)
@@ -241,6 +270,8 @@ namespace Guavovic.Parallax
             for (int index = 0; index < _renderers.Length; index++)
             {
                 var spriteRenderer = _renderers[index];
+                if (spriteRenderer == null)
+                    continue;
                 var material = spriteRenderer.sharedMaterial;
                 if (material == null)
                     continue;

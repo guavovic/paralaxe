@@ -9,7 +9,8 @@ namespace Guavovic.Parallax.Editor
     [CustomEditor(typeof(ParallaxCameraBounds))]
     public sealed class ParallaxCameraBoundsEditor : UnityEditor.Editor
     {
-        private static readonly Color EdgeColor = new Color(0.62f, 0.83f, 0.85f);
+        private static readonly Color EdgeColor = ParallaxCameraBounds.GizmoColor;
+        private static readonly Color FillColor = new Color(EdgeColor.r, EdgeColor.g, EdgeColor.b, 0.04f);
 
         private void OnSceneGUI()
         {
@@ -18,7 +19,7 @@ namespace Guavovic.Parallax.Editor
             float z = 0f;
 
             Handles.color = EdgeColor;
-            Handles.DrawSolidRectangleWithOutline(new Rect(area.x, area.y, area.width, area.height), new Color(0.62f, 0.83f, 0.85f, 0.04f), EdgeColor);
+            Handles.DrawSolidRectangleWithOutline(new Rect(area.x, area.y, area.width, area.height), FillColor, EdgeColor);
 
             EditorGUI.BeginChangeCheck();
             float xMin = Edge(new Vector3(area.xMin, area.center.y, z), Vector3.right).x;

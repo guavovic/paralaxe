@@ -1,10 +1,24 @@
 # Paralaxe
 
-<img src="Docs/floresta.gif" alt="Herói andando pela floresta em pixel art, com as camadas do parallax se movendo em velocidades diferentes" width="100%">
+<img src="Docs/jornada.gif" alt="Herói andando de uma floresta em pixel art até as ruínas de um templo, com a arte das camadas mudando aos poucos e o parallax se movendo em velocidades diferentes" width="100%">
 
 Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.
 
-Veio de uma ferramenta de editor simples e virou um pacote, com um cenário de exemplo em pixel art que mostra o que dá para fazer.
+Além das camadas, o pacote faz a arte mudar ao longo da fase, espalha elementos sem repetir o mesmo padrão a cada tela, liga cenas por passagens com o fundo continuando de onde parou e traz shaders para vento, balanço, névoa e brilho. Vem com uma jornada de exemplo em pixel art que mostra tudo isso junto.
+
+## A jornada do exemplo
+
+Uma floresta à noite que vira, aos poucos, as ruínas de um templo. A entrada do templo leva a uma caverna de cristal, em outra cena, e o fundo segue de onde a floresta parou. São 18 camadas por bioma, com névoa que forma e desfaz bolsões, raios de luz que cintilam, fogo que tremula, bichos voando em profundidades diferentes, sons e três músicas calmas por bioma.
+
+<img src="Docs/caverna.gif" alt="Herói atravessando a caverna de cristal, com cristais pulsando, esporos flutuando e estalactites em várias profundidades" width="100%">
+
+O terreno tem subidas, degraus e escadaria, e dá para escalar cipós, correntes e raízes até plataformas altas.
+
+<img src="Docs/escalada.gif" alt="Herói subindo um cipó até o topo e pulando para uma plataforma alta" width="100%">
+
+O golpe corta o mato e os cipós, que voltam depois de um tempo. Plantas balançam e cogumelos dão um pulinho quando o herói passa, mesmo nas camadas de trás e da frente.
+
+<img src="Docs/corte.gif" alt="Herói cortando o mato da floresta com golpes, com pedaços de folhas voando" width="100%">
 
 ## O editor
 
@@ -16,15 +30,21 @@ Cada camada tem um controle só de distância, de perto a longe. O preview anda 
 
 <img src="Docs/editor-usar.gif" alt="Janela do editor mudando a distância de uma camada, animando o preview e trocando para o modo perspectiva" width="100%">
 
+Cada camada também tem os seus trechos, em que a arte muda ao longo da fase, e os seus elementos espalhados: arraste os sprites e ajuste quantidade, altura, tamanho, vento, se reagem ao herói e se podem ser cortados. O botão Mapa cuida dos limites da câmera, com alças na cena, e das passagens entre cenas.
+
+<img src="Docs/editor-espalhados.png" alt="Janela do editor com a camada do chão selecionada e a seção de elementos espalhados aberta, mostrando sprites, quantidade, altura, vento, reação ao herói e corte" width="100%">
+
 ## Como foi feito
 
 - **Dois modos de cálculo**, simulado em 2D e em perspectiva. O modo segue a câmera: ortográfica usa 2D, em perspectiva usa perspectiva, então os dois nunca ficam desencontrados.
-- **Uma janela só para tudo**: lista das camadas com miniatura, detalhes da camada escolhida, valores do mundo e preview com animação. O preview usa cópias temporárias e é desfeito antes de salvar, recompilar ou entrar em Play, então nada dele fica gravado na cena.
+- **Uma janela só para tudo**: lista das camadas com miniatura, detalhes da camada escolhida, valores do mundo, mapa e preview com animação. O preview usa cópias temporárias e é desfeito antes de salvar, recompilar ou entrar em Play, então nada dele fica gravado na cena.
+- **Trechos por camada**: a arte muda bloco a bloco fora da tela, com uma costura entre os dois cenários, ou a camada inteira esmaece, para as camadas distantes que quase não andam. Cada trecho tem o seu vento, então pedra fica parada onde a floresta balançava.
+- **Elementos espalhados** num trecho bem maior que a imagem da camada, com sorteio fixo e sem seguir o loop da imagem: o cenário não repete a cada tela. Eles podem ficar só num pedaço da fase, sem piscar na troca de cenário, reagir ao herói e ser cortados.
+- **Passagens entre cenas** com escurecer, ponto de chegada e o fundo continuando de onde a cena anterior parou.
 - **Valores globais** de velocidade e de vento, que o jogador pode afetar e que também afetam o jogador.
-- **Efeitos por camada**: desfoque, brilho aditivo, rolagem automática, influência do vento e repetição horizontal sem emenda.
-- **Leve de rodar**: o rig custa cerca de 3 µs por quadro e não aloca memória, e testes de desempenho travam isso. O cenário de exemplo roda a 165 FPS num notebook.
-- **Ícones em pixel art** e uma tela de boas-vindas com créditos e atalhos, gerados por script como o resto da arte.
-- **Cenário de exemplo** em pixel art, com herói animado, câmera que acompanha na horizontal e na vertical, pássaros, vagalumes, luz e neblina. A arte e o áudio são gerados por código, num projeto à parte.
+- **Shaders próprios**: vento, balanço a partir da base ou do topo, névoa e poeira que se mexem em dithering, ondulação, brilho aditivo com pulsação e tremular de fogo.
+- **Leve de rodar**: o rig não aloca memória por quadro e custa poucos microssegundos, uns 3 µs só com as camadas e perto de 25 µs com mais de cem elementos espalhados. Testes de desempenho travam isso.
+- **Arte, sons e músicas** do exemplo, ícones e tela de boas-vindas gerados por código, num projeto à parte.
 
 ## Qual modo usar
 
@@ -34,12 +54,12 @@ Cada camada tem um controle só de distância, de perto a longe. O preview anda 
 ## Tecnologias
 
 - **Pacote:** C# e a API de editor da Unity 6, com o Universal Render Pipeline.
-- **Efeitos:** shaders próprios, para o vento e o brilho aditivo.
-- **Arte do exemplo e ícones:** Python com PIL, em pixel art.
+- **Efeitos:** shaders em HLSL para o URP.
+- **Arte, sons e músicas do exemplo:** Python, com PIL para a pixel art e numpy para o áudio.
 - **Testes:** Unity Test Framework, com testes de desempenho.
 
 ## Licença
 
 O código é livre para usar, inclusive em jogos comerciais, com uma condição: o jogo ou projeto tem que creditar **Paralaxe, por Gustavo Victor** nos créditos, na tela de sobre ou na documentação, com o link do repositório quando der.
 
-A arte do exemplo (imagens, banner, GIFs e os scripts que geram a arte) é só para conhecer o pacote e não pode ser usada em outros projetos. Os detalhes estão em [LICENSE](LICENSE).
+A arte, os sons e as músicas do exemplo (imagens, áudio, banner e GIFs) são só para conhecer o pacote e não podem ser usados em outros projetos. Os detalhes estão em [LICENSE](LICENSE).
