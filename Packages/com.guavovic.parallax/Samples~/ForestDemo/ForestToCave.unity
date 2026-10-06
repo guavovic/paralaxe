@@ -151,7 +151,7 @@ MonoBehaviour:
   profile: {fileID: 11400000, guid: 4f901d503a2939a4386a9d249db1f984, type: 2}
   targetCamera: {fileID: 2035013546}
   applyProfileToWorld: 1
-  continueFromPreviousScene: 1
+  continueFromPreviousScene: 0
   layers:
   - {fileID: 1024068918}
   - {fileID: 1877432517}
@@ -386,7 +386,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 8
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: d81ecc7e8e13c8943b6218330e34ae68, type: 3}
+    transition: {fileID: 21300000, guid: 898e5e37a3b05994ca03de57c6396616, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &84295324
@@ -2849,7 +2852,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 11
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: ca6f89352f82b174a8f404aa36cc384b, type: 3}
+    transition: {fileID: 21300000, guid: 6c57723f6b7c5d34d8ad5307dfeea3c6, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &235704841
@@ -5521,7 +5527,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 12
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 4867207a62d0395408c0f3f0626fb66b, type: 3}
+    transition: {fileID: 21300000, guid: a74ddb57d2bf28c4b96f9ec0b35e0298, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &372947284
@@ -6159,8 +6168,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 3
-  stages: []
-  fadeBetweenStages: 0
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 2017f450c284a984d8120836231cc81a, type: 3}
+    transition: {fileID: 21300000, guid: e3698b8b7ad2d784baf9d25b217b1fd0, type: 3}
+  fadeBetweenStages: 1
   fadeSeconds: 1
 --- !u!4 &561646016
 Transform:
@@ -8794,98 +8806,6 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!1 &798986389
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 798986390}
-  - component: {fileID: 798986391}
-  m_Layer: 0
-  m_Name: Passagem
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &798986390
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 798986389}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 36.5, y: -1.4444444, z: 0}
-  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1017518601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &798986391
-SpriteRenderer:
-  serializedVersion: 3
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 798986389}
-  m_Enabled: 1
-  m_CastShadows: 0
-  m_ReceiveShadows: 0
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 0
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_SmallMeshCulling: 1
-  m_ForceMeshLod: -1
-  m_MeshLodSelectionBias: 0
-  m_RenderingLayerMask: 1
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_GlobalIlluminationMeshLod: 0
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 1
-  m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: b326704a28ed1ff4a95fffed670ab0f3, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1.6296296, y: 2.074074}
-  m_AdaptiveModeThreshold: 0.5
-  m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
-  m_SpriteSortPoint: 0
-  m_BlendShapeWeights: []
 --- !u!1 &815292466
 GameObject:
   m_ObjectHideFlags: 0
@@ -11921,56 +11841,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1017518599
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1017518601}
-  - component: {fileID: 1017518600}
-  m_Layer: 0
-  m_Name: Passagens
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1017518600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1017518599}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 095fea079902a9a499b6212674c6b2d0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoSceneFader
-  seconds: 0.45
---- !u!4 &1017518601
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1017518599}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 798986390}
-  - {fileID: 1576693256}
-  - {fileID: 1367355411}
-  - {fileID: 2056410677}
-  - {fileID: 2126617296}
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1019411465
 GameObject:
   m_ObjectHideFlags: 0
@@ -12116,8 +11986,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 0
-  stages: []
-  fadeBetweenStages: 0
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 0adf9e370588fca40841cb2173d50a41, type: 3}
+    transition: {fileID: 21300000, guid: d38590969b39e294089fff67c36b460b, type: 3}
+  fadeBetweenStages: 1
   fadeSeconds: 1
 --- !u!4 &1024068919
 Transform:
@@ -15334,84 +15207,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &1367355410
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1367355411}
-  - component: {fileID: 1367355412}
-  m_Layer: 0
-  m_Name: Parede
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1367355411
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1367355410}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -21.5, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1017518601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &1367355412
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1367355410}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 20}
-  m_EdgeRadius: 0
 --- !u!1 &1488526613
 GameObject:
   m_ObjectHideFlags: 0
@@ -15442,7 +15237,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 9
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 4f870edcf930ab846bd4fdbf4622438b, type: 3}
+    transition: {fileID: 21300000, guid: 2acc88d4794527247894ee2c01804e09, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1488526615
@@ -15491,7 +15289,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 10
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 34a083b9bc27155478be42889490c8bf, type: 3}
+    transition: {fileID: 21300000, guid: a86411aaf490c694691a86b96c96c443, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1509158875
@@ -15839,7 +15640,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 5
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 8bf2bd75211615448bcb2ae0e6505813, type: 3}
+    transition: {fileID: 21300000, guid: e0049777eba991048aa0828754116f34, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1532449134
@@ -15888,7 +15692,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 13
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: c19b7bb037da220428affad3e5606b91, type: 3}
+    transition: {fileID: 21300000, guid: 6a06d88ff2536044ea17eff043c2d825, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1554021019
@@ -15907,102 +15714,6 @@ Transform:
   - {fileID: 1202351683}
   m_Father: {fileID: 52627011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1576693255
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1576693256}
-  - component: {fileID: 1576693258}
-  - component: {fileID: 1576693257}
-  m_Layer: 0
-  m_Name: Entrada
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1576693256
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1576693255}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 37.1, y: -2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1017518601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1576693257
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1576693255}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bc8e4af7d77577a48b5f59d255507c35, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoScenePortal
-  sceneName: CaveDemo
-  scenePath: Assets/Samples/ForestDemo/CaveDemo.unity
-  spawnId: da_floresta
-  rig: {fileID: 52627010}
-  fader: {fileID: 1017518600}
---- !u!61 &1576693258
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1576693255}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 1
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 0.8, y: 3}
-  m_EdgeRadius: 0
 --- !u!1 &1579996691
 GameObject:
   m_ObjectHideFlags: 0
@@ -18735,6 +18446,164 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1695211837}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1657842105
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1657842106}
+  - component: {fileID: 1657842109}
+  - component: {fileID: 1657842108}
+  - component: {fileID: 1657842107}
+  m_Layer: 0
+  m_Name: crystal_pink
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1657842106
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657842105}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 42, y: -2.5833333, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1695211837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1657842107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657842105}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59113d976be897243bac9949fb78bba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoBreakable
+  hits: 1
+  shardColor: {r: 1, g: 0.49, b: 0.88, a: 1}
+  shards: {fileID: 1653385714}
+  shardCount: 14
+  hitCount: 4
+  respawnSeconds: 8
+--- !u!61 &1657842108
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657842105}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.5185185, y: 0.5555556}
+    newSize: {x: 0.5185185, y: 0.5555556}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5185185, y: 0.5555556}
+  m_EdgeRadius: 0
+--- !u!212 &1657842109
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1657842105}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: c16d2c43255d0794c8cb2e33faccb725, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.5185185, y: 0.5555556}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!1 &1660511206
 GameObject:
   m_ObjectHideFlags: 0
@@ -18765,7 +18634,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 6
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: d230856cf7d31b0429f39f1d1c57e19a, type: 3}
+    transition: {fileID: 21300000, guid: c69133d3e0f422c4bbb0d8bfa341a9e6, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1660511208
@@ -18914,6 +18786,9 @@ Transform:
   - {fileID: 922499477}
   - {fileID: 72166177}
   - {fileID: 1586075063}
+  - {fileID: 1745928240}
+  - {fileID: 2011655630}
+  - {fileID: 1657842106}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1744226043
@@ -18946,7 +18821,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 14
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 70a37878242d99e4cbfab3380a11a90d, type: 3}
+    transition: {fileID: 21300000, guid: c55a02411c9c9d242ad2632eea66e247, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1744226045
@@ -18965,6 +18843,164 @@ Transform:
   - {fileID: 1512288035}
   m_Father: {fileID: 52627011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1745928239
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1745928240}
+  - component: {fileID: 1745928243}
+  - component: {fileID: 1745928242}
+  - component: {fileID: 1745928241}
+  m_Layer: 0
+  m_Name: crystal_cyan
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1745928240
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745928239}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 34, y: -2.5, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1695211837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1745928241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745928239}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59113d976be897243bac9949fb78bba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoBreakable
+  hits: 1
+  shardColor: {r: 0.49, g: 0.91, b: 1, a: 1}
+  shards: {fileID: 1653385714}
+  shardCount: 14
+  hitCount: 4
+  respawnSeconds: 8
+--- !u!61 &1745928242
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745928239}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.5185185, y: 0.6666667}
+    newSize: {x: 0.5185185, y: 0.6666667}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5185185, y: 0.6666667}
+  m_EdgeRadius: 0
+--- !u!212 &1745928243
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1745928239}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 053742f018c589740a21279aeedceca2, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.5185185, y: 0.6666667}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!1 &1826165292
 GameObject:
   m_ObjectHideFlags: 0
@@ -19153,8 +19189,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 1
-  stages: []
-  fadeBetweenStages: 0
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 161ee5a487de6aa46a6dba4e76a6f27a, type: 3}
+    transition: {fileID: 21300000, guid: 30a9383e898e9064dbb7a5bf4af6cbbe, type: 3}
+  fadeBetweenStages: 1
   fadeSeconds: 1
 --- !u!4 &1877432518
 Transform:
@@ -19202,7 +19241,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 7
-  stages: []
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: bcdadc11b5a7b744fb87021ac174da75, type: 3}
+    transition: {fileID: 21300000, guid: cc5a7cf400116844bb54885d0ac22199, type: 3}
   fadeBetweenStages: 0
   fadeSeconds: 1
 --- !u!4 &1898845361
@@ -19251,8 +19293,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 2
-  stages: []
-  fadeBetweenStages: 0
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: f147ccf35b443a74cb5780ea4f82eee9, type: 3}
+    transition: {fileID: 21300000, guid: 6cbfe247e8fae9f4d8cc1dec5b49e703, type: 3}
+  fadeBetweenStages: 1
   fadeSeconds: 1
 --- !u!4 &1972547042
 Transform:
@@ -19305,8 +19350,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxLayer
   settingsIndex: 4
-  stages: []
-  fadeBetweenStages: 0
+  stages:
+  - startX: 25
+    sprite: {fileID: 21300000, guid: 709f48addfd6ad44592be25ade1dcc2f, type: 3}
+    transition: {fileID: 21300000, guid: 3b8d8b370adb6cc4cb62e115cf1ab60b, type: 3}
+  fadeBetweenStages: 1
   fadeSeconds: 1
 --- !u!4 &2009259388
 Transform:
@@ -19324,6 +19372,164 @@ Transform:
   - {fileID: 1086848252}
   m_Father: {fileID: 52627011}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2011655629
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2011655630}
+  - component: {fileID: 2011655633}
+  - component: {fileID: 2011655632}
+  - component: {fileID: 2011655631}
+  m_Layer: 0
+  m_Name: geode
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2011655630
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011655629}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 38, y: -2.6388888, z: 0}
+  m_LocalScale: {x: 1.5, y: 1.5, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1695211837}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2011655631
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011655629}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59113d976be897243bac9949fb78bba5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoBreakable
+  hits: 3
+  shardColor: {r: 0.6, g: 0.66, b: 1, a: 1}
+  shards: {fileID: 1653385714}
+  shardCount: 14
+  hitCount: 4
+  respawnSeconds: 8
+--- !u!61 &2011655632
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011655629}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ForceSendLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ForceReceiveLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_ContactCaptureLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_CallbackLayers:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_CompositeOperation: 0
+  m_CompositeOrder: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.6296296, y: 0.4814815}
+    newSize: {x: 0.6296296, y: 0.4814815}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.6296296, y: 0.4814815}
+  m_EdgeRadius: 0
+--- !u!212 &2011655633
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2011655629}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 21300000, guid: 5f6c4f64c9b2d8142a55974571a84f43, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 0.6296296, y: 0.4814815}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 1
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
 --- !u!1 &2035013545
 GameObject:
   m_ObjectHideFlags: 0
@@ -19486,92 +19692,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Guavovic.Parallax::Guavovic.Parallax.ParallaxCameraBounds
   area:
     serializedVersion: 2
-    x: -22
+    x: -20
     y: -6.6
-    width: 62
+    width: 40
     height: 14
-  limitX: 1
+  limitX: 0
   limitY: 1
   focusDistance: 10
   rig: {fileID: 52627010}
---- !u!1 &2056410676
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2056410677}
-  - component: {fileID: 2056410678}
-  m_Layer: 0
-  m_Name: Parede
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2056410677
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2056410676}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.6, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1017518601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!61 &2056410678
-BoxCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2056410676}
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_ForceSendLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ForceReceiveLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_ContactCaptureLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_CallbackLayers:
-    serializedVersion: 2
-    m_Bits: 4294967295
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_CompositeOperation: 0
-  m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
-  m_SpriteTilingProperty:
-    border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0, y: 0}
-    oldSize: {x: 0, y: 0}
-    newSize: {x: 0, y: 0}
-    adaptiveTilingThreshold: 0
-    drawMode: 0
-    adaptiveTiling: 0
-  m_AutoTiling: 0
-  m_Size: {x: 1, y: 20}
-  m_EdgeRadius: 0
 --- !u!1 &2064349315
 GameObject:
   m_ObjectHideFlags: 0
@@ -19687,54 +19815,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
---- !u!1 &2126617295
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2126617296}
-  - component: {fileID: 2126617297}
-  m_Layer: 0
-  m_Name: Chegada
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2126617296
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126617295}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 34, y: -2.2, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1017518601}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2126617297
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2126617295}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b1f0e18a34e488043bc6e59c4364a09f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Guavovic.Parallax.Samples.DemoSpawnPoint
-  id: da_caverna
-  player: {fileID: 855756094}
-  walkDirection: -1
-  walkSeconds: 0.5
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
@@ -19747,4 +19827,3 @@ SceneRoots:
   - {fileID: 855756098}
   - {fileID: 815292468}
   - {fileID: 1695211837}
-  - {fileID: 1017518601}

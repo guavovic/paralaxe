@@ -13,6 +13,11 @@ namespace Guavovic.Parallax
         private static readonly int BlurId = Shader.PropertyToID("_Blur");
 
         [SerializeField] private int settingsIndex;
+        [Tooltip("Trechos do cenário: a arte da camada muda conforme a câmera avança. Vazio, a camada só repete a mesma imagem.")]
+        [SerializeField] private List<ParallaxStage> stages = new List<ParallaxStage>();
+        [Tooltip("Troca a camada inteira com um esmaecer, em vez de bloco a bloco. Bom para camadas muito distantes, que quase não andam.")]
+        [SerializeField] private bool fadeBetweenStages;
+        [SerializeField, Min(0.05f)] private float fadeSeconds = 1f;
 
         private SpriteRenderer[] _renderers;
         private MaterialPropertyBlock _block;
@@ -25,11 +30,21 @@ namespace Guavovic.Parallax
         private float _windStrength;
         private float _windSpeed;
         private float _blur;
+        private readonly ParallaxStageTracker _stageTracker = new ParallaxStageTracker();
+        private Color _tint = Color.white;
+        private float _lastStageTime = -1f;
 
         public int SettingsIndex { get => settingsIndex; set => settingsIndex = value; }
         public Vector3 Origin => _origin;
         public Vector3 BaseScale => _baseScale;
         public float TileWidth => _tileWidth;
+        public IReadOnlyList<ParallaxStage> Stages => stages;
+        public bool FadeBetweenStages { get => fadeBetweenStages; set => fadeBetweenStages = value; }
+
+        /// <summary>Índice do loop atual, escrito pelo solver: quantos blocos a camada já deu a volta.</summary>
+        public int WrapIndex { get; internal set; }
+
+        public void AddStage(ParallaxStage stage) => stages.Add(stage);
 
         public void Initialize(bool createCopies)
         {
@@ -56,6 +71,57 @@ namespace Guavovic.Parallax
 
             if (createCopies && !_copiesCreated && _tileWidth > 0f)
                 CreateCopies(temporaryCopies);
+
+            CollectTiles();
+            ResetStages();
+        }
+
+        /// <summary>
+        /// Atualiza a arte dos blocos conforme os trechos e a posição X da câmera.
+        /// </summary>
+        internal void UpdateStages(float cameraX)
+        {
+            if (stages.Count == 0)
+                return;
+
+            if (!fadeBetweenStages)
+            {
+                _stageTracker.UpdateBlocks(stages, WrapIndex, cameraX);
+                return;
+            }
+
+            float now = Time.realtimeSinceStartup;
+            float delta = _lastStageTime < 0f ? 0f : now - _lastStageTime;
+            _lastStageTime = now;
+            _stageTracker.UpdateFade(stages, cameraX, delta, fadeSeconds);
+            ApplyTint(_tint);
+        }
+
+        internal void ResetStages()
+        {
+            _stageTracker.Reset();
+            _lastStageTime = -1f;
+            ApplyTint(_tint);
+        }
+
+        private void CollectTiles()
+        {
+            var tiles = new List<(SpriteRenderer renderer, int index)>();
+            var first = transform.GetChild(0);
+            foreach (Transform child in transform)
+            {
+                var spriteRenderer = child.GetComponent<SpriteRenderer>();
+                if (spriteRenderer == null)
+                    continue;
+
+                if (child == first)
+                    tiles.Add((spriteRenderer, 0));
+                else if (child.name.EndsWith(" (esquerda)"))
+                    tiles.Add((spriteRenderer, -1));
+                else if (child.name.EndsWith(" (direita)"))
+                    tiles.Add((spriteRenderer, 1));
+            }
+            _stageTracker.SetTiles(tiles);
         }
 
         internal void RemoveTemporaryCopies()
@@ -72,6 +138,11 @@ namespace Guavovic.Parallax
             _temporaryCopies.Clear();
             _copiesCreated = false;
             _renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            if (transform.childCount > 0)
+            {
+                ResetStages();
+                CollectTiles();
+            }
         }
 
         public void Restore()
@@ -82,9 +153,11 @@ namespace Guavovic.Parallax
 
         public void ApplyTint(Color tint)
         {
+            _tint = tint;
             if (_renderers == null)
                 return;
 
+            tint.a *= _stageTracker.Alpha;
             foreach (var spriteRenderer in _renderers)
                 spriteRenderer.color = tint;
         }

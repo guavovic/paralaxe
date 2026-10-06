@@ -14,9 +14,15 @@ namespace Guavovic.Parallax
             float shiftX = offset.x * factor.x + scroll.x;
 
             // O loop acompanha a câmera real. No preview ela fica parada e só o deslocamento virtual anda.
+            // Conta a partir da posição da câmera em relação à camada, e não do deslocamento desde o início:
+            // a câmera pode começar longe da camada (ao continuar o fundo da cena anterior, por exemplo).
+            float view = context.CameraPosition.x - (origin.x + shiftX);
             float wrap = 0f;
             if (settings.LoopHorizontally && layer.TileWidth > 0f)
-                wrap = layer.TileWidth * Mathf.Round((context.CameraOffset.x - shiftX) / layer.TileWidth);
+                wrap = layer.TileWidth * Mathf.Round(view / layer.TileWidth);
+
+            // Os trechos seguem a câmera que o jogador veria (no preview, a virtual), não só a real.
+            layer.WrapIndex = layer.TileWidth > 0f ? Mathf.RoundToInt((view + context.VirtualCameraOffset.x) / layer.TileWidth) : 0;
 
             layer.transform.position = new Vector3(
                 origin.x + shiftX + wrap,

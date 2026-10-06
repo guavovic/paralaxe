@@ -110,6 +110,22 @@ def ledge(top, top_light, rock, seed):
     return outlined((w, h), draw)
 
 
+def passage(rock, rim, inside, glow):
+    """Passagem para outra cena: um arco de pedra com o interior escuro (ou claro, na saída)."""
+    w, h = 44, 56
+
+    def draw(d, img):
+        d.polygon([(0, h - 1), (2, 18), (10, 5), (22, 0), (34, 5), (42, 18), (w - 1, h - 1)], fill=rock)
+        d.line([(2, 18), (10, 5), (22, 0), (34, 5)], fill=rim)
+        d.polygon([(9, h - 1), (10, 24), (16, 13), (22, 10), (28, 13), (34, 24), (35, h - 1)], fill=inside)
+        if glow:
+            for y in range(14, h - 1, 2):
+                for x in range(12, 33, 3):
+                    if (x + y) % 4 == 0:
+                        d.point((x, y), fill=glow)
+    return outlined((w, h), draw)
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
     items = {
@@ -122,6 +138,8 @@ def main():
         "geode": geode(),
         "ledge_forest": ledge(hexc("#2f6a52"), hexc("#74cfa0"), hexc("#142c3d"), 3),
         "ledge_cave": ledge(hexc("#1d2350"), hexc("#9aa8ff"), hexc("#10152f"), 5),
+        "passage_to_cave": passage(hexc("#1e2a33"), hexc("#74cfd3"), hexc("#02040a"), None),
+        "passage_to_forest": passage(hexc("#10152f"), hexc("#9aa8ff"), hexc("#2f5a4a"), hexc("#9fd8a8")),
     }
     for name, image in items.items():
         image.save(os.path.join(OUT, name + ".png"))
