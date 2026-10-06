@@ -166,6 +166,22 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void ScatteringAgainKeepsTheLayerWorking()
+        {
+            _rig.Initialize();
+            MoveCamera(3f);
+            _scatter.Rebuild();
+
+            Assert.DoesNotThrow(() =>
+            {
+                _layer.ApplyMaterialProperties(0.9f, 1f, 1f);
+                _layer.ApplyTint(Color.gray);
+                MoveCamera(6f);
+            });
+            Assert.AreEqual(Color.gray, _scatter.transform.GetChild(0).GetComponent<SpriteRenderer>().color);
+        }
+
+        [Test]
         public void PreviewResetPutsTheItemsBack()
         {
             var placed = ItemsX();

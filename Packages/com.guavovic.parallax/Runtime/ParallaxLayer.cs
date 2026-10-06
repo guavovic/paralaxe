@@ -184,7 +184,20 @@ namespace Guavovic.Parallax
 
             tint.a *= _stageTracker.Alpha;
             foreach (var spriteRenderer in _renderers)
-                spriteRenderer.color = tint;
+            {
+                if (spriteRenderer != null)
+                    spriteRenderer.color = tint;
+            }
+        }
+
+        /// <summary>
+        /// Recolhe os renderers da camada, depois que os filhos mudaram (elementos espalhados de novo, por exemplo).
+        /// </summary>
+        public void RefreshRenderers()
+        {
+            CollectRenderers();
+            _materialApplied = false;
+            ApplyTint(_tint);
         }
 
         public void ApplyWind(float strength, float speed)
@@ -241,6 +254,8 @@ namespace Guavovic.Parallax
             for (int index = 0; index < _renderers.Length; index++)
             {
                 var spriteRenderer = _renderers[index];
+                if (spriteRenderer == null)
+                    continue;
                 var material = spriteRenderer.sharedMaterial;
                 if (material == null)
                     continue;

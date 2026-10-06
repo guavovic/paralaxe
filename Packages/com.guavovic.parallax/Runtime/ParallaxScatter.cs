@@ -50,6 +50,7 @@ namespace Guavovic.Parallax
         private readonly List<float> _cutUntil = new List<float>();
         private Transform _target;
         private float _nextTargetSearch;
+        private bool _wasLimited;
 
         public int Count => count;
         public float Span => span;
@@ -143,6 +144,11 @@ namespace Guavovic.Parallax
             }
 
             CollectItems();
+
+            // A camada guarda os renderers para cor, vento e desfoque: sem avisar, ela segue mexendo nos apagados.
+            var layer = GetComponentInParent<ParallaxLayer>();
+            if (layer != null)
+                layer.RefreshRenderers();
         }
 
         /// <param name="factor">Fator X da camada (modo 2D), para saber onde a câmera vai estar quando cada elemento passar pelo meio da tela.</param>
@@ -160,6 +166,8 @@ namespace Guavovic.Parallax
             float unwrapped = layer.transform.position.x - layer.LoopOffset;
             float loopLocal = layer.LoopOffset / scale;
             bool limited = visibleRangeX.y > visibleRangeX.x;
+            bool unlimitedNow = _wasLimited && !limited;
+            _wasLimited = limited;
             bool reacts = reaction != ParallaxReaction.None && Application.isPlaying && FindTarget();
             float targetX = reacts ? _target.position.x : 0f;
             for (int i = 0; i < _items.Count; i++)
@@ -178,7 +186,7 @@ namespace Guavovic.Parallax
                     React(i, layer.transform.position.x + (offset + position.x) * scale, targetX);
 
                 bool wasCut = !float.IsNegativeInfinity(_cutUntil[i]);
-                if ((limited || wasCut) && _renderers[i] != null)
+                if ((limited || wasCut || unlimitedNow) && _renderers[i] != null)
                 {
                     bool show = true;
                     if (limited)

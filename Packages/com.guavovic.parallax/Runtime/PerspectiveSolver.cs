@@ -40,7 +40,7 @@ namespace Guavovic.Parallax
 
             // Os trechos seguem a câmera que o jogador veria (no preview, a virtual), não só a real.
             float virtualX = context.VirtualCameraOffset.x;
-            layer.WrapIndex = tileWidth > 0f
+            layer.WrapIndex = settings.LoopHorizontally && tileWidth > 0f
                 ? Mathf.RoundToInt((context.CameraPosition.x + virtualX - (centerX - virtualX * (scale - 1f))) / tileWidth)
                 : 0;
 

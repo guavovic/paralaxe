@@ -22,6 +22,7 @@ namespace Guavovic.Parallax
         [SerializeField, Min(0f)] private float fadeSeconds = 0.45f;
 
         private bool _leaving;
+        private bool _needsExit;
 
         /// <summary>Alguém entrou na passagem e a troca de cena começou (para som, efeito, salvar o jogo).</summary>
         public static event System.Action<ParallaxScenePortal> Leaving;
@@ -36,6 +37,12 @@ namespace Guavovic.Parallax
             if (_leaving || ParallaxSceneTravel.Arriving || !other.CompareTag(travelerTag))
                 return;
 
+            // Quem já está dentro quando a cena começa (chegou em cima da passagem) precisa sair antes, senão volta na hora.
+            if (Time.timeSinceLevelLoad < 0.5f)
+                _needsExit = true;
+            if (_needsExit)
+                return;
+
             var traveler = other.GetComponentInParent<IParallaxTraveler>();
             if (traveler != null && !traveler.CanTravel)
                 return;
@@ -43,6 +50,12 @@ namespace Guavovic.Parallax
             _leaving = true;
             Leaving?.Invoke(this);
             StartCoroutine(Leave());
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.CompareTag(travelerTag))
+                _needsExit = false;
         }
 
         private IEnumerator Leave()
@@ -66,6 +79,17 @@ namespace Guavovic.Parallax
                 yield break;
             }
 #endif
+            if (!Application.CanStreamedLevelBeLoaded(sceneName))
+            {
+                // Cena errada ou fora da Build Settings: volta a tela e as passagens, em vez de travar no preto.
+                Debug.LogError($"Passagem '{name}': a cena '{sceneName}' não pode ser carregada. Confira o nome e a Build Settings.", this);
+                ParallaxSceneTravel.Cancel();
+                ParallaxSceneLink.Clear();
+                ParallaxScreenFade.FadeIn(fadeSeconds);
+                _leaving = false;
+                yield break;
+            }
+
             SceneManager.LoadScene(sceneName);
         }
 

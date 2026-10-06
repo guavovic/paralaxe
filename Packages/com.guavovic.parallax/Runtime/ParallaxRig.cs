@@ -84,7 +84,8 @@ namespace Guavovic.Parallax
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
-            if (continueFromPreviousScene && ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind))
+            // Sempre consome o que foi salvo: se esta cena não continua, o fundo da anterior não pode valer numa próxima.
+            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind) && continueFromPreviousScene)
             {
                 _cameraOrigin -= offset;
                 _world.SpeedMultiplier = speed;
@@ -189,7 +190,9 @@ namespace Guavovic.Parallax
 
                 _solver.Solve(layer, settings, context);
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
-                layer.UpdateScatters(context.CameraPosition.x, settings.Factor.x * context.SpeedMultiplier);
+                // Em perspectiva a camada fica parada no mundo e o parallax vem da câmera: para o limite, fator 0.
+                float factor = mode == ParallaxMode.Perspective ? 0f : settings.Factor.x * context.SpeedMultiplier;
+                layer.UpdateScatters(context.CameraPosition.x, factor);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
             }
         }

@@ -48,7 +48,9 @@ namespace Guavovic.Parallax
         {
             _tiles.Clear();
             _tiles.AddRange(tiles);
-            if (_baseSprite == null && _tiles.Count > 0)
+            // A imagem original só é lida com a camada no estado original (nenhum trecho aplicado), para pegar
+            // a arte atual da cena e não uma antiga, nem a de um trecho.
+            if (_tiles.Count > 0 && _slotStage.Count == 0 && _shownStage < 0)
                 _baseSprite = _tiles[0].renderer.sprite;
         }
 
@@ -68,12 +70,13 @@ namespace Guavovic.Parallax
             }
         }
 
+        /// <summary>O trecho de maior início que a câmera já passou, em qualquer ordem da lista. -1 antes de todos.</summary>
         public static int StageAt(IReadOnlyList<ParallaxStage> stages, float cameraX)
         {
             int found = -1;
             for (int i = 0; i < stages.Count; i++)
             {
-                if (cameraX >= stages[i].StartX)
+                if (cameraX >= stages[i].StartX && (found < 0 || stages[i].StartX >= stages[found].StartX))
                     found = i;
             }
             return found;
@@ -117,8 +120,8 @@ namespace Guavovic.Parallax
                 return;
             }
 
-            if (target != _shownStage)
-                _fadingTo = target;
+            // Sempre segue a câmera: se ela volta para o trecho mostrado no meio do esmaecer, a camada volta a aparecer.
+            _fadingTo = target;
 
             float step = deltaTime / Mathf.Max(0.01f, seconds * 0.5f);
             if (_fadingTo == _shownStage)
@@ -137,7 +140,7 @@ namespace Guavovic.Parallax
         private void ShowStage(IReadOnlyList<ParallaxStage> stages, int stage)
         {
             _shownStage = stage;
-            var sprite = stage < 0 ? _baseSprite : stages[stage].Sprite;
+            var sprite = stage < 0 || stages[stage].Sprite == null ? _baseSprite : stages[stage].Sprite;
             foreach (var tile in _tiles)
             {
                 if (tile.renderer == null)
@@ -153,7 +156,8 @@ namespace Guavovic.Parallax
                 return _baseSprite;
 
             var current = stages[stage];
-            if (leftStage < stage && current.Transition != null)
+            bool comesAfterLeft = leftStage < 0 || stages[leftStage].StartX < current.StartX;
+            if (leftStage != stage && comesAfterLeft && current.Transition != null)
                 return current.Transition;
             return current.Sprite != null ? current.Sprite : _baseSprite;
         }

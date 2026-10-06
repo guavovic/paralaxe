@@ -1,8 +1,8 @@
 {
   "name": "com.guavovic.parallax",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "displayName": "Paralaxe",
-  "description": "Parallax em 2D simulado e em perspectiva, com valores globais que o jogador pode afetar e que afetam o jogador.",
+  "description": "Parallax em 2D simulado e em perspectiva, montado por uma janela no editor: camadas, trechos que mudam a arte ao longo da fase, elementos espalhados sem repetição que reagem ao herói e podem ser cortados, passagens entre cenas, limites da câmera e shaders de vento, balanço, névoa e brilho. Valores globais que o jogador pode afetar e que afetam o jogador.",
   "unity": "6000.0",
   "author": {
     "name": "Gustavo Victor",
@@ -15,8 +15,8 @@
   },
   "samples": [
     {
-      "displayName": "Floresta e caverna em pixel art",
-      "description": "Uma jornada da floresta até a caverna, com a arte mudando aos poucos, passagem entre cenas, 18 camadas com elementos espalhados, bichos, partículas, shaders de vento, brilho e ondulação e pós-processamento, nos modos 2D e perspectiva. Precisa do URP ativo no projeto, do Input System e do 2D Sprite.",
+      "displayName": "Floresta, ruínas e caverna em pixel art",
+      "description": "Uma jornada em pixel art da floresta às ruínas de um templo, com a arte mudando aos poucos, e pela entrada do templo até a caverna de cristal. Terreno com subidas e escalada, mato que se corta, elementos que quebram, bichos, efeitos que se mexem sozinhos, sons e três músicas por bioma. Precisa do URP ativo no projeto, do Input System e do 2D Sprite.",
       "path": "Samples~/Demo"
     }
   ]

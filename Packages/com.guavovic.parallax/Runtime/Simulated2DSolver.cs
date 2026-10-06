@@ -23,7 +23,8 @@ namespace Guavovic.Parallax
 
             // Os trechos seguem a câmera que o jogador veria (no preview, a virtual), não só a real.
             layer.LoopOffset = wrap;
-            layer.WrapIndex = layer.TileWidth > 0f ? Mathf.RoundToInt((view + context.VirtualCameraOffset.x) / layer.TileWidth) : 0;
+            // Sem repetir, os blocos não andam: o índice fica fixo, senão a arte trocaria na frente da câmera.
+            layer.WrapIndex = settings.LoopHorizontally && layer.TileWidth > 0f ? Mathf.RoundToInt((view + context.VirtualCameraOffset.x) / layer.TileWidth) : 0;
 
             layer.transform.position = new Vector3(
                 origin.x + shiftX + wrap,
