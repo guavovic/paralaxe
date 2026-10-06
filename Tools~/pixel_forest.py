@@ -506,7 +506,7 @@ def layer_beams():
     noise = periodic(97)
 
     def density(x, y):
-        u = (x + y * 0.55) % 96
+        u = (x - y * 0.55) % 96
         band = max(0.0, 1 - abs(u - 48) / 30.0)
         fade = max(0.0, 1 - y / (H * 0.85))
         return band * fade * (0.3 + 0.25 * (noise(x) * 0.5 + 0.5))

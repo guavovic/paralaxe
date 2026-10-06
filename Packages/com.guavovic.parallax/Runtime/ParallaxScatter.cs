@@ -22,6 +22,8 @@ namespace Guavovic.Parallax
         [Tooltip("Vazio, usa o material da primeira imagem da camada (com o vento e o desfoque dela).")]
         [SerializeField] private Material material;
         [SerializeField] private int sortingOrder;
+        [Tooltip("Quanto o vento balança estes elementos, sobre o vento da camada. 0 deixa parado (pedra, construção).")]
+        [SerializeField, Min(0f)] private float windInfluence = 1f;
         [Tooltip("Mostra só os elementos que passam pelo meio da tela com a câmera entre estes X. Serve para a fase que muda de cenário. Mínimo igual ao máximo desliga.")]
         [SerializeField] private Vector2 visibleRangeX;
 
@@ -32,6 +34,7 @@ namespace Guavovic.Parallax
         public int Count => count;
         public float Span => span;
         public Vector2 VisibleRangeX { get => visibleRangeX; set => visibleRangeX = value; }
+        public float WindInfluence { get => windInfluence; set => windInfluence = Mathf.Max(0f, value); }
 
         public void Configure(Sprite[] sprites, int amount, float width, Vector2 height, Vector2 scale, int randomSeed, int order)
         {

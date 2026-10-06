@@ -20,6 +20,8 @@ namespace Guavovic.Parallax
         [SerializeField, Min(0.05f)] private float fadeSeconds = 1f;
 
         private SpriteRenderer[] _renderers;
+        // Vento de cada renderer que é elemento espalhado (o do grupo dele); negativo para os blocos da camada.
+        private float[] _scatterWind = System.Array.Empty<float>();
         private MaterialPropertyBlock _block;
         private Vector3 _origin;
         private Vector3 _baseScale = Vector3.one;
@@ -63,7 +65,7 @@ namespace Guavovic.Parallax
         {
             _origin = transform.position;
             _baseScale = transform.localScale;
-            _renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            CollectRenderers();
             _block = new MaterialPropertyBlock();
             _materialApplied = false;
             _scatters = GetComponentsInChildren<ParallaxScatter>(true);
@@ -154,7 +156,7 @@ namespace Guavovic.Parallax
 
             _temporaryCopies.Clear();
             _copiesCreated = false;
-            _renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            CollectRenderers();
             if (transform.childCount > 0)
             {
                 ResetStages();
@@ -202,8 +204,10 @@ namespace Guavovic.Parallax
         /// </summary>
         internal void ApplyMaterialProperties(float windStrength, float windSpeed, float blur)
         {
-            if (_materialApplied && windStrength == _windStrength && windSpeed == _windSpeed && blur == _blur)
+            if (_materialApplied && !_stageTracker.WindChanged && windStrength == _windStrength && windSpeed == _windSpeed && blur == _blur)
                 return;
+
+            _stageTracker.WindChanged = false;
 
             SetMaterialProperties(windStrength, windSpeed, blur);
             _windStrength = windStrength;
@@ -212,13 +216,31 @@ namespace Guavovic.Parallax
             _materialApplied = true;
         }
 
+        private void CollectRenderers()
+        {
+            _renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            _scatterWind = new float[_renderers.Length];
+            for (int i = 0; i < _renderers.Length; i++)
+            {
+                var scatter = _renderers[i].GetComponentInParent<ParallaxScatter>(true);
+                _scatterWind[i] = scatter != null ? scatter.WindInfluence : -1f;
+            }
+        }
+
+        private float WindFactor(int index)
+        {
+            float scatter = index < _scatterWind.Length ? _scatterWind[index] : -1f;
+            return scatter >= 0f ? scatter : _stageTracker.WindFor(_renderers[index]);
+        }
+
         private void SetMaterialProperties(float? windStrength, float windSpeed, float? blur)
         {
             if (_renderers == null)
                 return;
 
-            foreach (var spriteRenderer in _renderers)
+            for (int index = 0; index < _renderers.Length; index++)
             {
+                var spriteRenderer = _renderers[index];
                 var material = spriteRenderer.sharedMaterial;
                 if (material == null)
                     continue;
@@ -231,7 +253,7 @@ namespace Guavovic.Parallax
                 spriteRenderer.GetPropertyBlock(_block);
                 if (wind)
                 {
-                    _block.SetFloat(WindStrengthId, windStrength.Value);
+                    _block.SetFloat(WindStrengthId, windStrength.Value * WindFactor(index));
                     _block.SetFloat(WindSpeedId, windSpeed);
                 }
 
@@ -259,7 +281,7 @@ namespace Guavovic.Parallax
                 _temporaryCopies.Add(copy.gameObject);
             }
 
-            _renderers = GetComponentsInChildren<SpriteRenderer>(true);
+            CollectRenderers();
             _copiesCreated = true;
         }
     }

@@ -16,6 +16,7 @@ namespace Guavovic.Parallax.Editor
         private static readonly GUIContent SeedLabel = new GUIContent("Sorteio", "Mude para outra arrumação com os mesmos valores.");
         private static readonly GUIContent MaterialLabel = new GUIContent("Material", "Vazio, usa o da camada (com o vento e o desfoque dela).");
         private static readonly GUIContent OrderLabel = new GUIContent("Ordem de desenho");
+        private static readonly GUIContent WindLabel = new GUIContent("Vento", "Quanto o vento balança estes elementos. 0 deixa parado (pedra, construção).");
         private static readonly GUIContent RangeLabel = new GUIContent("Só entre X da câmera", "Para a fase que muda de cenário: os elementos só passam pela tela com a câmera neste trecho. Os dois iguais: sempre.");
 
         public static void Draw(ParallaxLayer layerObject)
@@ -72,6 +73,7 @@ namespace Guavovic.Parallax.Editor
                 EditorGUILayout.PropertyField(serialized.FindProperty("seed"), SeedLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("material"), MaterialLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("sortingOrder"), OrderLabel);
+                EditorGUILayout.PropertyField(serialized.FindProperty("windInfluence"), WindLabel);
                 EditorGUILayout.PropertyField(serialized.FindProperty("visibleRangeX"), RangeLabel);
                 bool changed = EditorGUI.EndChangeCheck();
                 serialized.ApplyModifiedProperties();

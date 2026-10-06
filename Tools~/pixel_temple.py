@@ -112,13 +112,13 @@ def layer_sky():
     for _ in range(110):
         x, y = rnd.randrange(W), rnd.randrange(int(H * 0.55))
         draw.point((x, y), fill=hexc("#e8dcff", rnd.choice((110, 180, 255))))
-    # lua grande e baixa, com halo violeta
-    cx, cy = int(W * 0.7), int(H * 0.34)
-    halo = dither_fill((W, H), lambda x, y: max(0.0, 1 - math.hypot(x - cx, y - cy) / 140) ** 2 * 0.5, hexc("#cdb8f0", 200))
+    # a mesma lua da floresta (posição e tamanho), em lilás: a transição não faz a lua pular
+    cx, cy = int(W * 0.32), int(H * 0.26)
+    halo = dither_fill((W, H), lambda x, y: max(0.0, 1 - math.hypot(x - cx, y - cy) / 120) ** 2 * 0.55, hexc("#cdb8f0", 200))
     img = Image.alpha_composite(img, halo)
     draw = ImageDraw.Draw(img)
-    draw.ellipse([cx - 26, cy - 26, cx + 26, cy + 26], fill=hexc("#f2e8ff"))
-    for ox, oy, r in ((-9, -6, 6), (8, 5, 7), (-3, 12, 4), (12, -10, 3)):
+    draw.ellipse([cx - 17, cy - 17, cx + 17, cy + 17], fill=hexc("#f2e8ff"))
+    for ox, oy, r in ((-6, -4, 4), (5, 3, 5), (-2, 8, 3)):
         draw.ellipse([cx + ox - r, cy + oy - r, cx + ox + r, cy + oy + r], fill=hexc("#cfc0ea"))
     return img
 

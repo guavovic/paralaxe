@@ -14,6 +14,8 @@ namespace Guavovic.Parallax
     {
         private readonly Dictionary<int, int> _slotStage = new Dictionary<int, int>();
         private readonly List<(SpriteRenderer renderer, int index)> _tiles = new List<(SpriteRenderer renderer, int index)>();
+        private readonly Dictionary<SpriteRenderer, int> _tileStage = new Dictionary<SpriteRenderer, int>();
+        private IReadOnlyList<ParallaxStage> _stages;
         private Sprite _baseSprite;
         private int _shownStage = -1;
         private int _fadingTo = -1;
@@ -22,6 +24,25 @@ namespace Guavovic.Parallax
 
         /// <summary>Multiplicador de alpha da camada durante o esmaecer.</summary>
         public float Alpha => _fade;
+
+        /// <summary>Algum bloco trocou de trecho desde a última vez que o vento foi aplicado.</summary>
+        public bool WindChanged { get; set; }
+
+        /// <summary>Vento do trecho que o bloco mostra (1 fora dos trechos e para o que não é bloco).</summary>
+        public float WindFor(SpriteRenderer renderer)
+        {
+            if (_stages == null || !_tileStage.TryGetValue(renderer, out int stage) || stage < 0 || stage >= _stages.Count)
+                return 1f;
+            return _stages[stage].WindInfluence;
+        }
+
+        private void SetTileStage(SpriteRenderer renderer, int stage)
+        {
+            if (_tileStage.TryGetValue(renderer, out int old) && old == stage)
+                return;
+            _tileStage[renderer] = stage;
+            WindChanged = true;
+        }
 
         public void SetTiles(List<(SpriteRenderer renderer, int index)> tiles)
         {
@@ -34,6 +55,8 @@ namespace Guavovic.Parallax
         public void Reset()
         {
             _slotStage.Clear();
+            _tileStage.Clear();
+            WindChanged = true;
             _shownStage = -1;
             _fadingTo = -1;
             _fade = 1f;
@@ -58,6 +81,7 @@ namespace Guavovic.Parallax
 
         public void UpdateBlocks(IReadOnlyList<ParallaxStage> stages, int wrapIndex, float cameraX)
         {
+            _stages = stages;
             int current = StageAt(stages, cameraX);
             foreach (var tile in _tiles)
             {
@@ -73,11 +97,13 @@ namespace Guavovic.Parallax
 
                 int left = _slotStage.TryGetValue(slot - 1, out int leftStage) ? leftStage : stage;
                 tile.renderer.sprite = SpriteFor(stages, stage, left);
+                SetTileStage(tile.renderer, stage);
             }
         }
 
         public void UpdateFade(IReadOnlyList<ParallaxStage> stages, float cameraX, float deltaTime, float seconds)
         {
+            _stages = stages;
             int target = StageAt(stages, cameraX);
 
             // Começando já dentro de um trecho (ao chegar por uma passagem, por exemplo), mostra o trecho direto:
@@ -114,8 +140,10 @@ namespace Guavovic.Parallax
             var sprite = stage < 0 ? _baseSprite : stages[stage].Sprite;
             foreach (var tile in _tiles)
             {
-                if (tile.renderer != null)
-                    tile.renderer.sprite = sprite;
+                if (tile.renderer == null)
+                    continue;
+                tile.renderer.sprite = sprite;
+                SetTileStage(tile.renderer, stage);
             }
         }
 
