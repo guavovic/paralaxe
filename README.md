@@ -24,7 +24,7 @@ Cada camada tem um controle só de distância, de perto a longe. O preview anda 
 - **Efeitos por camada**: desfoque, brilho aditivo, rolagem automática, influência do vento e repetição horizontal sem emenda.
 - **Leve de rodar**: o rig custa cerca de 3 µs por quadro e não aloca memória, e testes de desempenho travam isso. O cenário de exemplo roda a 165 FPS num notebook.
 - **Ícones em pixel art** e uma tela de boas-vindas com créditos e atalhos, gerados por script como o resto da arte.
-- **Cenário de exemplo** em pixel art, com herói animado, câmera que acompanha na horizontal e na vertical, pássaros, vagalumes, luz e neblina. A arte é gerada por script, o que permite refazer o cenário com outra paleta ou outro bioma.
+- **Cenário de exemplo** em pixel art, com herói animado, câmera que acompanha na horizontal e na vertical, pássaros, vagalumes, luz e neblina. A arte e o áudio são gerados por código, num projeto à parte.
 
 ## Qual modo usar
 
