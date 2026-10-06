@@ -18,6 +18,7 @@ namespace Guavovic.Parallax
         private int _shownStage = -1;
         private int _fadingTo = -1;
         private float _fade = 1f;
+        private bool _started;
 
         /// <summary>Multiplicador de alpha da camada durante o esmaecer.</summary>
         public float Alpha => _fade;
@@ -36,6 +37,7 @@ namespace Guavovic.Parallax
             _shownStage = -1;
             _fadingTo = -1;
             _fade = 1f;
+            _started = false;
             foreach (var tile in _tiles)
             {
                 if (tile.renderer != null && _baseSprite != null)
@@ -77,6 +79,18 @@ namespace Guavovic.Parallax
         public void UpdateFade(IReadOnlyList<ParallaxStage> stages, float cameraX, float deltaTime, float seconds)
         {
             int target = StageAt(stages, cameraX);
+
+            // Começando já dentro de um trecho (ao chegar por uma passagem, por exemplo), mostra o trecho direto:
+            // o esmaecer é só para quando a câmera cruza o começo dele.
+            if (!_started)
+            {
+                _started = true;
+                _fadingTo = target;
+                _fade = 1f;
+                ShowStage(stages, target);
+                return;
+            }
+
             if (target != _shownStage)
                 _fadingTo = target;
 
@@ -91,8 +105,13 @@ namespace Guavovic.Parallax
             if (_fade > 0f)
                 return;
 
-            _shownStage = _fadingTo;
-            var sprite = _shownStage < 0 ? _baseSprite : stages[_shownStage].Sprite;
+            ShowStage(stages, _fadingTo);
+        }
+
+        private void ShowStage(IReadOnlyList<ParallaxStage> stages, int stage)
+        {
+            _shownStage = stage;
+            var sprite = stage < 0 ? _baseSprite : stages[stage].Sprite;
             foreach (var tile in _tiles)
             {
                 if (tile.renderer != null)
