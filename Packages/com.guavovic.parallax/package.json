@@ -1,6 +1,6 @@
 {
   "name": "com.guavovic.parallax",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "Paralaxe",
   "description": "Parallax em 2D simulado e em perspectiva, montado por uma janela no editor: camadas, trechos que mudam a arte ao longo da fase, elementos espalhados sem repetição que reagem ao herói e podem ser cortados, passagens entre cenas, limites da câmera e shaders de vento, balanço, névoa e brilho. Valores globais que o jogador pode afetar e que afetam o jogador.",
   "unity": "6000.0",
