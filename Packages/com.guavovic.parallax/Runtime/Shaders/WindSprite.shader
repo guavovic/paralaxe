@@ -27,7 +27,7 @@ Shader "Parallax/Wind Sprite"
         Pass
         {
             Name "Unlit"
-            Tags { "LightMode" = "UniversalForward" }
+            Tags { "LightMode" = "SRPDefaultUnlit" }
 
             HLSLPROGRAM
             #pragma vertex vert
