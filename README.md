@@ -1,10 +1,36 @@
-# Paralaxe
+<p align="center">
+  <img src="Docs/icone.svg" alt="" width="120">
+</p>
+
+<h1 align="center">Paralaxe</h1>
+
+<p align="center">
+  <a href="https://github.com/guavovic/paralaxe/releases/latest"><img src="https://img.shields.io/github/v/release/guavovic/paralaxe?style=flat-square&label=release&color=4fb0a5" alt="Release"></a>
+  <a href="https://unity.com/releases/unity-6"><img src="https://img.shields.io/badge/Unity-6-4fb0a5?style=flat-square&logo=unity" alt="Unity 6"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/licen%C3%A7a-com%20cr%C3%A9dito-4fb0a5?style=flat-square" alt="Licença"></a>
+</p>
+
+<p align="center">Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.</p>
+
+<p align="center">
+  <b><a href="https://github.com/guavovic/paralaxe/releases/latest">Baixar</a></b>
+  &nbsp;•&nbsp;
+  <a href="Docs/guia-de-arte.md">Guia de produção de arte</a>
+  &nbsp;•&nbsp;
+  <a href="LICENSE">Licença</a>
+</p>
 
 <img src="Docs/jornada.gif" alt="Herói andando de uma floresta em pixel art até as ruínas de um templo, com a arte das camadas mudando aos poucos e o parallax se movendo em velocidades diferentes" width="100%">
 
-Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.
-
 Além das camadas, o pacote faz a arte mudar ao longo da fase, espalha elementos sem repetir o mesmo padrão a cada tela, liga cenas por passagens com o fundo continuando de onde parou e traz shaders para vento, balanço, névoa e brilho. Vem com uma jornada de exemplo em pixel art que mostra tudo isso junto.
+
+## Destaques
+
+- **Dois modos:** 2D simulado, com um fator de movimento por camada, e perspectiva, com profundidade de verdade, seguindo o tipo da câmera.
+- **Uma janela só:** arraste as imagens e o parallax sai montado, com preview que anda com a câmera sem entrar em Play.
+- **Arte que muda ao longo da fase:** trechos por camada e elementos espalhados que não repetem a cada tela, reagem ao herói e podem ser cortados.
+- **Passagens entre cenas:** o fundo continua de onde a cena anterior parou.
+- **Leve de rodar:** sem alocar memória por quadro, uns 3 µs só com as camadas e perto de 25 µs com mais de cem elementos espalhados.
 
 ## A jornada do exemplo
 
@@ -67,3 +93,7 @@ O [guia de produção de arte](Docs/guia-de-arte.md) mostra como preparar as cam
 O código é livre para usar, inclusive em jogos comerciais, com uma condição: o jogo ou projeto tem que creditar **Paralaxe, por Gustavo Victor** nos créditos, na tela de sobre ou na documentação, com o link do repositório quando der.
 
 A arte, os sons e as músicas do exemplo (imagens, áudio, banner e GIFs) são só para conhecer o pacote e não podem ser usados em outros projetos. Os detalhes estão em [LICENSE](LICENSE).
+
+---
+
+<sub>Licença [própria](LICENSE) · Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
