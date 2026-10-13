@@ -15,7 +15,7 @@ namespace Guavovic.Parallax.Editor
         private const string PackageName = "com.guavovic.parallax";
         private const string RepositoryUrl = "https://github.com/guavovic/paralaxe";
         private const string BannerPath = "Packages/com.guavovic.parallax/Editor/Welcome/Banner.png";
-        private const string IconPath = "Packages/com.guavovic.parallax/Editor/Icons/ParallaxRig.png";
+        private const string IconPath = "Packages/com.guavovic.parallax/Editor/Icons/Paralaxe.png";
         private const string SampleSceneGuid = "06c5b48c88d39bb43a002704d0ba083d";
         private const string ShownThisSession = "Paralaxe.Welcome.ShownThisSession";
 
