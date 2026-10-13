@@ -88,12 +88,6 @@ O [guia de produção de arte](Docs/guia-de-arte.md) mostra como preparar as cam
 - **Arte, sons e músicas do exemplo:** Python, com PIL para a pixel art e numpy para o áudio.
 - **Testes:** Unity Test Framework, com testes de desempenho.
 
-## Licença
-
-O código é livre para usar, inclusive em jogos comerciais, com uma condição: o jogo ou projeto tem que creditar **Paralaxe, por Gustavo Victor** nos créditos, na tela de sobre ou na documentação, com o link do repositório quando der.
-
-A arte, os sons e as músicas do exemplo (imagens, áudio, banner e GIFs) são só para conhecer o pacote e não podem ser usados em outros projetos. Os detalhes estão em [LICENSE](LICENSE).
-
 ---
 
 <sub>Licença [própria](LICENSE) · Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
