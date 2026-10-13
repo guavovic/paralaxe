@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="Docs/icone.svg" alt="" width="120">
+  <img src="Docs/icone.svg" alt="" width="160">
 </p>
 
 <h1 align="center">Paralaxe</h1>
