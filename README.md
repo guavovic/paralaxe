@@ -51,6 +51,10 @@ Cada camada também tem os seus trechos, em que a arte muda ao longo da fase, e 
 - **2D**, com câmera ortográfica: cada camada tem um fator de movimento e todas ficam na mesma grade de pixels. É o mais indicado para pixel art, como em Celeste e Dead Cells, e é o modo do cenário de exemplo.
 - **Perspectiva**, com câmera em perspectiva: as camadas ficam em profundidades de verdade e o parallax vem da própria câmera, nos dois eixos. É o caminho do Hollow Knight, que usa arte pintada. Em pixel art, a escala muda com a distância e os pixels deixam de ter o mesmo tamanho entre as camadas.
 
+## Arte para o pacote
+
+O [guia de produção de arte](Docs/guia-de-arte.md) mostra como preparar as camadas de um cenário novo, à mão, em pixel art ou com IA: tamanho e loop de cada camada, como separar os planos, o que deixar para os shaders, contraste com a ação e importação na Unity.
+
 ## Tecnologias
 
 - **Pacote:** C# e a API de editor da Unity 6, com o Universal Render Pipeline.
