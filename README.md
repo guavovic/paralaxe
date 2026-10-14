@@ -84,4 +84,4 @@ O [guia de produção de arte](Docs/guia-de-arte.md) mostra como preparar as cam
 
 ---
 
-<sub>Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
+<sub>Licença [MIT](LICENSE) · Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
