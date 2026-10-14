@@ -13,11 +13,7 @@
 <p align="center">Pacote para a Unity que monta cenários com parallax em camadas, direto no editor, sem escrever código para cada camada. Serve para jogos 2D, em dois modos: um parallax simulado, com um fator de movimento por camada, e um em perspectiva, em que cada camada tem uma profundidade de verdade.</p>
 
 <p align="center">
-  <b><a href="https://github.com/guavovic/paralaxe/releases/latest">Baixar</a></b>
-  &nbsp;•&nbsp;
   <a href="Docs/guia-de-arte.md">Guia de produção de arte</a>
-  &nbsp;•&nbsp;
-  <a href="LICENSE">Licença</a>
 </p>
 
 <img src="Docs/jornada.gif" alt="Herói andando de uma floresta em pixel art até as ruínas de um templo, com a arte das camadas mudando aos poucos e o parallax se movendo em velocidades diferentes" width="100%">
@@ -85,9 +81,7 @@ O [guia de produção de arte](Docs/guia-de-arte.md) mostra como preparar as cam
 
 - **Pacote:** C# e a API de editor da Unity 6, com o Universal Render Pipeline.
 - **Efeitos:** shaders em HLSL para o URP.
-- **Arte, sons e músicas do exemplo:** Python, com PIL para a pixel art e numpy para o áudio.
-- **Testes:** Unity Test Framework, com testes de desempenho.
 
 ---
 
-<sub>Licença [própria](LICENSE) · Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
+<sub>Feito por [Gustavo Victor](https://github.com/guavovic)</sub>
