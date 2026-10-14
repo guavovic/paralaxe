@@ -4,8 +4,8 @@
 
 | Versão | Suporte |
 | --- | --- |
-| 0.2.x | sim |
-| < 0.2 | não |
+| 1.0.x | sim |
+| < 1.0 | não |
 
 ## Como relatar uma vulnerabilidade
 
