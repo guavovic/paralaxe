@@ -89,13 +89,14 @@ namespace Guavovic.Parallax.Tests
             _rig.World.SpeedMultiplier = 0f;
             _rig.Apply(1f);
             _rig.Apply(1f);
-            Assert.AreEqual(2f, LayerX, 0.001f, "parada");
+            _rig.Apply(1f);
+            Assert.AreEqual(4f, LayerX, 0.001f, "parada");
 
             _rig.World.SpeedMultiplier = 1f;
             _rig.Apply(1f);
-            Assert.AreEqual(2f, LayerX, 0.001f, "volta de onde parou");
+            Assert.AreEqual(4f, LayerX, 0.001f, "volta de onde parou");
             _rig.Apply(1f);
-            Assert.AreEqual(4f, LayerX, 0.001f, "e segue na velocidade normal");
+            Assert.AreEqual(6f, LayerX, 0.001f, "e segue na velocidade normal");
         }
 
         [Test]
