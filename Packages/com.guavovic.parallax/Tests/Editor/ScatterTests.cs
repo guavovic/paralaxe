@@ -131,7 +131,7 @@ namespace Guavovic.Parallax.Tests
                 {
                     float step = after[i] - before[i];
                     bool scrolled = Mathf.Abs(step - 0.75f) < 0.001f;
-                    bool turned = Mathf.Abs(Mathf.Abs(step - 0.75f) - 100f) < 0.001f;
+                    bool turned = Mathf.Abs(step - (0.75f - 100f)) < 0.001f;
                     Assert.IsTrue(scrolled || turned, $"elemento {i} pulou {step} no quadro {frame}");
                     Assert.LessOrEqual(Mathf.Abs(after[i]), 50f + 0.001f, $"elemento {i} no quadro {frame}");
                 }

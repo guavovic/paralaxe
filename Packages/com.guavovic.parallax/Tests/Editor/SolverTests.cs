@@ -129,7 +129,7 @@ namespace Guavovic.Parallax.Tests
             settings.SetLoopHorizontally(false);
             settings.SetAutoScroll(new Vector2(0.5f, 0f));
 
-            _layer.AdvanceScroll(new Vector2(2f, 0f));
+            _layer.AdvanceScroll(new Vector2(0.5f, 0f), 4d);
             new Simulated2DSolver().Solve(_layer, settings, Context(0f));
 
             Assert.AreEqual(2f, _layer.transform.position.x, 0.001f);
@@ -154,9 +154,9 @@ namespace Guavovic.Parallax.Tests
             settings.SetAutoScroll(new Vector2(3f, 0f));
             var solver = new Simulated2DSolver();
 
-            foreach (var step in new[] { 0f, 3f, 13.5f, 94.5f, 249f })
+            foreach (var step in new[] { 0d, 1d, 4.5d, 31.5d, 83d })
             {
-                _layer.AdvanceScroll(new Vector2(step, 0f));
+                _layer.AdvanceScroll(settings.AutoScroll, step);
                 solver.Solve(_layer, settings, Context(0f));
                 Assert.LessOrEqual(Mathf.Abs(_layer.transform.position.x), TileWidth * 0.5f + 0.001f, "rolagem " + _layer.Scroll.x);
             }
@@ -168,7 +168,7 @@ namespace Guavovic.Parallax.Tests
             var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
             settings.SetAutoScroll(new Vector2(3f, 0f));
 
-            _layer.AdvanceScroll(new Vector2(37f, 0f));
+            _layer.AdvanceScroll(new Vector2(3f, 0f), 37d / 3d);
             new Simulated2DSolver().Solve(_layer, settings, Context(0f, time: 400f));
 
             Assert.AreEqual(-32f, _layer.LoopOffset, 0.001f);
@@ -183,7 +183,7 @@ namespace Guavovic.Parallax.Tests
             settings.SetLoopHorizontally(false);
             settings.SetAutoScroll(new Vector2(0.5f, 0f));
 
-            _layer.AdvanceScroll(new Vector2(2f, 0f));
+            _layer.AdvanceScroll(new Vector2(0.5f, 0f), 4d);
             new PerspectiveSolver().Solve(_layer, settings, Context(0f, time: 400f));
 
             Assert.AreEqual(4f, _layer.transform.position.x, 0.001f);

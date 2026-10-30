@@ -99,6 +99,38 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void ApplyTwiceInTheSameFrameScrollsOnce()
+        {
+            _rig.Apply();
+            _rig.Apply();
+            float afterSecondCall = LayerX;
+
+            _rig.Apply();
+
+            Assert.AreEqual(afterSecondCall, LayerX, 0.001f);
+        }
+
+        [Test]
+        public void ContinuingFromThePreviousSceneKeepsTheScroll()
+        {
+            var serialized = new UnityEditor.SerializedObject(_rig);
+            serialized.FindProperty("continueFromPreviousScene").boolValue = true;
+            serialized.ApplyModifiedPropertiesWithoutUndo();
+            try
+            {
+                ParallaxSceneLink.Save(Vector3.zero, _rig.World, 3d);
+
+                _rig.Initialize();
+
+                Assert.AreEqual(new Vector2(6f, 0f), _layer.Scroll);
+            }
+            finally
+            {
+                ParallaxSceneLink.Clear();
+            }
+        }
+
+        [Test]
         public void InitializeStartsTheScrollFromZeroAgain()
         {
             _rig.Apply(1f);

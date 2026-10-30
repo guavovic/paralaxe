@@ -61,7 +61,7 @@ namespace Guavovic.Parallax
 
         /// <summary>
         /// Quanto a rolagem automática já levou a camada desde o Initialize, em unidades do mundo. O rig soma a cada
-        /// quadro o AutoScroll vezes o SpeedMultiplier; em double, para não perder precisão depois de horas.
+        /// quadro o AutoScroll vezes o deltaTime vezes o SpeedMultiplier; em double, para a soma não perder precisão depois de horas.
         /// </summary>
         public Vector2 Scroll => new Vector2((float)_scrollX, (float)_scrollY);
 
@@ -103,10 +103,10 @@ namespace Guavovic.Parallax
             ResetStages();
         }
 
-        internal void AdvanceScroll(Vector2 distance)
+        internal void AdvanceScroll(Vector2 autoScroll, double scrollTime)
         {
-            _scrollX += distance.x;
-            _scrollY += distance.y;
+            _scrollX += autoScroll.x * scrollTime;
+            _scrollY += autoScroll.y * scrollTime;
         }
 
         /// <summary>

@@ -22,6 +22,8 @@ namespace Guavovic.Parallax
         private Vector3 _cameraOrigin;
         private bool _initialized;
         private bool _previewing;
+        private double _scrollTime;
+        private int _scrolledFrame = -1;
 
         public ParallaxProfile Profile { get => profile; set => profile = value; }
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
@@ -87,19 +89,26 @@ namespace Guavovic.Parallax
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
+            _scrollTime = 0d;
             // Sempre consome o que foi salvo: se esta cena não continua, o fundo da anterior não pode valer numa próxima.
-            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind) && continueFromPreviousScene)
+            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind, out double scrollTime) && continueFromPreviousScene)
             {
                 _cameraOrigin -= offset;
                 _world.SpeedMultiplier = speed;
                 _world.BaseWindStrength = wind;
+                AdvanceScroll(scrollTime);
             }
             _initialized = true;
         }
 
+        /// <summary>
+        /// Chamado mais de uma vez no mesmo quadro, só a primeira chamada soma a rolagem.
+        /// </summary>
         public void Apply()
         {
-            Apply(Time.deltaTime);
+            bool firstCallThisFrame = Time.frameCount != _scrolledFrame;
+            _scrolledFrame = Time.frameCount;
+            Apply(firstCallThisFrame ? Time.deltaTime : 0f);
         }
 
         /// <summary>
@@ -113,7 +122,8 @@ namespace Guavovic.Parallax
 
             float speed = _world.SpeedMultiplier;
             var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, speed, profile.FocusDistance, Time.time);
-            SolveLayers(context, _world.WindStrength, _world.WindSpeed, deltaTime * speed);
+            SolveLayers(context, _world.WindStrength, _world.WindSpeed);
+            AdvanceScroll(deltaTime * speed);
         }
 
         /// <summary>
@@ -132,7 +142,7 @@ namespace Guavovic.Parallax
 
             var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
             var context = new ParallaxContext(cameraOrigin, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance, 0f, cameraOffset);
-            SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed, 0f);
+            SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
         }
 
         /// <summary>
@@ -141,7 +151,7 @@ namespace Guavovic.Parallax
         public void SaveForNextScene()
         {
             if (_initialized)
-                ParallaxSceneLink.Save(targetCamera.transform.position - _cameraOrigin, _world);
+                ParallaxSceneLink.Save(targetCamera.transform.position - _cameraOrigin, _world, _scrollTime);
         }
 
         public void ResetPreview()
@@ -176,7 +186,7 @@ namespace Guavovic.Parallax
             }
         }
 
-        private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed, float scrollTime)
+        private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed)
         {
             var mode = Mode;
             if (_solver == null || _solverMode != mode)
@@ -204,7 +214,19 @@ namespace Guavovic.Parallax
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
                 layer.UpdateScatters(context.CameraPosition.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
-                layer.AdvanceScroll(settings.AutoScroll * scrollTime);
+            }
+        }
+
+        /// <summary>
+        /// O tempo de rolagem é o deltaTime vezes o SpeedMultiplier. O rig guarda a soma para a próxima cena continuar dali.
+        /// </summary>
+        private void AdvanceScroll(double scrollTime)
+        {
+            _scrollTime += scrollTime;
+            foreach (var layer in layers)
+            {
+                if (TryGetSettings(layer, out var settings))
+                    layer.AdvanceScroll(settings.AutoScroll, scrollTime);
             }
         }
 
