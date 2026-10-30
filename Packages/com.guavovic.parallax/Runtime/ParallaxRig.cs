@@ -99,11 +99,21 @@ namespace Guavovic.Parallax
 
         public void Apply()
         {
+            Apply(Time.deltaTime);
+        }
+
+        /// <summary>
+        /// A camada mostra a rolagem somada até o quadro anterior, então o primeiro quadro depois do Initialize
+        /// fica sempre no zero, qualquer que seja o deltaTime dele.
+        /// </summary>
+        internal void Apply(float deltaTime)
+        {
             if (profile == null || targetCamera == null)
                 return;
 
-            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance, Time.time);
-            SolveLayers(context, _world.WindStrength, _world.WindSpeed);
+            float speed = _world.SpeedMultiplier;
+            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, speed, profile.FocusDistance, Time.time);
+            SolveLayers(context, _world.WindStrength, _world.WindSpeed, deltaTime * speed);
         }
 
         /// <summary>
@@ -122,7 +132,7 @@ namespace Guavovic.Parallax
 
             var cameraOrigin = targetCamera != null ? targetCamera.transform.position : Vector3.zero;
             var context = new ParallaxContext(cameraOrigin, cameraOrigin, profile.SpeedMultiplier, profile.FocusDistance, 0f, cameraOffset);
-            SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed);
+            SolveLayers(context, withWind ? profile.WindStrength : 0f, profile.WindSpeed, 0f);
         }
 
         /// <summary>
@@ -166,7 +176,7 @@ namespace Guavovic.Parallax
             }
         }
 
-        private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed)
+        private void SolveLayers(in ParallaxContext context, float windStrength, float windSpeed, float scrollTime)
         {
             var mode = Mode;
             if (_solver == null || _solverMode != mode)
@@ -194,6 +204,7 @@ namespace Guavovic.Parallax
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
                 layer.UpdateScatters(context.CameraPosition.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
+                layer.AdvanceScroll(settings.AutoScroll * scrollTime);
             }
         }
 
