@@ -13,6 +13,7 @@ namespace Guavovic.Parallax
         private static Vector3 _cameraOffset;
         private static float _speedMultiplier = 1f;
         private static float _windStrength;
+        private static double _scrollTime;
 
         public static bool HasPending => _pending;
 
@@ -23,9 +24,11 @@ namespace Guavovic.Parallax
             _pending = false;
         }
 
-        public static void Save(Vector3 cameraOffset, ParallaxWorld world)
+        /// <param name="scrollTime">O tempo de rolagem automática do rig, para as camadas seguirem rolando de onde estavam.</param>
+        public static void Save(Vector3 cameraOffset, ParallaxWorld world, double scrollTime = 0d)
         {
             _cameraOffset = cameraOffset;
+            _scrollTime = scrollTime;
             _speedMultiplier = world != null ? world.SpeedMultiplier : 1f;
             _windStrength = world != null ? world.BaseWindStrength : 0f;
             _pending = true;
@@ -36,7 +39,13 @@ namespace Guavovic.Parallax
         /// </summary>
         public static bool TryTake(out Vector3 cameraOffset, out float speedMultiplier, out float windStrength)
         {
+            return TryTake(out cameraOffset, out speedMultiplier, out windStrength, out _);
+        }
+
+        public static bool TryTake(out Vector3 cameraOffset, out float speedMultiplier, out float windStrength, out double scrollTime)
+        {
             cameraOffset = _cameraOffset;
+            scrollTime = _scrollTime;
             speedMultiplier = _speedMultiplier;
             windStrength = _windStrength;
             bool had = _pending;

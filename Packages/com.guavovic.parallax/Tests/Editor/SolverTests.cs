@@ -123,15 +123,28 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
-        public void AutoScrollMovesTheLayerWithTimeWithoutTheCamera()
+        public void AutoScrollMovesTheLayerByTheAccumulatedScrollWithoutTheCamera()
         {
             var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
             settings.SetLoopHorizontally(false);
             settings.SetAutoScroll(new Vector2(0.5f, 0f));
 
-            new Simulated2DSolver().Solve(_layer, settings, Context(0f, time: 4f));
+            _layer.AdvanceScroll(new Vector2(0.5f, 0f), 4d);
+            new Simulated2DSolver().Solve(_layer, settings, Context(0f));
 
             Assert.AreEqual(2f, _layer.transform.position.x, 0.001f);
+        }
+
+        [Test]
+        public void AutoScrollDoesNotComeFromTheContextTime()
+        {
+            var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
+            settings.SetLoopHorizontally(false);
+            settings.SetAutoScroll(new Vector2(0.5f, 0f));
+
+            new Simulated2DSolver().Solve(_layer, settings, Context(0f, time: 400f));
+
+            Assert.AreEqual(0f, _layer.transform.position.x, 0.001f);
         }
 
         [Test]
@@ -141,11 +154,39 @@ namespace Guavovic.Parallax.Tests
             settings.SetAutoScroll(new Vector2(3f, 0f));
             var solver = new Simulated2DSolver();
 
-            foreach (var time in new[] { 0f, 1f, 5.5f, 37f, 120f })
+            foreach (var step in new[] { 0d, 1d, 4.5d, 31.5d, 83d })
             {
-                solver.Solve(_layer, settings, Context(0f, time: time));
-                Assert.LessOrEqual(Mathf.Abs(_layer.transform.position.x), TileWidth * 0.5f + 0.001f, "tempo " + time);
+                _layer.AdvanceScroll(settings.AutoScroll, step);
+                solver.Solve(_layer, settings, Context(0f));
+                Assert.LessOrEqual(Mathf.Abs(_layer.transform.position.x), TileWidth * 0.5f + 0.001f, "rolagem " + _layer.Scroll.x);
             }
+        }
+
+        [Test]
+        public void LoopOffsetAndWrapIndexComeFromTheAccumulatedScroll()
+        {
+            var settings = new ParallaxLayerSettings("L", Vector2.zero, 0f);
+            settings.SetAutoScroll(new Vector2(3f, 0f));
+
+            _layer.AdvanceScroll(new Vector2(3f, 0f), 37d / 3d);
+            new Simulated2DSolver().Solve(_layer, settings, Context(0f, time: 400f));
+
+            Assert.AreEqual(-32f, _layer.LoopOffset, 0.001f);
+            Assert.AreEqual(-2, _layer.WrapIndex);
+            Assert.AreEqual(5f, _layer.transform.position.x, 0.001f);
+        }
+
+        [Test]
+        public void PerspectiveScrollsByTheAccumulatedScrollTimesTheScale()
+        {
+            var settings = new ParallaxLayerSettings("L", Vector2.zero, 10f);
+            settings.SetLoopHorizontally(false);
+            settings.SetAutoScroll(new Vector2(0.5f, 0f));
+
+            _layer.AdvanceScroll(new Vector2(0.5f, 0f), 4d);
+            new PerspectiveSolver().Solve(_layer, settings, Context(0f, time: 400f));
+
+            Assert.AreEqual(4f, _layer.transform.position.x, 0.001f);
         }
 
         [Test]

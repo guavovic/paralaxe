@@ -37,6 +37,8 @@ namespace Guavovic.Parallax
         private Color _tint = Color.white;
         private float _lastStageTime = -1f;
         private ParallaxScatter[] _scatters = System.Array.Empty<ParallaxScatter>();
+        private double _scrollX;
+        private double _scrollY;
 
         public int SettingsIndex { get => settingsIndex; set => settingsIndex = value; }
         public Vector3 Origin => _origin;
@@ -56,6 +58,12 @@ namespace Guavovic.Parallax
         /// (a camada fica parada e o parallax vem da câmera).
         /// </summary>
         public float CameraFactor { get; internal set; }
+
+        /// <summary>
+        /// Quanto a rolagem automática já levou a camada desde o Initialize, em unidades do mundo. O rig soma a cada
+        /// quadro o AutoScroll vezes o deltaTime vezes o SpeedMultiplier; em double, para a soma não perder precisão depois de horas.
+        /// </summary>
+        public Vector2 Scroll => new Vector2((float)_scrollX, (float)_scrollY);
 
         /// <summary>A imagem que define a camada (o primeiro filho), ou nulo se a camada só tem elementos espalhados.</summary>
         public SpriteRenderer FirstTile => transform.childCount > 0 ? transform.GetChild(0).GetComponent<SpriteRenderer>() : null;
@@ -79,6 +87,8 @@ namespace Guavovic.Parallax
             _block = new MaterialPropertyBlock();
             _materialApplied = false;
             _scatters = GetComponentsInChildren<ParallaxScatter>(true);
+            _scrollX = 0d;
+            _scrollY = 0d;
 
             if (transform.childCount == 0)
                 return;
@@ -91,6 +101,12 @@ namespace Guavovic.Parallax
 
             CollectTiles();
             ResetStages();
+        }
+
+        internal void AdvanceScroll(Vector2 autoScroll, double scrollTime)
+        {
+            _scrollX += autoScroll.x * scrollTime;
+            _scrollY += autoScroll.y * scrollTime;
         }
 
         /// <summary>

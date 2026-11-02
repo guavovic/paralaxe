@@ -23,7 +23,7 @@ namespace Guavovic.Parallax
             // o mesmo que pareceria andar se a câmera tivesse se movido.
             centerX += context.VirtualCameraOffset.x * (scale - 1f);
 
-            Vector2 scroll = settings.AutoScroll * context.Time * scale;
+            Vector2 scroll = layer.Scroll * scale;
             centerX += scroll.x;
             centerY += scroll.y;
 

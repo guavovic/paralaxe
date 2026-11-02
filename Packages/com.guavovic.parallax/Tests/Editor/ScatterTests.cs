@@ -116,6 +116,31 @@ namespace Guavovic.Parallax.Tests
         }
 
         [Test]
+        public void ItemsFollowTheAutoScrollAndStayNearTheCamera()
+        {
+            _profile.Layers[0].SetAutoScroll(new Vector2(3f, 0f));
+            _rig.Initialize();
+            _rig.Apply(0.25f);
+            var before = ItemsX();
+
+            for (int frame = 0; frame < 200; frame++)
+            {
+                _rig.Apply(0.25f);
+                var after = ItemsX();
+                for (int i = 0; i < after.Length; i++)
+                {
+                    float step = after[i] - before[i];
+                    bool scrolled = Mathf.Abs(step - 0.75f) < 0.001f;
+                    bool turned = Mathf.Abs(step - (0.75f - 100f)) < 0.001f;
+                    Assert.IsTrue(scrolled || turned, $"elemento {i} pulou {step} no quadro {frame}");
+                    Assert.LessOrEqual(Mathf.Abs(after[i]), 50f + 0.001f, $"elemento {i} no quadro {frame}");
+                }
+
+                before = after;
+            }
+        }
+
+        [Test]
         public void VisibleRangeDoesNotFlickerWhileTheCameraMoves()
         {
             _scatter.VisibleRangeX = new Vector2(-10f, 10f);
