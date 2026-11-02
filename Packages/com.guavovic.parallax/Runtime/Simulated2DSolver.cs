@@ -10,7 +10,7 @@ namespace Guavovic.Parallax
             Vector3 origin = layer.Origin;
             Vector3 offset = context.CameraOffset + context.VirtualCameraOffset;
 
-            Vector2 scroll = settings.AutoScroll * context.Time;
+            Vector2 scroll = layer.Scroll;
             float shiftX = offset.x * factor.x + scroll.x;
 
             // O loop acompanha a câmera real. No preview ela fica parada e só o deslocamento virtual anda.

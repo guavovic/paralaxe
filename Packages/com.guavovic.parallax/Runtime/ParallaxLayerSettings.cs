@@ -15,7 +15,7 @@ namespace Guavovic.Parallax
         [SerializeField, Min(0f)] private float windInfluence = 1f;
         [Tooltip("Desfoque em texels, para simular profundidade de campo. 0 desliga.")]
         [SerializeField, Range(0f, 6f)] private float blur;
-        [Tooltip("Rolagem automática em unidades por segundo, independente da câmera. Serve para neblina e nuvens.")]
+        [Tooltip("Rolagem automática em unidades por segundo, vezes o multiplicador de velocidade, independente da câmera. Serve para neblina e nuvens.")]
         [SerializeField] private Vector2 autoScroll;
         [SerializeField] private bool loopHorizontally = true;
         [SerializeField] private Color tint = Color.white;

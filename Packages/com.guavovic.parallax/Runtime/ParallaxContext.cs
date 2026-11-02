@@ -8,6 +8,8 @@ namespace Guavovic.Parallax
         public readonly Vector3 CameraOrigin;
         public readonly float SpeedMultiplier;
         public readonly float FocusDistance;
+
+        /// <summary>O Time.time do quadro. A rolagem automática não sai daqui, e sim de <see cref="ParallaxLayer.Scroll"/>.</summary>
         public readonly float Time;
 
         /// <summary>

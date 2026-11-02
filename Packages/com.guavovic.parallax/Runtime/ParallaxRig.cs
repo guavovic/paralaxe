@@ -22,6 +22,8 @@ namespace Guavovic.Parallax
         private Vector3 _cameraOrigin;
         private bool _initialized;
         private bool _previewing;
+        private double _scrollTime;
+        private int _scrolledFrame = -1;
 
         public ParallaxProfile Profile { get => profile; set => profile = value; }
         public Camera TargetCamera { get => targetCamera; set => targetCamera = value; }
@@ -87,23 +89,41 @@ namespace Guavovic.Parallax
 
             InitializeLayers(createCopies: true, temporaryCopies: false);
             _cameraOrigin = targetCamera.transform.position;
+            _scrollTime = 0d;
             // Sempre consome o que foi salvo: se esta cena não continua, o fundo da anterior não pode valer numa próxima.
-            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind) && continueFromPreviousScene)
+            if (ParallaxSceneLink.TryTake(out var offset, out float speed, out float wind, out double scrollTime) && continueFromPreviousScene)
             {
                 _cameraOrigin -= offset;
                 _world.SpeedMultiplier = speed;
                 _world.BaseWindStrength = wind;
+                AdvanceScroll(scrollTime);
             }
             _initialized = true;
         }
 
+        /// <summary>
+        /// Chamado mais de uma vez no mesmo quadro, só a primeira chamada soma a rolagem.
+        /// </summary>
         public void Apply()
+        {
+            bool firstCallThisFrame = Time.frameCount != _scrolledFrame;
+            _scrolledFrame = Time.frameCount;
+            Apply(firstCallThisFrame ? Time.deltaTime : 0f);
+        }
+
+        /// <summary>
+        /// A camada mostra a rolagem somada até o quadro anterior, então o primeiro quadro depois do Initialize
+        /// fica sempre no zero, qualquer que seja o deltaTime dele.
+        /// </summary>
+        internal void Apply(float deltaTime)
         {
             if (profile == null || targetCamera == null)
                 return;
 
-            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, _world.SpeedMultiplier, profile.FocusDistance, Time.time);
+            float speed = _world.SpeedMultiplier;
+            var context = new ParallaxContext(targetCamera.transform.position, _cameraOrigin, speed, profile.FocusDistance, Time.time);
             SolveLayers(context, _world.WindStrength, _world.WindSpeed);
+            AdvanceScroll(deltaTime * speed);
         }
 
         /// <summary>
@@ -131,7 +151,7 @@ namespace Guavovic.Parallax
         public void SaveForNextScene()
         {
             if (_initialized)
-                ParallaxSceneLink.Save(targetCamera.transform.position - _cameraOrigin, _world);
+                ParallaxSceneLink.Save(targetCamera.transform.position - _cameraOrigin, _world, _scrollTime);
         }
 
         public void ResetPreview()
@@ -194,6 +214,19 @@ namespace Guavovic.Parallax
                 layer.UpdateStages(context.CameraPosition.x + context.VirtualCameraOffset.x);
                 layer.UpdateScatters(context.CameraPosition.x);
                 layer.ApplyMaterialProperties(windStrength * settings.WindInfluence, windSpeed, settings.Blur);
+            }
+        }
+
+        /// <summary>
+        /// O tempo de rolagem é o deltaTime vezes o SpeedMultiplier. O rig guarda a soma para a próxima cena continuar dali.
+        /// </summary>
+        private void AdvanceScroll(double scrollTime)
+        {
+            _scrollTime += scrollTime;
+            foreach (var layer in layers)
+            {
+                if (TryGetSettings(layer, out var settings))
+                    layer.AdvanceScroll(settings.AutoScroll, scrollTime);
             }
         }
 
